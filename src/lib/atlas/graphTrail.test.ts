@@ -18,7 +18,7 @@ describe("trailReducer — back", () => {
         expect(trailReducer(state, { type: "back" })).toEqual({
             history: [],
             current: A,
-            future:  [B],
+            future: [B],
         });
     });
 });
@@ -34,7 +34,7 @@ describe("trailReducer — forward", () => {
         expect(trailReducer(state, { type: "forward" })).toEqual({
             history: [A],
             current: B,
-            future:  [],
+            future: [],
         });
     });
 });
@@ -55,21 +55,21 @@ describe("trailReducer — navigate", () => {
         expect(trailReducer(state, { type: "navigate", slug: B })).toEqual({
             history: [A],
             current: B,
-            future:  [],
+            future: [],
         });
     });
 
     it("smart-backs when the target is the immediate-previous history entry", () => {
         const state: TrailState = { history: [A], current: B, future: [] };
         const viaNavigate = trailReducer(state, { type: "navigate", slug: A });
-        const viaBack      = trailReducer(state, { type: "back" });
+        const viaBack = trailReducer(state, { type: "back" });
         expect(viaNavigate).toEqual(viaBack);
     });
 
     it("smart-forwards when the target is the next redo entry", () => {
         const state: TrailState = { history: [], current: A, future: [B] };
         const viaNavigate = trailReducer(state, { type: "navigate", slug: B });
-        const viaForward   = trailReducer(state, { type: "forward" });
+        const viaForward = trailReducer(state, { type: "forward" });
         expect(viaNavigate).toEqual(viaForward);
     });
 });
@@ -81,7 +81,7 @@ describe("trailReducer — jump", () => {
         expect(trailReducer(state, { type: "jump", index: 0 })).toEqual({
             history: [],
             current: A,
-            future:  [B, C],
+            future: [B, C],
         });
     });
 
@@ -90,7 +90,13 @@ describe("trailReducer — jump", () => {
         expect(trailReducer(state, { type: "jump", index: 1 })).toEqual({
             history: [A],
             current: B,
-            future:  [C, "extra"],
+            future: [C, "extra"],
         });
+    });
+
+    it("is a no-op for an out-of-range index", () => {
+        const state: TrailState = { history: [A, B], current: C, future: [] };
+        expect(trailReducer(state, { type: "jump", index: 2 })).toBe(state);
+        expect(trailReducer(state, { type: "jump", index: -1 })).toBe(state);
     });
 });

@@ -15,9 +15,7 @@ describe("slugFromFile", () => {
         expect(slugFromFile("algorithm", "chess-corners.md")).toBe("chess-corners");
         expect(slugFromFile("model", "alexnet.md")).toBe("alexnet");
         expect(slugFromFile("concept", "homography.md")).toBe("homography");
-        expect(slugFromFile("narrative", "one-homography-is-not-enough.md")).toBe(
-            "one-homography-is-not-enough",
-        );
+        expect(slugFromFile("narrative", "one-homography-is-not-enough.md")).toBe("one-homography-is-not-enough");
         expect(slugFromFile("demo", "some-demo.md")).toBe("some-demo");
     });
 

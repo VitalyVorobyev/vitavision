@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { LayoutGrid, List } from "lucide-react";
+import { Button } from "@vitavision/ui";
 import type {
     AlgorithmsFilters,
     AlgorithmsKind,
@@ -79,31 +80,26 @@ export default function AlgorithmsFilterSheet({
     }, [open, onClose]);
 
     // Focus trap
-    const handleKeyDown = useCallback(
-        (e: React.KeyboardEvent) => {
-            if (e.key !== "Tab" || !sheetRef.current) return;
-            const focusable = Array.from(
-                sheetRef.current.querySelectorAll<HTMLElement>(
-                    'button, input, [tabindex]:not([tabindex="-1"])',
-                ),
-            ).filter((el) => !el.hasAttribute("disabled"));
-            if (focusable.length === 0) return;
-            const first = focusable[0];
-            const last = focusable[focusable.length - 1];
-            if (e.shiftKey) {
-                if (document.activeElement === first) {
-                    e.preventDefault();
-                    last.focus();
-                }
-            } else {
-                if (document.activeElement === last) {
-                    e.preventDefault();
-                    first.focus();
-                }
+    const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+        if (e.key !== "Tab" || !sheetRef.current) return;
+        const focusable = Array.from(
+            sheetRef.current.querySelectorAll<HTMLElement>('button, input, [tabindex]:not([tabindex="-1"])'),
+        ).filter((el) => !el.hasAttribute("disabled"));
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!first || !last) return;
+        if (e.shiftKey) {
+            if (document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
             }
-        },
-        [],
-    );
+        } else {
+            if (document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    }, []);
 
     const content = (
         <AnimatePresence>
@@ -129,7 +125,7 @@ export default function AlgorithmsFilterSheet({
                         aria-modal="true"
                         aria-label="Filters"
                         tabIndex={-1}
-                        className="fixed left-0 right-0 bottom-0 z-50 bg-[hsl(var(--bg-soft))] rounded-t-[18px] border-t border-border pb-[34px] max-h-[82vh] flex flex-col outline-none"
+                        className="fixed left-0 right-0 bottom-0 z-50 bg-overlay rounded-t-[18px] border-t border-line pb-[34px] max-h-[82vh] flex flex-col outline-none"
                         onKeyDown={handleKeyDown}
                         drag={reducedMotion ? false : "y"}
                         dragConstraints={{ top: 0 }}
@@ -144,19 +140,17 @@ export default function AlgorithmsFilterSheet({
                     >
                         {/* Grabber */}
                         <div className="grid place-items-center pt-2.5">
-                            <div className="w-10 h-1 rounded-full bg-[hsl(var(--border))]" />
+                            <div className="w-10 h-1 rounded-full bg-line" />
                         </div>
 
                         {/* Header */}
-                        <div className="flex items-center justify-between px-[18px] pt-2.5 pb-3.5 border-b border-[hsl(var(--border)/0.8)]">
-                            <span className="text-[17px] font-semibold text-foreground">
-                                Filters
-                            </span>
+                        <div className="flex items-center justify-between px-[18px] pt-2.5 pb-3.5 border-b border-line/80">
+                            <span className="text-[17px] font-semibold text-fg">Filters</span>
                             <div className="flex items-center gap-3">
                                 <div
                                     role="radiogroup"
                                     aria-label="Layout"
-                                    className="flex gap-0.5 rounded-md border border-[hsl(var(--border)/0.7)] p-0.5"
+                                    className="flex gap-0.5 rounded-control border border-line/70 p-0.5"
                                 >
                                     {(
                                         [
@@ -172,9 +166,7 @@ export default function AlgorithmsFilterSheet({
                                             aria-label={label}
                                             onClick={() => onLayoutChange(key)}
                                             className={`grid h-9 w-9 place-items-center rounded transition-colors ${
-                                                layout === key
-                                                    ? "bg-[hsl(var(--surface-hi))] text-foreground"
-                                                    : "text-muted-foreground"
+                                                layout === key ? "bg-line text-fg" : "text-fg-muted"
                                             }`}
                                         >
                                             <Icon size={15} />
@@ -184,7 +176,7 @@ export default function AlgorithmsFilterSheet({
                                 <button
                                     type="button"
                                     onClick={onReset}
-                                    className="text-[13px] text-brand hover:underline"
+                                    className="text-[13px] text-signal hover:underline"
                                 >
                                     Reset
                                 </button>
@@ -194,20 +186,16 @@ export default function AlgorithmsFilterSheet({
                         {/* Scrollable body */}
                         <div className="flex-1 overflow-y-auto px-[18px] pt-1 pb-2.5">
                             {/* Type section */}
-                            <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-muted-foreground mt-3.5 mb-2">
+                            <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-fg-muted mt-3.5 mb-2">
                                 Type
                             </div>
-                            <div
-                                role="radiogroup"
-                                aria-label="Type"
-                                className="grid grid-cols-2 gap-2 mt-2"
-                            >
+                            <div role="radiogroup" aria-label="Type" className="grid grid-cols-2 gap-2 mt-2">
                                 {(
                                     [
-                                        ["all",       "All"],
+                                        ["all", "All"],
                                         ["algorithm", "Algorithms"],
-                                        ["model",     "Models"],
-                                        ["concept",   "Concepts"],
+                                        ["model", "Models"],
+                                        ["concept", "Concepts"],
                                     ] as const
                                 ).map(([key, label]) => {
                                     const active = filters.kind === key;
@@ -219,46 +207,38 @@ export default function AlgorithmsFilterSheet({
                                             role="radio"
                                             aria-checked={active}
                                             onClick={() => onKindChange(key)}
-                                            className={`px-3 py-2.5 rounded-lg flex items-center justify-between transition-colors ${
+                                            className={`px-3 py-2.5 rounded-control flex items-center justify-between transition-colors ${
                                                 active
-                                                    ? "border border-[hsl(var(--brand)/0.5)] bg-[hsl(var(--brand)/0.08)] font-semibold text-foreground"
-                                                    : "border border-border bg-surface text-[hsl(var(--foreground)/0.8)]"
+                                                    ? "border border-signal/50 bg-signal/8 font-semibold text-fg"
+                                                    : "border border-line bg-surface text-fg/80"
                                             }`}
                                         >
-                                            <span className="text-[13px]">
-                                                {label}
-                                            </span>
-                                            <span className="text-[11px] text-muted-foreground font-normal">
-                                                {count}
-                                            </span>
+                                            <span className="text-[13px]">{label}</span>
+                                            <span className="text-[11px] text-fg-muted font-normal">{count}</span>
                                         </button>
                                     );
                                 })}
                             </div>
 
                             {/* Problem section */}
-                            <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-muted-foreground mt-5 mb-2">
+                            <div className="text-[10.5px] font-semibold uppercase tracking-[0.09em] text-fg-muted mt-5 mb-2">
                                 Problem
                             </div>
-                            <div
-                                role="radiogroup"
-                                aria-label="Problem"
-                                className="flex flex-col gap-0.5"
-                            >
+                            <div role="radiogroup" aria-label="Problem" className="flex flex-col gap-0.5">
                                 {/* All problems row */}
                                 <button
                                     type="button"
                                     role="radio"
                                     aria-checked={filters.problem === "all"}
                                     onClick={() => onProblemChange("all")}
-                                    className={`flex justify-between items-center px-2.5 py-2 rounded-md text-[13.5px] w-full text-left transition-colors ${
+                                    className={`flex justify-between items-center px-2.5 py-2 rounded-control text-[13.5px] w-full text-left transition-colors ${
                                         filters.problem === "all"
-                                            ? "bg-[hsl(var(--surface-hi))] text-foreground font-semibold"
-                                            : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                                            ? "bg-line text-fg font-semibold"
+                                            : "text-fg/80 hover:bg-line/50"
                                     }`}
                                 >
                                     <span>All problems</span>
-                                    <span className="text-[11px] text-muted-foreground font-normal">
+                                    <span className="text-[11px] text-fg-muted font-normal">
                                         {facets.kinds[filters.kind]}
                                     </span>
                                 </button>
@@ -273,14 +253,16 @@ export default function AlgorithmsFilterSheet({
                                                 role="radio"
                                                 aria-checked={active}
                                                 onClick={() => onProblemChange(task)}
-                                                className={`flex justify-between items-center px-2.5 py-2 rounded-md text-[13px] w-full text-left transition-colors ${
+                                                className={`flex justify-between items-center px-2.5 py-2 rounded-control text-[13px] w-full text-left transition-colors ${
                                                     active
-                                                        ? "bg-[hsl(191_70%_94%)] text-[hsl(191_55%_22%)] font-medium"
-                                                        : "text-[hsl(var(--foreground)/0.8)] hover:bg-[hsl(var(--surface-hi)/0.5)]"
+                                                        ? "bg-signal/10 text-signal font-medium"
+                                                        : "text-fg/80 hover:bg-line/50"
                                                 }`}
                                             >
                                                 <span className="truncate">{taskLabel(task)}</span>
-                                                <span className={`text-[11px] font-normal ml-2 shrink-0 ${active ? "text-[hsl(191_55%_22%)]" : "text-muted-foreground"}`}>
+                                                <span
+                                                    className={`text-[11px] font-normal ml-2 shrink-0 ${active ? "text-signal" : "text-fg-muted"}`}
+                                                >
                                                     {facets.problems[task]}
                                                 </span>
                                             </button>
@@ -290,14 +272,10 @@ export default function AlgorithmsFilterSheet({
                         </div>
 
                         {/* Sticky apply footer */}
-                        <div className="border-t border-[hsl(var(--border)/0.8)] bg-[hsl(var(--bg-soft))] px-4 py-2.5 shrink-0">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="w-full py-3 bg-brand text-background rounded-[10px] font-semibold text-sm"
-                            >
+                        <div className="border-t border-line/80 bg-raised px-4 py-2.5 shrink-0">
+                            <Button variant="primary" className="h-11 w-full" onClick={onClose}>
                                 Show {totalResults} results
-                            </button>
+                            </Button>
                         </div>
                     </motion.div>
                 </>

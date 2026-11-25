@@ -17,18 +17,27 @@ export function checkLenses(
 
     const overviewLens = lenses.find((l) => l.id === "overview");
     if (!overviewLens) {
-        diagnostics.push({ level: "error", message: `[${file}] narrative requires a lens with id "overview" covering all nodes` });
+        diagnostics.push({
+            level: "error",
+            message: `[${file}] narrative requires a lens with id "overview" covering all nodes`,
+        });
     } else {
         for (const nodeId of nodeIds) {
             if (!(nodeId in overviewLens.coords)) {
-                diagnostics.push({ level: "error", message: `[${file}] overview lens is missing coords for node "${nodeId}"` });
+                diagnostics.push({
+                    level: "error",
+                    message: `[${file}] overview lens is missing coords for node "${nodeId}"`,
+                });
             }
         }
     }
     for (const lens of lenses) {
         for (const key of Object.keys(lens.coords)) {
             if (!nodeIds.has(key)) {
-                diagnostics.push({ level: "error", message: `[${file}] lens "${lens.id}" coords reference unknown node "${key}"` });
+                diagnostics.push({
+                    level: "error",
+                    message: `[${file}] lens "${lens.id}" coords reference unknown node "${key}"`,
+                });
             }
         }
         // Warning: x-order inversions of >= 2 years between node pairs

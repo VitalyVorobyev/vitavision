@@ -14,6 +14,12 @@ import type { ChessCornersResult, CalibrationTargetResult } from "../../types";
 
 // ── Chess Corners ────────────────────────────────────────────────────────────
 
+function confidenceLevelFor(fraction: number): "low" | "medium" | "high" {
+    if (fraction < 0.33) return "low";
+    if (fraction < 0.66) return "medium";
+    return "high";
+}
+
 function mockChessCornersResult(cornerCount: number): ChessCornersResult {
     const corners = Array.from({ length: cornerCount }, (_, i) => {
         const axis0Angle = (i * Math.PI) / Math.max(cornerCount, 1);
@@ -28,23 +34,19 @@ function mockChessCornersResult(cornerCount: number): ChessCornersResult {
             axes: [
                 {
                     angle_rad: axis0Angle,
-                    angle_deg: axis0Angle * 180 / Math.PI,
-                    sigma_rad: 0.05,
+                    angle_deg: (axis0Angle * 180) / Math.PI,
+                    fit_std_error_rad: 0.05,
                     direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) },
                 },
                 {
                     angle_rad: axis1Angle,
-                    angle_deg: axis1Angle * 180 / Math.PI,
-                    sigma_rad: 0.06,
+                    angle_deg: (axis1Angle * 180) / Math.PI,
+                    fit_std_error_rad: 0.06,
                     direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) },
                 },
             ] as [ChessCornersResult["corners"][0]["axes"][0], ChessCornersResult["corners"][0]["axes"][0]],
             confidence: i / Math.max(cornerCount - 1, 1),
-            confidence_level: (i / Math.max(cornerCount - 1, 1) < 0.33
-                ? "low"
-                : i / Math.max(cornerCount - 1, 1) < 0.66
-                  ? "medium"
-                  : "high") as "low" | "medium" | "high",
+            confidence_level: confidenceLevelFor(i / Math.max(cornerCount - 1, 1)),
         };
     });
 
@@ -60,16 +62,6 @@ function mockChessCornersResult(cornerCount: number): ChessCornersResult {
             x_axis: "right",
             y_axis: "down",
             units: "pixels",
-        },
-        config: {
-            threshold: 30,
-            nms_radius: 2,
-            broad_mode: false,
-            min_cluster_size: 2,
-            pyramid_levels: 4,
-            pyramid_min_size: 128,
-            upscale_factor: 0,
-            refiner: "center_of_mass",
         },
         summary: {
             count: cornerCount,
@@ -136,7 +128,7 @@ describe("Chess Corners WASM result shape", () => {
 
     it("produces features compatible with toFeatures", () => {
         const result = mockChessCornersResult(3);
-        const corner = result.corners[0];
+        const corner = result.corners[0]!;
         expect(corner).toHaveProperty("id");
         expect(corner).toHaveProperty("x");
         expect(corner).toHaveProperty("y");
@@ -188,23 +180,37 @@ function mockCalibTargetResult(
             circle_candidate_count: algorithm === "markerboard" ? 3 : null,
             circle_match_count: algorithm === "markerboard" ? 2 : null,
             alignment_inliers: algorithm === "markerboard" ? 5 : null,
+            alignment_runner_up_inliers: algorithm === "markerboard" ? 2 : null,
             runtime_ms: 150.3,
         },
-        detection: { kind: kind as CalibrationTargetResult["detection"]["kind"], corners },
-        markers: algorithm === "charuco"
-            ? [{
-                id: 0,
-                grid_cell: { gx: 0, gy: 0 },
-                rotation: 0,
-                hamming: 0,
-                score: 0.95,
-                border_score: 0.9,
-                code: 42,
-                inverted: false,
-                corners_rect: [{ x: 10, y: 10 }, { x: 50, y: 10 }, { x: 50, y: 50 }, { x: 10, y: 50 }],
-                corners_img: [{ x: 12, y: 12 }, { x: 48, y: 11 }, { x: 49, y: 49 }, { x: 11, y: 48 }],
-            }]
-            : null,
+        detection: { kind, corners },
+        markers:
+            algorithm === "charuco"
+                ? [
+                      {
+                          id: 0,
+                          grid_cell: { gx: 0, gy: 0 },
+                          rotation: 0,
+                          hamming: 0,
+                          score: 0.95,
+                          border_score: 0.9,
+                          code: 42,
+                          inverted: false,
+                          corners_rect: [
+                              { x: 10, y: 10 },
+                              { x: 50, y: 10 },
+                              { x: 50, y: 50 },
+                              { x: 10, y: 50 },
+                          ],
+                          corners_img: [
+                              { x: 12, y: 12 },
+                              { x: 48, y: 11 },
+                              { x: 49, y: 49 },
+                              { x: 11, y: 48 },
+                          ],
+                      },
+                  ]
+                : null,
         alignment: null,
         circle_candidates: null,
         circle_matches: null,
@@ -230,7 +236,7 @@ describe("Calibration Target WASM result shape", () => {
         expect(result.markers).not.toBeNull();
         expect(result.markers!.length).toBe(1);
 
-        const marker = result.markers![0];
+        const marker = result.markers![0]!;
         expect(marker).toHaveProperty("id");
         expect(marker).toHaveProperty("grid_cell");
         expect(marker.grid_cell).toHaveProperty("gx");
@@ -406,12 +412,12 @@ describe("Ringgrid WASM result shape", () => {
 
     it("includes decode and fit data", () => {
         const result = mockRinggridWasmResult(1);
-        const marker = result.markers[0];
+        const marker = result.markers[0]!;
         expect(marker.decode).not.toBeNull();
-        expect(marker.decode!.best_id).toBe(0);
-        expect(typeof marker.decode!.decode_confidence).toBe("number");
+        expect(marker.decode.best_id).toBe(0);
+        expect(typeof marker.decode.decode_confidence).toBe("number");
         expect(marker.fit).not.toBeNull();
-        expect(typeof marker.fit!.rms_residual_outer).toBe("number");
+        expect(typeof marker.fit.rms_residual_outer).toBe("number");
     });
 
     it("handles empty detection", () => {

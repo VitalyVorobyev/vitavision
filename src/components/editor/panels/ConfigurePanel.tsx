@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Link } from "react-router-dom";
-import { toast } from "sonner";
-import { LoaderCircle, Sparkles, AlertCircle, Maximize2, ChevronDown, X } from "lucide-react";
+import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import { Link } from "react-router";
+import { Sparkles, Maximize2, X } from "lucide-react";
+import { Button, Callout, Dialog, DialogClose, Panel, Select, SkeletonRows, toast } from "@vitavision/ui";
 
 import { useEditorStore } from "../../../store/editor/useEditorStore";
 import type { SampleId } from "../../../store/editor/useEditorStore";
@@ -10,9 +10,7 @@ import { useShallow } from "zustand/react/shallow";
 import { ALGORITHM_MANIFEST, loadAlgorithm, getLoadedAlgorithm } from "../algorithms/registry";
 import useAlgorithmRunner, { stageLabel } from "../algorithms/useAlgorithmRunner";
 import { useDeepLinkSync } from "../../../hooks/useEditorDeepLink";
-
-import RailSection from "./RailSection";
-import ConfigModal from "./ConfigModal";
+import { mergeConfig } from "../../../lib/wasm/worker/util";
 
 type ConfigEntry = { value: unknown; sampleId: SampleId };
 
@@ -28,24 +26,21 @@ const resolveConfig = (
         return entry.value;
     }
     const defaults = sampleDefaults?.[sampleId];
-    return defaults !== undefined ? { ...initialConfig as object, ...defaults as object } : initialConfig;
+    return defaults !== undefined
+        ? mergeConfig(initialConfig as Record<string, unknown>, defaults as Record<string, unknown>)
+        : initialConfig;
 };
 
+/**
+ * Focuses the element once, when it mounts. Module-level so the ref is stable: an inline
+ * callback would be called again on every render and pull focus out of the fields.
+ */
+const focusOnMount = (node: HTMLElement | null) => node?.focus();
+
+const ALGORITHM_OPTIONS = ALGORITHM_MANIFEST.map((algo) => ({ value: algo.id, label: algo.title }));
+
 function AlgorithmPicker({ value, onChange }: { value: string; onChange: (id: string) => void }) {
-    return (
-        <div className="relative">
-            <select
-                value={value}
-                onChange={(e) => onChange(e.target.value)}
-                className="w-full appearance-none rounded-lg border border-border bg-background px-3 py-2 pr-8 text-xs font-medium text-foreground transition-colors hover:bg-muted/60 focus:outline-none focus:ring-1 focus:ring-primary/40"
-            >
-                {ALGORITHM_MANIFEST.map((algo) => (
-                    <option key={algo.id} value={algo.id}>{algo.title}</option>
-                ))}
-            </select>
-            <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground" />
-        </div>
-    );
+    return <Select aria-label="Algorithm" value={value} options={ALGORITHM_OPTIONS} onValueChange={onChange} />;
 }
 
 export default function ConfigurePanel() {
@@ -61,43 +56,49 @@ export default function ConfigurePanel() {
         setPanelMode,
         setLastAlgorithmResult,
         addRunToHistory,
-    } = useEditorStore(useShallow((s) => ({
-        imageSrc: s.imageSrc,
-        imageName: s.imageName,
-        imageSampleId: s.imageSampleId,
-        galleryImages: s.galleryImages,
-        selectedAlgorithmId: s.selectedAlgorithmId,
-        replaceAlgorithmFeatures: s.replaceAlgorithmFeatures,
-        setSelectedFeatureId: s.setSelectedFeatureId,
-        setSelectedAlgorithmId: s.setSelectedAlgorithmId,
-        setPanelMode: s.setPanelMode,
-        setLastAlgorithmResult: s.setLastAlgorithmResult,
-        addRunToHistory: s.addRunToHistory,
-    })));
+    } = useEditorStore(
+        useShallow((s) => ({
+            imageSrc: s.imageSrc,
+            imageName: s.imageName,
+            imageSampleId: s.imageSampleId,
+            galleryImages: s.galleryImages,
+            selectedAlgorithmId: s.selectedAlgorithmId,
+            replaceAlgorithmFeatures: s.replaceAlgorithmFeatures,
+            setSelectedFeatureId: s.setSelectedFeatureId,
+            setSelectedAlgorithmId: s.setSelectedAlgorithmId,
+            setPanelMode: s.setPanelMode,
+            setLastAlgorithmResult: s.setLastAlgorithmResult,
+            addRunToHistory: s.addRunToHistory,
+        })),
+    );
 
     const { initialState, syncToUrl } = useDeepLinkSync();
-    const configSampleId: SampleId = imageSrc === null && initialState.sampleId !== null
-        ? initialState.sampleId
-        : imageSampleId;
+    const configSampleId: SampleId =
+        imageSrc === null && initialState.sampleId !== null ? initialState.sampleId : imageSampleId;
 
     // didSeedFromUrl: run once per mount (useRef instead of module-level variable
     // so it resets if the user navigates away and returns — URL may have changed).
-    const didSeedFromUrl = useRef(false);
+    const didSeedFromUrlRef = useRef(false);
     useEffect(() => {
-        if (!didSeedFromUrl.current) {
-            didSeedFromUrl.current = true;
+        if (!didSeedFromUrlRef.current) {
+            didSeedFromUrlRef.current = true;
             if (initialState.algorithmId !== selectedAlgorithmId) {
                 setSelectedAlgorithmId(initialState.algorithmId);
             }
         }
-    // Empty deps: intentional — we only want this to run once on mount.
-    // didSeedFromUrl is a ref (stable), and the initial* values from useDeepLinkSync
-    // are derived from URL search params at construction time and do not change.
-    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+        // Empty deps: intentional — we only want this to run once on mount.
+        // didSeedFromUrlRef is a ref (stable), and the initial* values from useDeepLinkSync
+        // are derived from URL search params at construction time and do not change.
+    }, []); // oxlint-disable-line react/exhaustive-deps -- run once on mount (see comment above)
 
     const [configEntries, setConfigEntries] = useState<Record<string, ConfigEntry>>(() => {
         if (initialState.config !== null) {
-            return { [initialState.algorithmId]: { value: initialState.config, sampleId: initialState.sampleId ?? imageSampleId } };
+            return {
+                [initialState.algorithmId]: {
+                    value: initialState.config,
+                    sampleId: initialState.sampleId ?? imageSampleId,
+                },
+            };
         }
         return {};
     });
@@ -111,20 +112,23 @@ export default function ConfigurePanel() {
 
     // Trigger counter so the component re-renders when a deferred load resolves
     // and getLoadedAlgorithm starts returning the freshly-cached entry.
-    const [, setLoadTick] = useState(0);
+    const [, bumpLoadTick] = useReducer((tick: number) => tick + 1, 0);
 
     useEffect(() => {
         let cancelled = false;
-        loadAlgorithm(selectedAlgorithmId).then(() => {
-            if (!cancelled) setLoadTick((tick) => tick + 1);
+        void loadAlgorithm(selectedAlgorithmId).then(() => {
+            if (!cancelled) bumpLoadTick();
         });
-        return () => { cancelled = true; };
+        return () => {
+            cancelled = true;
+        };
     }, [selectedAlgorithmId]);
 
     const runner = useAlgorithmRunner();
 
     const manifestEntry = useMemo(
-        () => ALGORITHM_MANIFEST.find((e) => e.id === selectedAlgorithmId) ?? ALGORITHM_MANIFEST[0],
+        // ALGORITHM_MANIFEST is a non-empty static list, so index 0 always exists.
+        () => ALGORITHM_MANIFEST.find((e) => e.id === selectedAlgorithmId) ?? ALGORITHM_MANIFEST[0]!,
         [selectedAlgorithmId],
     );
 
@@ -133,14 +137,21 @@ export default function ConfigurePanel() {
         ? resolveConfig(configEntries, algorithm.id, configSampleId, algorithm.initialConfig, algorithm.sampleDefaults)
         : undefined;
 
-    const handleConfigChange = useCallback((next: unknown) => {
-        if (!algorithm) return;
-        setConfigEntries((current) => ({
-            ...current,
-            [algorithm.id]: { value: next, sampleId: configSampleId },
-        }));
-        syncToUrl(algorithm.id, next);
-    }, [algorithm, configSampleId, syncToUrl]);
+    const handleConfigChange = useCallback(
+        (next: unknown) => {
+            if (!algorithm) return;
+            setConfigEntries((current) => ({
+                ...current,
+                [algorithm.id]: { value: next, sampleId: configSampleId },
+            }));
+            syncToUrl(
+                algorithm.id,
+                next,
+                resolveConfig({}, algorithm.id, configSampleId, algorithm.initialConfig, algorithm.sampleDefaults),
+            );
+        },
+        [algorithm, configSampleId, syncToUrl],
+    );
 
     const activeGalleryImage = useMemo(
         () => galleryImages.find((img) => img.sampleId === imageSampleId && imageSrc !== null) ?? null,
@@ -154,7 +165,7 @@ export default function ConfigurePanel() {
         runner.clearError();
         // Load the new algorithm and sync URL once it resolves.
         // We don't block the selection on the load — the picker updates immediately.
-        loadAlgorithm(id).then((algo) => {
+        void loadAlgorithm(id).then((algo) => {
             // If the user has since picked a different algorithm, don't let
             // this stale resolution overwrite the URL with the older selection.
             // Reading from the store at resolution time avoids the closure
@@ -163,6 +174,7 @@ export default function ConfigurePanel() {
             syncToUrl(
                 id,
                 resolveConfig(configEntries, id, configSampleId, algo.initialConfig, algo.sampleDefaults),
+                resolveConfig({}, id, configSampleId, algo.initialConfig, algo.sampleDefaults),
             );
         });
     };
@@ -181,8 +193,9 @@ export default function ConfigurePanel() {
         try {
             const mappedFeatures = algorithm.toFeatures(output.result, output.runId);
             replaceAlgorithmFeatures(algorithm.id, mappedFeatures);
-            if (mappedFeatures.length > 0) {
-                setSelectedFeatureId(mappedFeatures[0].id);
+            const firstFeature = mappedFeatures[0];
+            if (firstFeature) {
+                setSelectedFeatureId(firstFeature.id);
             }
 
             const summaryEntries = algorithm.summary(output.result);
@@ -197,100 +210,113 @@ export default function ConfigurePanel() {
             });
             setPanelMode("results");
         } catch (err) {
-            toast.error(`Failed to process algorithm results: ${err instanceof Error ? err.message : "unknown error"}`);
+            toast({
+                title: `Failed to process algorithm results: ${err instanceof Error ? err.message : "unknown error"}`,
+                tone: "error",
+            });
         }
     };
 
-    const hasHint = activeGalleryImage !== null && imageSrc !== null &&
+    const hasHint =
+        activeGalleryImage !== null &&
+        imageSrc !== null &&
         (activeGalleryImage.description || (activeGalleryImage.recommendedAlgorithms?.length ?? 0) > 0);
 
     return (
         <>
             {/* Section 1: No-image hint OR sample context card */}
             {imageSrc === null ? (
-                <div className="rounded-lg border border-dashed border-border/80 bg-background/40 p-4 text-center">
-                    <p className="text-xs text-muted-foreground leading-relaxed">
+                <div className="rounded-panel border border-dashed border-line p-4 text-center">
+                    <p className="text-xs text-fg-muted leading-relaxed">
                         Open an image from the gallery to get started.
                     </p>
                 </div>
-            ) : hasHint && (
-                <HintCard
-                    image={activeGalleryImage!}
-                    onSelectAlgorithm={handleSelectAlgorithm}
-                />
+            ) : (
+                hasHint && <HintCard image={activeGalleryImage} onSelectAlgorithm={handleSelectAlgorithm} />
             )}
 
             {/* Section 2: Algorithm selector */}
-            <RailSection label="Algorithm">
+            <Panel title="Algorithm" bodyClassName="space-y-2">
                 <AlgorithmPicker value={selectedAlgorithmId} onChange={handleSelectAlgorithm} />
-                <p className="text-xs text-muted-foreground leading-relaxed px-0.5">
+                <p className="text-xs text-fg-muted leading-relaxed">
                     {manifestEntry.description}
                     {manifestEntry.blogSlug && (
                         <>
                             {" "}
                             <Link
                                 to={`/blog/${manifestEntry.blogSlug}`}
-                                className="text-primary underline hover:text-primary/80"
+                                className="text-signal underline hover:text-signal-strong"
                             >
                                 Learn more
                             </Link>
                         </>
                     )}
                 </p>
-            </RailSection>
+            </Panel>
 
             {/* Section 3: Presets (if available) */}
             {algorithm?.presets && algorithm.presets.length > 0 && (
-                <RailSection label="Presets">
-                    <PresetPicker
-                        presets={algorithm.presets}
-                        onSelect={handleConfigChange}
-                    />
-                </RailSection>
+                <Panel title="Presets">
+                    <PresetPicker presets={algorithm.presets} onSelect={handleConfigChange} />
+                </Panel>
             )}
 
             {/* Section 4: Config */}
-            <RailSection
-                label="Configuration"
-                action={
-                    <button
-                        type="button"
+            <Panel
+                title="Configuration"
+                bodyClassName="flex flex-col gap-3"
+                actions={
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        className="size-6 px-0"
                         onClick={() => setConfigModalOpen(true)}
-                        className="text-muted-foreground/50 hover:text-foreground transition-colors"
-                        title="Expand configuration"
+                        aria-label="Expand configuration"
                         disabled={algorithm === null}
-                    >
-                        <Maximize2 size={11} />
-                    </button>
+                        icon={<Maximize2 />}
+                    />
                 }
             >
                 {ConfigComponent && config !== undefined ? (
-                    <ConfigComponent
-                        config={config}
-                        onChange={handleConfigChange}
-                        disabled={runner.isRunning}
-                    />
+                    <ConfigComponent config={config} onChange={handleConfigChange} disabled={runner.isRunning} />
                 ) : (
-                    <p className="text-xs text-muted-foreground/60 animate-pulse">Loading…</p>
+                    <SkeletonRows rows={4} />
                 )}
-            </RailSection>
+            </Panel>
 
+            {/* The same form with room for two columns: it edits the same config, so every
+                change applies at once and closing is the only action. */}
             {ConfigComponent && config !== undefined && (
-                <ConfigModal
+                <Dialog
                     open={configModalOpen}
-                    onClose={() => setConfigModalOpen(false)}
+                    onOpenChange={setConfigModalOpen}
                     title={`${manifestEntry.title} Configuration`}
-                    ConfigComponent={ConfigComponent}
-                    config={config}
-                    onChange={handleConfigChange}
-                    disabled={runner.isRunning}
-                />
+                    description="Changes apply as you make them."
+                    className="w-[min(42rem,calc(100vw-2rem))]"
+                    footer={
+                        <DialogClose asChild>
+                            <Button variant="primary">Done</Button>
+                        </DialogClose>
+                    }
+                >
+                    {/* Focus lands on the form itself, not on its first field's help mark: a
+                        tooltip opening with the dialog would cover the description, and the
+                        first Escape would close the tooltip instead of the dialog. */}
+                    <div ref={focusOnMount} tabIndex={-1} className="mt-4 flex flex-col gap-3 pr-1 outline-none">
+                        <ConfigComponent
+                            config={config}
+                            onChange={handleConfigChange}
+                            disabled={runner.isRunning}
+                            modal
+                        />
+                    </div>
+                </Dialog>
             )}
 
             {/* Section 5: Run + status + summary */}
-            <RailSection label="Run">
-                <RunSection runner={runner} canRun={canRun} onRun={handleRun} />
-            </RailSection>
+            <Panel title="Run">
+                <RunSection runner={runner} canRun={canRun} onRun={() => void handleRun()} />
+            </Panel>
         </>
     );
 }
@@ -299,25 +325,13 @@ export default function ConfigurePanel() {
 
 import type { AlgorithmPreset } from "../algorithms/types";
 
-function PresetPicker({
-    presets,
-    onSelect,
-}: {
-    presets: AlgorithmPreset[];
-    onSelect: (config: unknown) => void;
-}) {
+function PresetPicker({ presets, onSelect }: { presets: AlgorithmPreset[]; onSelect: (config: unknown) => void }) {
     return (
         <div className="flex flex-wrap gap-1.5">
             {presets.map((preset) => (
-                <button
-                    key={preset.label}
-                    type="button"
-                    onClick={() => onSelect(preset.config)}
-                    title={preset.description}
-                    className="text-[11px] px-2.5 py-1 rounded-full border border-border bg-background text-foreground hover:bg-primary/10 hover:border-primary/40 hover:text-primary transition-colors"
-                >
+                <Button key={preset.label} size="sm" onClick={() => onSelect(preset.config)} title={preset.description}>
                     {preset.label}
-                </button>
+                </Button>
             ))}
         </div>
     );
@@ -335,39 +349,35 @@ function HintCardInner({
     if (dismissed) return null;
 
     return (
-        <div className="rounded-lg border border-border bg-background p-3 space-y-2">
+        <div className="rounded-panel border border-line bg-surface p-3 space-y-2">
             <div className="flex items-start justify-between gap-2">
-                <p className="text-xs font-semibold text-foreground leading-tight">
-                    {image.name}
-                </p>
-                <button
-                    type="button"
+                <p className="text-xs font-semibold text-fg leading-tight">{image.name}</p>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="-mt-1 -mr-1 size-6 px-0"
                     onClick={() => setDismissed(true)}
-                    className="text-muted-foreground/50 hover:text-foreground transition-colors shrink-0 -mt-0.5 -mr-0.5 p-0.5"
-                    title="Dismiss"
-                >
-                    <X size={14} />
-                </button>
+                    aria-label="Dismiss"
+                    icon={<X />}
+                />
             </div>
-            {image.description && (
-                <p className="text-xs text-muted-foreground leading-relaxed">
-                    {image.description}
-                </p>
-            )}
+            {image.description && <p className="text-xs text-fg-muted leading-relaxed">{image.description}</p>}
             {(image.recommendedAlgorithms?.length ?? 0) > 0 && (
                 <div className="flex flex-wrap gap-1 pt-0.5">
-                    <span className="text-[10px] text-muted-foreground self-center">Try:</span>
+                    <span className="text-[10px] text-fg-muted self-center">Try:</span>
                     {image.recommendedAlgorithms!.map((name) => {
                         const match = ALGORITHM_MANIFEST.find((a) => a.title === name);
                         return (
-                            <button
+                            <Button
                                 key={name}
-                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                className="h-6 px-2 text-signal hover:text-signal-strong"
                                 onClick={() => match && onSelectAlgorithm(match.id)}
-                                className="text-[11px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-medium hover:bg-primary/20 transition-colors"
+                                disabled={!match}
                             >
                                 {name}
-                            </button>
+                            </Button>
                         );
                     })}
                 </div>
@@ -395,53 +405,43 @@ function RunSection({
 }) {
     return (
         <div className="space-y-2.5">
-            <button
-                type="button"
+            <Button
+                variant="primary"
+                size="md"
+                className="w-full"
                 onClick={onRun}
                 disabled={!canRun}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-4 py-2.5 text-sm font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:enabled:bg-primary/90 transition-colors shadow-sm"
+                loading={runner.isRunning}
+                icon={<Sparkles />}
             >
-                {runner.isRunning
-                    ? <LoaderCircle size={14} className="animate-spin" />
-                    : <Sparkles size={14} />
-                }
                 {runner.isRunning ? "Running…" : "Run Algorithm"}
-            </button>
+            </Button>
 
-            {runner.isRunning && (
-                <p className="text-[11px] text-center text-muted-foreground">
-                    {stageLabel(runner.stage)}
-                </p>
-            )}
+            {runner.isRunning && <p className="text-[11px] text-center text-fg-muted">{stageLabel(runner.stage)}</p>}
 
             {!canRun && !runner.isRunning && (
-                <p className="text-[10px] text-center text-muted-foreground/50">Load an image to run</p>
+                <p className="text-[10px] text-center text-fg-muted">Load an image to run</p>
             )}
 
-            {!runner.isRunning && canRun && (
-                <p className="text-[10px] text-center text-muted-foreground/50">
-                    Client-side (WASM)
-                </p>
-            )}
+            {!runner.isRunning && canRun && <p className="text-[10px] text-center text-fg-muted">Client-side (WASM)</p>}
 
             {runner.error && (
-                <div className="flex items-start gap-2 rounded-lg border border-destructive/30 bg-destructive/5 px-3 py-2">
-                    <AlertCircle size={13} className="text-destructive shrink-0 mt-0.5" />
-                    <p className="text-xs text-destructive leading-relaxed">{runner.error}</p>
-                </div>
+                <Callout tone="error" className="text-xs">
+                    {runner.error}
+                </Callout>
             )}
 
             {runner.summary.length > 0 && (
                 <div className="space-y-1.5">
-                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground/60">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted">
                         Last Run
                     </span>
-                    <div className="rounded-lg border border-border/80 bg-background/60 px-4 py-3">
+                    <div className="rounded-panel border border-line bg-raised px-3 py-2">
                         <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1.5">
                             {runner.summary.map((entry) => (
                                 <div key={entry.label} className="flex items-baseline gap-1.5">
-                                    <span className="text-[11px] text-muted-foreground">{entry.label}</span>
-                                    <span className="text-sm font-semibold text-foreground tabular-nums">{entry.value}</span>
+                                    <span className="text-[11px] text-fg-muted">{entry.label}</span>
+                                    <span className="text-sm font-semibold text-fg tabular-nums">{entry.value}</span>
                                 </div>
                             ))}
                         </div>

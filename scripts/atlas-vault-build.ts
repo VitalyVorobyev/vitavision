@@ -27,7 +27,7 @@ type NodeType = "algorithm" | "model" | "concept" | "paper";
 // Mirrors src/components/atlas/RelationshipPanel.tsx (FORWARD_LABEL, ~L14, and
 // the three sidebar categories per .claude/CLAUDE.md → "Relations field"). Kept
 // as a local copy rather than an import: the component pulls in React,
-// react-router-dom, and the generated content graph, none of which belong in
+// react-router, and the generated content graph, none of which belong in
 // this Node/Bun build script. Keep in sync by hand if the label text changes.
 type RelationCategory = "Lineage" | "Practice" | "Cross-paradigm";
 
@@ -56,8 +56,7 @@ const RELATION_LABEL: Record<RelationType, string> = {
 function sortRelations(relations: TypedRelation[]): TypedRelation[] {
     return [...relations].sort((a, b) => {
         const catDiff =
-            CATEGORY_ORDER.indexOf(RELATION_CATEGORY[a.type]) -
-            CATEGORY_ORDER.indexOf(RELATION_CATEGORY[b.type]);
+            CATEGORY_ORDER.indexOf(RELATION_CATEGORY[a.type]) - CATEGORY_ORDER.indexOf(RELATION_CATEGORY[b.type]);
         if (catDiff !== 0) return catDiff;
         if (a.type !== b.type) return a.type.localeCompare(b.type);
         return a.target.localeCompare(b.target);
@@ -70,7 +69,7 @@ interface PageNode {
     title: string;
     summary: string;
     prerequisites: string[];
-    relations: TypedRelation[];   // authored forward edges only; see readPages()
+    relations: TypedRelation[]; // authored forward edges only; see readPages()
     failureModes: string[];
     sourcesPrimary?: string;
     sourcesReferences: string[];
@@ -172,8 +171,10 @@ function renderPageStub(node: PageNode): string {
     lines.push(`slug: ${node.slug}`);
     lines.push("---");
     lines.push("");
-    lines.push("> Generated stub — do not edit. Source: " +
-        `\`content/${node.type === "algorithm" ? "algorithms" : node.type === "model" ? "models" : "concepts"}/${node.slug}.md\`.`);
+    lines.push(
+        "> Generated stub — do not edit. Source: " +
+            `\`content/${node.type === "algorithm" ? "algorithms" : node.type === "model" ? "models" : "concepts"}/${node.slug}.md\`.`,
+    );
     lines.push("");
     if (node.summary) {
         lines.push(node.summary);
@@ -359,7 +360,7 @@ function main(): void {
     const total = counts.algorithm + counts.model + counts.concept + counts.paper;
     console.log(
         `vault:build — ${counts.algorithm} algorithm(s), ${counts.model} model(s), ` +
-        `${counts.concept} concept(s), ${counts.paper} paper(s) → ${VAULT_DIR} (${total} nodes)`,
+            `${counts.concept} concept(s), ${counts.paper} paper(s) → ${VAULT_DIR} (${total} nodes)`,
     );
 }
 

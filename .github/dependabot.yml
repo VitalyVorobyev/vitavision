@@ -1,8 +1,11 @@
 version: 2
 
 updates:
-  # Frontend — npm/bun ecosystem
-  - package-ecosystem: "npm"
+  # Frontend. The project is managed by bun (bun.lock), and the `npm` ecosystem
+  # cannot update bun.lock: from 2026-09-28 every npm_and_yarn run aborted with
+  # "Set `package-ecosystem: \"bun\"`". The bun ecosystem does version updates only;
+  # GitHub does not raise security-update PRs for it.
+  - package-ecosystem: "bun"
     directory: "/"
     schedule:
       interval: "weekly"
@@ -11,17 +14,26 @@ updates:
     groups:
       react:
         patterns: ["react", "react-*", "@types/react*"]
-      eslint:
-        patterns: ["eslint*", "@eslint/*", "typescript-eslint", "@typescript-eslint/*"]
+      oxlint:
+        patterns: ["oxlint", "oxlint-tsgolint", "oxfmt"]
       vite:
         patterns: ["vite*", "@vitejs/*"]
+      # The lab-ui packages are released together from one monorepo
+      # (VitalyVorobyev/lab-ui). The @vitavision WASM packages (calib-targets,
+      # chess-corners, radsym, ringgrid) are deliberately NOT grouped: every
+      # release so far has broken the worker silently, so each bump is its own
+      # migration, driven from scripts/test-wasm-schemas.ts.
+      lab-ui:
+        patterns:
+          [
+            "@vitavision/ui",
+            "@vitavision/config-*",
+            "@vitavision/forms",
+            "@vitavision/stage2d",
+            "@vitavision/charts",
+            "@vitavision/workbench",
+          ]
     ignore:
-      # TypeScript 7 (the Go-native port) is blocked on typescript-eslint, which
-      # declares peer `typescript: ">=4.8.4 <6.1.0"` as of 8.64.0. Remove this
-      # entry once a stable typescript-eslint widens that range; until then the
-      # bump only produces PRs that fail `bun run lint`.
-      - dependency-name: "typescript"
-        update-types: ["version-update:semver-major"]
       # katex is pinned to the version rehype-katex actually renders with, not
       # just imported for its CSS. src/main.tsx imports katex/dist/katex.min.css
       # (the top-level `katex` dependency), but the HTML is generated at build
@@ -32,14 +44,27 @@ updates:
       # katex 0.18.0 renames internal classes (mord, mbin, vlist, pstrut, …)
       # that saturate src/generated/content/**, so this isn't cosmetic drift —
       # it silently breaks math styling on every atlas page.
-      # Pinning into the 0.16 line lets bun hoist a single shared copy, so the
-      # CSS and the renderer are now literally the same code. bun.lock must
-      # contain exactly ONE katex entry; a nested "rehype-katex/katex" or
-      # "micromark-extension-math/katex" entry reappearing means the skew is
-      # back. Verify with:
+      # Hoisting alone did not hold (rehype-katex drifted onto a nested 0.16.29),
+      # so package.json `overrides` pins katex to the exact top-level version:
+      # the CSS and the renderer are literally the same code. The override also
+      # pulls mermaid (>= 12.3 declares katex ^0.18) onto 0.16; that is inert,
+      # since mermaid runs at build time and no content mermaid block uses math.
+      # bun.lock must contain exactly ONE katex entry; a nested
+      # "rehype-katex/katex", "micromark-extension-math/katex" or
+      # "mermaid/katex" entry reappearing means the skew is back. Bump the
+      # override together with the top-level katex spec. Verify with:
       #   find node_modules -path '*katex/package.json' -not -path '*@types*'
       # Unblock condition: a rehype-katex release whose dependencies accept
       # katex >= 0.17. Until then, bump katex only in lockstep with a
       # rehype-katex upgrade.
       - dependency-name: "katex"
         versions: [">= 0.17"]
+
+  # CI actions (.github/workflows/*.yml)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      actions:
+        patterns: ["*"]

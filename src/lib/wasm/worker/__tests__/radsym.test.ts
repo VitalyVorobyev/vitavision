@@ -15,13 +15,17 @@ describe("adaptRadsymProposalResult", () => {
         expect(result.status).toBe("success");
         expect(result.circles).toHaveLength(1);
         expect(result.circles[0]).toMatchObject({ x: 10, y: 20, score: 0.5, radius: 0 });
-        expect(typeof result.circles[0].id).toBe("string");
+        expect(typeof result.circles[0]!.id).toBe("string");
         expect(result.summary.count).toBe(1);
         expect(result.summary.runtime_ms).toBe(4);
     });
 
     it("sorts circles by score descending", () => {
-        const raw = makeRaw([{ x: 0, y: 0, score: 0.2 }, { x: 1, y: 1, score: 0.9 }, { x: 2, y: 2, score: 0.5 }]);
+        const raw = makeRaw([
+            { x: 0, y: 0, score: 0.2 },
+            { x: 1, y: 1, score: 0.9 },
+            { x: 2, y: 2, score: 0.5 },
+        ]);
         const result = adaptRadsymProposalResult(raw, 10, 10, 1);
         const scores = result.circles.map((c) => c.score);
         expect(scores[0]).toBeCloseTo(0.9);
@@ -30,7 +34,10 @@ describe("adaptRadsymProposalResult", () => {
     });
 
     it("drops non-finite x/y", () => {
-        const raw = makeRaw([{ x: NaN, y: 0, score: 1 }, { x: 1, y: 1, score: 1 }]);
+        const raw = makeRaw([
+            { x: NaN, y: 0, score: 1 },
+            { x: 1, y: 1, score: 1 },
+        ]);
         const result = adaptRadsymProposalResult(raw, 10, 10, 1);
         expect(result.circles).toHaveLength(1);
     });
@@ -39,5 +46,12 @@ describe("adaptRadsymProposalResult", () => {
         const result = adaptRadsymProposalResult(new Float32Array(0), 10, 10, 1);
         expect(result.circles).toHaveLength(0);
         expect(result.summary.count).toBe(0);
+    });
+
+    it("ignores a trailing partial triple", () => {
+        const raw = new Float32Array([10, 20, 0.5, 30, 40]);
+        const result = adaptRadsymProposalResult(raw, 100, 100, 1);
+        expect(result.circles).toHaveLength(1);
+        expect(result.circles[0]).toMatchObject({ x: 10, y: 20, score: 0.5 });
     });
 });

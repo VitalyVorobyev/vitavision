@@ -104,7 +104,7 @@ capped at ~30 entries. `match_kind` values: `primary` (`sources.primary == sourc
 
 See `.claude/skills/_shared/subagent-prompts.md` for the contract template and context on why heavy reads are delegated.
 
-The orchestrator confirms the candidate list with the user before proceeding: "I found these Atlas pages that may relate to this paper: [list]. I plan to write update-plan bullets for: [list]. Does this look right?" The user-confirmation step is preserved; it now runs on the JSON returned by the Sonnet subagent.
+The orchestrator confirms the candidate list with the user before proceeding: "I found these Atlas pages that may relate to this paper: [list]. I plan to write update-plan bullets for: [list]. Does this look right?"
 
 ### Step 4b — Typed-relations check
 
@@ -201,7 +201,7 @@ The distinction matters because primary-update notes are applied to a single pag
 - **Never publish raw LLM summaries.** The note's sections are structured reasoning, not summarised output. Each claim must be traceable to a specific paper section, equation, or table.
 - **Never invent paper IDs not in `docs/papers/index.yaml`.** If the ID is unknown, run `bun papers:fetch-meta` first.
 - **Never reference unresolved Atlas slugs in the update plan.** Verify a slug exists in `content/algorithms/`, `content/models/`, or `content/concepts/` before writing it under `## NEW:` or `## UPDATE:`.
-- **Never write `usedBy:` (or any reverse edge) anywhere.** Reverse edges are computed by the build from `src/generated/content-graph.ts`.
+- **Never write `usedBy:` (or any reverse edge) anywhere.** Reverse edges are computed by the build and emitted to `src/generated/content-graph.ts`.
 - **Never overwrite an existing research note.** Step 0 enforces this. To re-author, delete the note first. The v1 → v2 Refresh mode is the one exception, and it only inserts.
 - **Never read the cache `.txt` / `.html` directly in the orchestrator.** Cache reads happen inside the delegated Extract contract; the orchestrator only sees Sonnet's reply.
 - **Never auto-commit typed relations or historical status.** The Extract subagent may *propose* relations in the note's `# Stated relations` table — but only from the paper's own positioning statements, each anchored to a quote + location, never from title heuristics or year delta. Committing any relation (recording a `Relations:` line, marking a page historical) always requires the user's or the approved plan's explicit confirmation (Step 4b). Even when the answer seems obvious, the orchestrator surfaces the proposal and records the confirmed answer, including confidence and any caution. The cost of one short question is far smaller than the cost of silently mislabelling a relation type or marking a page historical.

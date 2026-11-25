@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { sourcesRule } from "./sources.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
 import type { RawIndexEntry } from "../../lib/papers-index.ts";
@@ -17,7 +17,7 @@ const knownPaper: RawIndexEntry = { id: "known-paper", year: 2000 };
 
 describe("sourcesRule", () => {
     it("passes when sources.primary resolves in the papers index", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", { sources: { primary: "known-paper" } })],
             indexEntries: [knownPaper],
         });
@@ -25,7 +25,7 @@ describe("sourcesRule", () => {
     });
 
     it("flags a sources.primary id that isn't in the papers index", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", { sources: { primary: "missing-paper" } })],
             indexEntries: [knownPaper],
         });
@@ -35,13 +35,14 @@ describe("sourcesRule", () => {
     });
 
     it("flags a malformed repo: ref", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", { sources: { primary: "repo:not-a-url" } })],
         });
         expect(sourcesRule(ctx)).toEqual([
             {
                 level: "error",
-                message: '[a.md] sources.primary "repo:not-a-url" malformed (expected paper:<id> | repo:<url>@<7-40 hex> | doc:<path>)',
+                message:
+                    '[a.md] sources.primary "repo:not-a-url" malformed (expected paper:<id> | repo:<url>@<7-40 hex> | doc:<path>)',
             },
         ]);
     });

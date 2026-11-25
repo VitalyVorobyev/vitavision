@@ -1,5 +1,5 @@
-import { useContext, useMemo } from "react";
-import { Navigate, useParams } from "react-router-dom";
+import { use, useMemo } from "react";
+import { Navigate, useParams } from "react-router";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import AuthorHeader from "../components/authors/AuthorHeader.tsx";
 import AuthorTimeline from "../components/authors/AuthorTimeline.tsx";
@@ -36,10 +36,10 @@ function AuthorPageSkeleton() {
     return (
         <div className="mx-auto max-w-[1100px] px-4 py-9 lg:px-8" aria-busy="true">
             <div className="flex max-w-[720px] animate-pulse flex-col gap-4">
-                <div className="h-3 w-40 rounded bg-muted" />
-                <div className="h-9 w-2/3 rounded bg-muted" />
-                <div className="h-5 w-full rounded bg-muted" />
-                <div className="h-24 w-full rounded bg-muted" />
+                <div className="h-3 w-40 rounded bg-raised" />
+                <div className="h-9 w-2/3 rounded bg-raised" />
+                <div className="h-5 w-full rounded bg-raised" />
+                <div className="h-24 w-full rounded bg-raised" />
             </div>
         </div>
     );
@@ -49,7 +49,7 @@ export default function AuthorPage() {
     const { id } = useParams<{ id: string }>();
     const authorsIndex = useAuthorsIndex();
     const { index: scholarly, status } = useScholarlyIndex();
-    const papers = useContext(PapersContext);
+    const papers = use(PapersContext);
     const isDesktop = useMediaQuery("(min-width: 1024px)", true);
 
     const author = id ? authorsIndex.authors[id] : undefined;

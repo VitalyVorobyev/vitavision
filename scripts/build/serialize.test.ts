@@ -1,5 +1,12 @@
 import { describe, it, expect } from "vitest";
-import { serializeDate, serializeContentEntry, serializeNarrativeFrontmatter, byTitleAsc, byDateDesc, serializeFilterSort } from "./serialize.ts";
+import {
+    serializeDate,
+    serializeContentEntry,
+    serializeNarrativeFrontmatter,
+    byTitleAsc,
+    byDateDesc,
+    serializeFilterSort,
+} from "./serialize.ts";
 
 describe("serializeDate", () => {
     it("formats a Date as YYYY-MM-DD", () => {
@@ -77,26 +84,34 @@ describe("serializeFilterSort", () => {
     it("serializes, drops drafts, and sorts in one pass", () => {
         const raw = [
             { slug: "b", frontmatter: { title: "Bravo", summary: "s", date: new Date("2024-01-01") }, html: "" },
-            { slug: "a", frontmatter: { title: "Alpha", summary: "s", date: new Date("2024-01-01"), draft: true }, html: "" },
+            {
+                slug: "a",
+                frontmatter: { title: "Alpha", summary: "s", date: new Date("2024-01-01"), draft: true },
+                html: "",
+            },
             { slug: "c", frontmatter: { title: "Charlie", summary: "s", date: new Date("2024-01-01") }, html: "" },
         ];
-        const out = serializeFilterSort<{ slug: string; frontmatter: { title: string; draft?: boolean }; html: string }>(
-            raw,
-            false,
-            byTitleAsc,
-        );
+        const out = serializeFilterSort<{
+            slug: string;
+            frontmatter: { title: string; draft?: boolean };
+            html: string;
+        }>(raw, false, byTitleAsc);
         expect(out.map((e) => e.slug)).toEqual(["b", "c"]);
     });
 
     it("keeps drafts when includeDrafts is true", () => {
         const raw = [
-            { slug: "a", frontmatter: { title: "Alpha", summary: "s", date: new Date("2024-01-01"), draft: true }, html: "" },
+            {
+                slug: "a",
+                frontmatter: { title: "Alpha", summary: "s", date: new Date("2024-01-01"), draft: true },
+                html: "",
+            },
         ];
-        const out = serializeFilterSort<{ slug: string; frontmatter: { title: string; draft?: boolean }; html: string }>(
-            raw,
-            true,
-            byTitleAsc,
-        );
+        const out = serializeFilterSort<{
+            slug: string;
+            frontmatter: { title: string; draft?: boolean };
+            html: string;
+        }>(raw, true, byTitleAsc);
         expect(out).toHaveLength(1);
     });
 });

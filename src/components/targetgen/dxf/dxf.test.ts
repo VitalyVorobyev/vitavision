@@ -22,9 +22,7 @@ const REPO_ROOT = resolve(import.meta.dirname, "../../../..");
 vi.mock("../../../lib/wasm/wasmWorkerProxy", async () => {
     const calibTargets = await import("@vitavision/calib-targets");
     calibTargets.initSync({
-        module: readFileSync(
-            resolve(REPO_ROOT, "node_modules/@vitavision/calib-targets/calib_targets_wasm_bg.wasm"),
-        ),
+        module: readFileSync(resolve(REPO_ROOT, "node_modules/@vitavision/calib-targets/calib_targets_wasm_bg.wasm")),
     });
 
     const ringgrid = await import("@vitavision/ringgrid");
@@ -33,33 +31,28 @@ vi.mock("../../../lib/wasm/wasmWorkerProxy", async () => {
     });
 
     return {
-        renderTargetBundleWasm: async (doc: unknown) => {
+        renderTargetBundleWasm: (doc: unknown) => {
             const bundle = calibTargets.render_target_bundle_json(doc) as {
                 svg_text: string;
                 dxf_text: string;
                 json_text: string;
                 png_bytes: Uint8Array;
             };
-            return {
+            return Promise.resolve({
                 svg: bundle.svg_text,
                 dxf: bundle.dxf_text,
                 json: bundle.json_text,
                 png: bundle.png_bytes,
-            };
+            });
         },
-        renderRinggridBundleWasm: async (targetJson: string, optionsJson: string) => {
-            const bundle = ringgrid.render_target_bundle_json(targetJson, optionsJson) as {
-                svg_text: string;
-                dxf_text: string;
-                json_text: string;
-                png_bytes: Uint8Array;
-            };
-            return {
+        renderRinggridBundleWasm: (targetJson: string, optionsJson: string) => {
+            const bundle = ringgrid.render_target_bundle_json(targetJson, optionsJson);
+            return Promise.resolve({
                 svg: bundle.svg_text,
                 dxf: bundle.dxf_text,
                 json: bundle.json_text,
                 png: bundle.png_bytes,
-            };
+            });
         },
     };
 });
@@ -129,9 +122,7 @@ describe("generateDxf", () => {
         // final VERTEX and its SEQEND, which orphans the terminator and makes
         // the document malformed — a reader would parse the scale-line LINEs
         // as part of the unterminated vertex sequence. Guard that ordering.
-        expect(withScale.lastIndexOf("\n0\nLINE\n")).toBeGreaterThan(
-            withScale.lastIndexOf("0\nSEQEND\n"),
-        );
+        expect(withScale.lastIndexOf("\n0\nLINE\n")).toBeGreaterThan(withScale.lastIndexOf("0\nSEQEND\n"));
     });
 
     it("splices three scale-line LINE entities before the ENDSEC/EOF terminator on a WASM-rendered kind", async () => {

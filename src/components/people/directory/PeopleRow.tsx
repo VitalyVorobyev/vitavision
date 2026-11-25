@@ -1,9 +1,10 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import OrcidLink from "../../atlas/OrcidLink.tsx";
 import PeopleEraBar from "./PeopleEraBar.tsx";
 import { domainLabel, type PeopleRow as PeopleRowData } from "../../../lib/atlas/peopleDirectory.ts";
 
-const COLUMNS = "grid grid-cols-[minmax(0,1fr)_56px_64px] sm:grid-cols-[minmax(0,1fr)_170px_150px_90px_90px] items-center gap-3 sm:gap-4 px-4 sm:px-5";
+const COLUMNS =
+    "grid grid-cols-[minmax(0,1fr)_56px_64px] sm:grid-cols-[minmax(0,1fr)_170px_150px_90px_90px] items-center gap-3 sm:gap-4 px-4 sm:px-5";
 
 export { COLUMNS as PEOPLE_ROW_COLUMNS };
 
@@ -16,23 +17,29 @@ interface PeopleRowProps {
  *  domains, an era bar, papers, and Atlas pages. */
 export default function PeopleRow({ row, bordered = false }: PeopleRowProps) {
     const domains = row.domains.slice(0, 3).map(domainLabel).join(" · ") || "—";
+    // The row is one big link without being one <a>: the name is the link and stretches over
+    // the row, so the ORCID mark (its own <a>) can sit above it instead of nested inside.
     return (
-        <Link
-            to={`/authors/${row.id}`}
-            className={`${COLUMNS} min-h-[48px] py-1.5 text-decoration-none hover:bg-[hsl(var(--surface-hi)/0.4)] ${
-                bordered ? "border-t border-border" : ""
+        <div
+            className={`${COLUMNS} relative min-h-[48px] py-1.5 hover:bg-line/40 ${
+                bordered ? "border-t border-line" : ""
             }`}
         >
             <span className="flex min-w-0 items-center gap-2">
-                <span className="truncate text-[14px] sm:text-[15px] font-semibold text-foreground">{row.name}</span>
-                {row.orcid && <OrcidLink orcid={row.orcid} size={12} />}
+                <Link
+                    to={`/authors/${row.id}`}
+                    className="truncate text-[14px] sm:text-[15px] font-semibold text-fg no-underline after:absolute after:inset-0"
+                >
+                    {row.name}
+                </Link>
+                {row.orcid && <OrcidLink orcid={row.orcid} size={12} className="relative z-10" />}
             </span>
-            <span className="hidden sm:block truncate text-[12.5px] text-muted-foreground">{domains}</span>
+            <span className="hidden sm:block truncate text-[12.5px] text-fg-muted">{domains}</span>
             <span className="hidden sm:block">
                 <PeopleEraBar firstYear={row.firstYear} lastYear={row.lastYear} />
             </span>
-            <span className="text-right font-mono text-[13px] text-foreground/80 tabular-nums">{row.papers}</span>
-            <span className="text-right font-mono text-[13px] font-semibold text-foreground tabular-nums">{row.pages}</span>
-        </Link>
+            <span className="text-right font-mono text-[13px] text-fg/80 tabular-nums">{row.papers}</span>
+            <span className="text-right font-mono text-[13px] font-semibold text-fg tabular-nums">{row.pages}</span>
+        </div>
     );
 }

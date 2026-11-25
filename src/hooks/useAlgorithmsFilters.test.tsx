@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import type { ReactNode } from "react";
 import { act, renderHook } from "@testing-library/react";
-import { MemoryRouter, useLocation } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router";
 import useAlgorithmsFilters from "./useAlgorithmsFilters.ts";
 import { ATLAS_VIEW_STORAGE_KEY } from "../lib/atlas/atlasFilters.ts";
 

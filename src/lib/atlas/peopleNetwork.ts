@@ -30,11 +30,12 @@ export const GROUP_COLOR: Record<ScholarlyGroup, string> = Object.fromEntries(
 export function resolveAuthorId(id: string, aliases: Record<string, string>): string {
     let current = id;
     const seen = new Set<string>();
-    while (aliases[current] && !seen.has(current)) {
+    for (;;) {
+        const next = aliases[current];
+        if (!next || seen.has(current)) return current;
         seen.add(current);
-        current = aliases[current];
+        current = next;
     }
-    return current;
 }
 
 // ── Era filter ───────────────────────────────────────────────────────────────
@@ -72,16 +73,13 @@ export const LABEL_MODE_OPTIONS: { value: LabelMode; label: string }[] = [
     { value: "none", label: "None" },
 ];
 
-export const OVERVIEW_LABEL_COUNT = 20;
+const OVERVIEW_LABEL_COUNT = 20;
 
 // ── Search matching ──────────────────────────────────────────────────────────
 
 /** Lowercase, diacritic-stripped comparison key (accent-insensitive matching). */
-export function normalizeSearchText(s: string): string {
-    return s
-        .normalize("NFD")
-        .replace(/[̀-ͯ]/g, "")
-        .toLowerCase();
+function normalizeSearchText(s: string): string {
+    return s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 }
 
 export function matchesQuery(name: string, query: string): boolean {
@@ -185,7 +183,7 @@ export interface FocusPosition {
 }
 
 /** Angle (radians) of the `i`th of `n` ring slots, used by `computeRingLayout`. */
-export function ringAngle(index: number, total: number): number {
+function ringAngle(index: number, total: number): number {
     return (index / Math.max(1, total)) * Math.PI * 2 - Math.PI / 2 + 0.2;
 }
 
@@ -265,11 +263,7 @@ export function computeFocusPositions(
 }
 
 /** Content-space box the camera should fit around a focused person (before ring padding). */
-export function focusBounds(
-    nodes: ScholarlyNetworkNode[],
-    focusId: string,
-    halfExtent = 220,
-): ViewportBounds | null {
+export function focusBounds(nodes: ScholarlyNetworkNode[], focusId: string, halfExtent = 220): ViewportBounds | null {
     const focusNode = nodes.find((n) => n.id === focusId);
     if (!focusNode) return null;
     return {
@@ -354,7 +348,7 @@ export interface PlacedLabel {
 type Box = [number, number, number, number];
 
 // Per-character width as a multiple of font size — a deliberately generous
-// estimate (real Inter glyphs average narrower) since this only feeds
+// estimate (real IBM Plex Sans glyphs average narrower) since this only feeds
 // collision math: overestimating wastes a little placement margin,
 // underestimating lets two labels render close enough to visually touch.
 const CHAR_WIDTH_FACTOR = 0.62;
@@ -403,7 +397,8 @@ export function layoutLabels(
     const boxes: Box[] = [...reserved];
     const placed: PlacedLabel[] = [];
 
-    const inCanvas = (box: Box) => box[0] >= canvas.minX && box[2] <= canvas.maxX && box[1] >= canvas.minY && box[3] <= canvas.maxY;
+    const inCanvas = (box: Box) =>
+        box[0] >= canvas.minX && box[2] <= canvas.maxX && box[1] >= canvas.minY && box[3] <= canvas.maxY;
 
     for (const c of candidates) {
         const w = textWidth(c.text, px(c.fontSize));
@@ -447,7 +442,14 @@ export function layoutLabels(
         }
 
         if (chosen) {
-            placed.push({ id: c.id, x: chosen.x, y: chosen.y, text: c.text, fontSize: c.fontSize, mandatory: !!c.mandatory });
+            placed.push({
+                id: c.id,
+                x: chosen.x,
+                y: chosen.y,
+                text: c.text,
+                fontSize: c.fontSize,
+                mandatory: !!c.mandatory,
+            });
         }
     }
 
@@ -456,7 +458,12 @@ export function layoutLabels(
     return placed;
 }
 
-function clampAnchorToCanvas(a: { x: number; y: number }, w: number, h: number, canvas: ViewportBounds): { x: number; y: number } {
+function clampAnchorToCanvas(
+    a: { x: number; y: number },
+    w: number,
+    h: number,
+    canvas: ViewportBounds,
+): { x: number; y: number } {
     let x = a.x;
     let y = a.y;
     if (x - 2 < canvas.minX) x = canvas.minX + 2;
@@ -500,11 +507,11 @@ function nudgeApartMandatoryOverlaps(placed: PlacedLabel[], contentPerScreenPx: 
     for (let iter = 0; iter < 50; iter++) {
         let movedAny = false;
         for (let i = 0; i < placed.length; i++) {
-            if (!placed[i].mandatory) continue;
+            const a = placed[i];
+            if (!a?.mandatory) continue;
             for (let j = i + 1; j < placed.length; j++) {
-                if (!placed[j].mandatory) continue;
-                const a = placed[i];
                 const b = placed[j];
+                if (!b?.mandatory) continue;
                 const boxA = boxOf(a);
                 const boxB = boxOf(b);
                 if (!boxesOverlap(boxA, boxB)) continue;
@@ -638,8 +645,15 @@ export function splitFocusTieLabels(
     const weakLabelled =
         remaining > 0 && weak.length > 0
             ? Array.from(
-                  new Set(Array.from({ length: Math.min(remaining, weak.length) }, (_, k) => Math.floor((k * weak.length) / Math.min(remaining, weak.length)))),
-              ).map((i) => weak[i])
+                  new Set(
+                      Array.from({ length: Math.min(remaining, weak.length) }, (_, k) =>
+                          Math.floor((k * weak.length) / Math.min(remaining, weak.length)),
+                      ),
+                  ),
+              ).flatMap((i) => {
+                  const t = weak[i];
+                  return t ? [t] : []; // indices are < weak.length by construction
+              })
             : [];
     const labelled = [...strong, ...weakLabelled];
     const labelledIds = new Set(labelled.map((t) => t.id));
@@ -737,7 +751,8 @@ export function hoverLabelAnchor(
     const w = textWidth(node.name, px(fontSize));
     const h = px(fontSize);
     const gap = px(4);
-    const anchors: { x: number; y: number }[] = [
+    type Pt = { x: number; y: number };
+    const anchors: [Pt, Pt, Pt, Pt] = [
         { x: node.x + node.radius + gap, y: node.y + h * 0.35 },
         { x: node.x - node.radius - gap - w, y: node.y + h * 0.35 },
         { x: node.x - w / 2, y: node.y + node.radius + h },

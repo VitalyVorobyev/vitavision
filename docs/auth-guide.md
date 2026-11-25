@@ -54,7 +54,7 @@ A product with user accounts in the traditional sense: saved work, collaboration
 ## Reference
 
 - Hook: `src/lib/auth/useIsAdmin.ts` — returns `boolean`.
-- Guards: `src/components/auth/RequireAuth.tsx`, `src/components/auth/RequireAdmin.tsx`.
+- Guard: `src/components/auth/RequireAdmin.tsx`.
 - Provider wiring: `src/App.tsx` (CSR) and `src/entry-server.tsx` (SSR).
 - CSP allowlist: `public/_headers` (prod response headers) and `index.html` (meta tag, applied in both dev and prod).
 - Frontmatter schema: `src/lib/content/schema.ts` — fields `access` (`public` | `members`) and `draft` (`boolean`).

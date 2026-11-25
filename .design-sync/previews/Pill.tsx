@@ -1,8 +1,6 @@
-import { Pill } from 'vitcv';
+import { Pill } from "vitcv";
 
-export const Default = () => (
-    <Pill>chessboard</Pill>
-);
+export const Default = () => <Pill>chessboard</Pill>;
 
 export const StatusRow = () => (
     <div className="flex flex-wrap gap-2">
@@ -14,7 +12,7 @@ export const StatusRow = () => (
 
 export const WithIcon = () => (
     <Pill>
-        <span className="h-1.5 w-1.5 rounded-full bg-primary" />
+        <span className="h-1.5 w-1.5 rounded-full bg-signal" />
         Detector active
     </Pill>
 );

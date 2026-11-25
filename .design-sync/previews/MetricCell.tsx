@@ -1,4 +1,4 @@
-import { MetricCell } from 'vitcv';
+import { MetricCell } from "vitcv";
 
 export const Tones = () => (
     <div className="grid grid-cols-4 gap-2">

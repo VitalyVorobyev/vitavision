@@ -1,9 +1,5 @@
-import type {
-    TargetType,
-    TargetConfig,
-    PageConfig,
-} from "./types";
-import { defaultCircles, DEFAULT_RINGGRID, DEFAULT_PUZZLEBOARD } from "./reducer";
+import type { TargetType, TargetConfig, PageConfig } from "./types";
+import { defaultCircles, DEFAULT_RINGGRID, DEFAULT_PUZZLEBOARD, DEFAULT_PUZZLEPOLE } from "./reducer";
 
 export interface Preset {
     id: string;
@@ -42,7 +38,10 @@ export const CHESSBOARD_PRESETS: Preset[] = [
         label: "Camera Calibration",
         description: "Standard 7x10 board for OpenCV-style calibration",
         targetType: "chessboard",
-        target: { targetType: "chessboard", config: { innerRows: 7, innerCols: 10, squareSizeMm: 20, innerSquareRel: 0 } },
+        target: {
+            targetType: "chessboard",
+            config: { innerRows: 7, innerCols: 10, squareSizeMm: 20, innerSquareRel: 0 },
+        },
         page: A4_LANDSCAPE,
     },
     {
@@ -50,7 +49,10 @@ export const CHESSBOARD_PRESETS: Preset[] = [
         label: "Robotics",
         description: "Large 5x7 board with 30 mm squares for robotic arm calibration",
         targetType: "chessboard",
-        target: { targetType: "chessboard", config: { innerRows: 5, innerCols: 7, squareSizeMm: 30, innerSquareRel: 0 } },
+        target: {
+            targetType: "chessboard",
+            config: { innerRows: 5, innerCols: 7, squareSizeMm: 30, innerSquareRel: 0 },
+        },
         page: A4_LANDSCAPE,
     },
     {
@@ -58,7 +60,10 @@ export const CHESSBOARD_PRESETS: Preset[] = [
         label: "Industrial QC",
         description: "Dense 9x13 board for high-precision measurement",
         targetType: "chessboard",
-        target: { targetType: "chessboard", config: { innerRows: 9, innerCols: 13, squareSizeMm: 15, innerSquareRel: 0 } },
+        target: {
+            targetType: "chessboard",
+            config: { innerRows: 9, innerCols: 13, squareSizeMm: 15, innerSquareRel: 0 },
+        },
         page: A4_LANDSCAPE,
     },
 ];
@@ -74,8 +79,13 @@ export const CHARUCO_PRESETS: Preset[] = [
         target: {
             targetType: "charuco",
             config: {
-                rows: 8, cols: 11, squareSizeMm: 20,
-                markerSizeRel: 0.75, dictionary: "DICT_4X4_250", borderBits: 1, innerSquareRel: 0,
+                rows: 8,
+                cols: 11,
+                squareSizeMm: 20,
+                markerSizeRel: 0.75,
+                dictionary: "DICT_4X4_250",
+                borderBits: 1,
+                innerSquareRel: 0,
             },
         },
         page: A4_LANDSCAPE,
@@ -88,8 +98,13 @@ export const CHARUCO_PRESETS: Preset[] = [
         target: {
             targetType: "charuco",
             config: {
-                rows: 6, cols: 8, squareSizeMm: 30,
-                markerSizeRel: 0.7, dictionary: "DICT_APRILTAG_36h11", borderBits: 1, innerSquareRel: 0,
+                rows: 6,
+                cols: 8,
+                squareSizeMm: 30,
+                markerSizeRel: 0.7,
+                dictionary: "DICT_APRILTAG_36h11",
+                borderBits: 1,
+                innerSquareRel: 0,
             },
         },
         page: A4_LANDSCAPE,
@@ -102,8 +117,13 @@ export const CHARUCO_PRESETS: Preset[] = [
         target: {
             targetType: "charuco",
             config: {
-                rows: 10, cols: 14, squareSizeMm: 15,
-                markerSizeRel: 0.8, dictionary: "DICT_6X6_250", borderBits: 1, innerSquareRel: 0,
+                rows: 10,
+                cols: 14,
+                squareSizeMm: 15,
+                markerSizeRel: 0.8,
+                dictionary: "DICT_6X6_250",
+                borderBits: 1,
+                innerSquareRel: 0,
             },
         },
         page: A4_LANDSCAPE,
@@ -120,7 +140,14 @@ export const MARKERBOARD_PRESETS: Preset[] = [
         targetType: "markerboard",
         target: {
             targetType: "markerboard",
-            config: { innerRows: 7, innerCols: 10, squareSizeMm: 20, circleDiameterRel: 0.5, circles: defaultCircles(7, 10), innerSquareRel: 0 },
+            config: {
+                innerRows: 7,
+                innerCols: 10,
+                squareSizeMm: 20,
+                circleDiameterRel: 0.5,
+                circles: defaultCircles(7, 10),
+                innerSquareRel: 0,
+            },
         },
         page: A4_LANDSCAPE,
     },
@@ -131,7 +158,14 @@ export const MARKERBOARD_PRESETS: Preset[] = [
         targetType: "markerboard",
         target: {
             targetType: "markerboard",
-            config: { innerRows: 5, innerCols: 7, squareSizeMm: 30, circleDiameterRel: 0.6, circles: defaultCircles(5, 7), innerSquareRel: 0 },
+            config: {
+                innerRows: 5,
+                innerCols: 7,
+                squareSizeMm: 30,
+                circleDiameterRel: 0.6,
+                circles: defaultCircles(5, 7),
+                innerSquareRel: 0,
+            },
         },
         page: A4_LANDSCAPE,
     },
@@ -142,7 +176,14 @@ export const MARKERBOARD_PRESETS: Preset[] = [
         targetType: "markerboard",
         target: {
             targetType: "markerboard",
-            config: { innerRows: 6, innerCols: 9, squareSizeMm: 20, circleDiameterRel: 0.5, circles: defaultCircles(6, 9), innerSquareRel: 0 },
+            config: {
+                innerRows: 6,
+                innerCols: 9,
+                squareSizeMm: 20,
+                circleDiameterRel: 0.5,
+                circles: defaultCircles(6, 9),
+                innerSquareRel: 0,
+            },
         },
         page: LETTER_LANDSCAPE,
     },
@@ -212,6 +253,32 @@ export const PUZZLEBOARD_PRESETS: Preset[] = [
     },
 ];
 
+// ── PuzzlePole presets ───────────────────────────────────────────────────────
+
+const A4_PORTRAIT: PageConfig = { ...A4_LANDSCAPE, orientation: "portrait" };
+
+export const PUZZLEPOLE_PRESETS: Preset[] = [
+    {
+        id: "puzzlepole-small",
+        label: "Small pole",
+        description: "12 squares round at 10 mm: a ~38 mm cylinder, 100 x 140 mm strip",
+        targetType: "puzzlepole",
+        target: { targetType: "puzzlepole", config: { ...DEFAULT_PUZZLEPOLE } },
+        page: A4_LANDSCAPE,
+    },
+    {
+        id: "puzzlepole-medium",
+        label: "Medium pole",
+        description: "24 squares round at 10 mm: a ~76 mm cylinder, 80 x 260 mm strip (A4 portrait)",
+        targetType: "puzzlepole",
+        target: {
+            targetType: "puzzlepole",
+            config: { circumferenceSquares: 24, startRow: 75, axialSquares: 8, squareSizeMm: 10 },
+        },
+        page: A4_PORTRAIT,
+    },
+];
+
 export function presetsForType(targetType: TargetType): Preset[] {
     switch (targetType) {
         case "chessboard":
@@ -224,5 +291,7 @@ export function presetsForType(targetType: TargetType): Preset[] {
             return RINGGRID_PRESETS;
         case "puzzleboard":
             return PUZZLEBOARD_PRESETS;
+        case "puzzlepole":
+            return PUZZLEPOLE_PRESETS;
     }
 }

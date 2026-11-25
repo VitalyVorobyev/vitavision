@@ -43,9 +43,6 @@ export function computeReadingTimeMinutes(markdown: string, options: ReadingTime
     const words = text.trim().split(/\s+/).filter(Boolean).length;
     const proseMinutes = words / wpm;
     const extraMinutes =
-        (displayMathCount * displayMathSeconds +
-            inlineMathCount * inlineMathSeconds +
-            imageCount * imageSeconds) /
-        60;
+        (displayMathCount * displayMathSeconds + inlineMathCount * inlineMathSeconds + imageCount * imageSeconds) / 60;
     return Math.max(1, Math.round(proseMinutes + extraMinutes));
 }

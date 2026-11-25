@@ -13,9 +13,7 @@ const GRAPH_BOX_CLASS = "flex flex-col h-[calc(100vh-11rem)] min-h-[460px]";
 
 function GraphFallback() {
     return (
-        <div className={`${GRAPH_BOX_CLASS} items-center justify-center text-[13px] text-muted-foreground`}>
-            Loading graph…
-        </div>
+        <div className={`${GRAPH_BOX_CLASS} items-center justify-center text-[13px] text-fg-muted`}>Loading graph…</div>
     );
 }
 
@@ -23,7 +21,7 @@ interface AtlasGraphViewProps {
     isDesktop: boolean;
     view: AlgorithmsView;
     setView: (view: AlgorithmsView) => void;
-    focusParam?: string;
+    focusParam?: string | undefined;
 }
 
 /** The Atlas graph-explorer view — full-width, no sidebar/facets. */
@@ -44,7 +42,10 @@ export default function AtlasGraphView({ isDesktop, view, setView, focusParam }:
                         graph re-centers; internal trail nav never touches
                         ?focus=, so it does not trigger a remount. */}
                     <Suspense fallback={<GraphFallback />}>
-                        <GraphExplorer key={focusParam ?? ""} focusSlug={focusParam} />
+                        <GraphExplorer
+                            key={focusParam ?? ""}
+                            {...(focusParam !== undefined && { focusSlug: focusParam })}
+                        />
                     </Suspense>
                 </main>
             </div>
@@ -54,10 +55,7 @@ export default function AtlasGraphView({ isDesktop, view, setView, focusParam }:
     // Mobile graph view — render focused entry + neighbor lists, skip catalog
     return (
         <div className="w-full min-w-0 max-w-[640px] mx-auto px-4 py-5">
-            <SeoHead
-                title="Atlas"
-                description="Practical computer vision atlas — algorithms, models, and concepts."
-            />
+            <SeoHead title="Atlas" description="Practical computer vision atlas — algorithms, models, and concepts." />
 
             {/* Title row */}
             <div className="mb-4 flex flex-col gap-3">
@@ -66,7 +64,7 @@ export default function AtlasGraphView({ isDesktop, view, setView, focusParam }:
             </div>
 
             <Suspense fallback={<GraphFallback />}>
-                <GraphExplorer key={focusParam ?? ""} focusSlug={focusParam} />
+                <GraphExplorer key={focusParam ?? ""} {...(focusParam !== undefined && { focusSlug: focusParam })} />
             </Suspense>
         </div>
     );

@@ -28,11 +28,7 @@ interface DirectiveNode extends Parent {
 
 function isDirectiveNode(node: unknown): node is DirectiveNode {
     const n = node as { type?: string };
-    return (
-        n.type === "containerDirective" ||
-        n.type === "leafDirective" ||
-        n.type === "textDirective"
-    );
+    return n.type === "containerDirective" || n.type === "leafDirective" || n.type === "textDirective";
 }
 
 const remarkVvDirectiveFallback: Plugin<[], Root> = () => {
@@ -49,9 +45,7 @@ const remarkVvDirectiveFallback: Plugin<[], Root> = () => {
             const start = node.position?.start?.offset;
             const end = node.position?.end?.offset;
             const literal =
-                typeof start === "number" && typeof end === "number"
-                    ? source.slice(start, end)
-                    : ":" + node.name;
+                typeof start === "number" && typeof end === "number" ? source.slice(start, end) : ":" + node.name;
 
             // Replace the directive node in-place with a plain text node,
             // restoring the original characters verbatim.

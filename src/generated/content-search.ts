@@ -4827,7 +4827,7 @@ export const searchRecords: SearchRecord[] = [
     "path": "/authors/A5070290355",
     "type": "author",
     "title": "Thomas Brox",
-    "summary": "2 papers",
+    "summary": "3 papers",
     "tags": [],
     "headings": []
   },
@@ -8054,6 +8054,222 @@ export const searchRecords: SearchRecord[] = [
     "headings": []
   },
   {
+    "slug": "A5026041233",
+    "path": "/authors/A5026041233",
+    "type": "author",
+    "title": "João P C Bertoldo",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5025671893",
+    "path": "/authors/A5025671893",
+    "type": "author",
+    "title": "Dick Ameln",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5038518813",
+    "path": "/authors/A5038518813",
+    "type": "author",
+    "title": "Samet Akçay",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5095094437",
+    "path": "/authors/A5095094437",
+    "type": "author",
+    "title": "Aimira Baitieva",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5086144380",
+    "path": "/authors/A5086144380",
+    "type": "author",
+    "title": "David Hurych",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5074326665",
+    "path": "/authors/A5074326665",
+    "type": "author",
+    "title": "Victor Besnier",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5089665295",
+    "path": "/authors/A5089665295",
+    "type": "author",
+    "title": "Bozhong Zheng",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5018803784",
+    "path": "/authors/A5018803784",
+    "type": "author",
+    "title": "Xiaohao Xu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5053905081",
+    "path": "/authors/A5053905081",
+    "type": "author",
+    "title": "Xiaonan Huang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5111513090",
+    "path": "/authors/A5111513090",
+    "type": "author",
+    "title": "Yingna Wu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5104153935",
+    "path": "/authors/A5104153935",
+    "type": "author",
+    "title": "Sassan Mokhtar",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5092031241",
+    "path": "/authors/A5092031241",
+    "type": "author",
+    "title": "Arian Mousakhan",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5064946819",
+    "path": "/authors/A5064946819",
+    "type": "author",
+    "title": "Silvio Galesso",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5002497004",
+    "path": "/authors/A5002497004",
+    "type": "author",
+    "title": "Jawad Tayyub",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5000290451",
+    "path": "/authors/A5000290451",
+    "type": "author",
+    "title": "Bin-Bin Gao",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5023834700",
+    "path": "/authors/A5023834700",
+    "type": "author",
+    "title": "Chengjie Wang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5040408220",
+    "path": "/authors/A5040408220",
+    "type": "author",
+    "title": "Matic Fučka",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5078364765",
+    "path": "/authors/A5078364765",
+    "type": "author",
+    "title": "Vitjan Zavrtanik",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5024699185",
+    "path": "/authors/A5024699185",
+    "type": "author",
+    "title": "Danijel Skočaj",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5105783109",
+    "path": "/authors/A5105783109",
+    "type": "author",
+    "title": "Shota Sugawara",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5026911576",
+    "path": "/authors/A5026911576",
+    "type": "author",
+    "title": "Ryuji Imamura",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5020923609",
+    "path": "/authors/A5020923609",
+    "type": "author",
+    "title": "Ximiao Zhang",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5139671087",
+    "path": "/authors/A5139671087",
+    "type": "author",
+    "title": "Min Xu",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
+    "slug": "A5085431435",
+    "path": "/authors/A5085431435",
+    "type": "author",
+    "title": "Xiuzhuang Zhou",
+    "summary": "1 paper",
+    "tags": [],
+    "headings": []
+  },
+  {
     "slug": "paper:bennett2013-chess",
     "path": "/papers/bennett2013-chess",
     "type": "paper",
@@ -10934,5 +11150,174 @@ export const searchRecords: SearchRecord[] = [
       "R. Girshick"
     ],
     "venue": "CVPR"
+  },
+  {
+    "slug": "paper:bertoldo2024-aupimo",
+    "path": "/papers/bertoldo2024-aupimo",
+    "type": "paper",
+    "title": "AUPIMO: Redefining Visual Anomaly Detection Benchmarks with High Speed and Low Tolerance",
+    "summary": "BMVC 2024",
+    "tags": [
+      "aupimo"
+    ],
+    "headings": [],
+    "authors": [
+      "J. P. C. Bertoldo",
+      "D. Ameln",
+      "A. Vaidya",
+      "S. Akçay"
+    ],
+    "venue": "BMVC 2024"
+  },
+  {
+    "slug": "paper:baitieva2024-segad",
+    "path": "/papers/baitieva2024-segad",
+    "type": "paper",
+    "title": "Supervised Anomaly Detection for Complex Industrial Images",
+    "summary": "CVPR 2024",
+    "tags": [
+      "segad"
+    ],
+    "headings": [],
+    "authors": [
+      "A. Baitieva",
+      "D. Hurych",
+      "V. Besnier",
+      "O. Bernard"
+    ],
+    "venue": "CVPR 2024"
+  },
+  {
+    "slug": "paper:li2024-mulsen-ad",
+    "path": "/papers/li2024-mulsen-ad",
+    "type": "paper",
+    "title": "Multi-Sensor Object Anomaly Detection: Unifying Appearance, Geometry, and Internal Properties",
+    "summary": "arXiv 2024",
+    "tags": [
+      "mulsen",
+      "ad"
+    ],
+    "headings": [],
+    "authors": [
+      "W. Li",
+      "B. Zheng",
+      "X. Xu",
+      "J. Gan",
+      "F. Lu",
+      "X. Li",
+      "N. Ni",
+      "Z. Tian",
+      "X. Huang",
+      "S. Gao",
+      "Y. Wu"
+    ],
+    "venue": "arXiv"
+  },
+  {
+    "slug": "paper:mokhtar2025-velm",
+    "path": "/papers/mokhtar2025-velm",
+    "type": "paper",
+    "title": "Detect, Classify, Act: Categorizing Industrial Anomalies with Multi-Modal Large Language Models",
+    "summary": "VAND Workshop, CVPR 2025",
+    "tags": [
+      "velm"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Mokhtar",
+      "A. Mousakhan",
+      "S. Galesso",
+      "J. Tayyub",
+      "T. Brox"
+    ],
+    "venue": "VAND Workshop, CVPR 2025"
+  },
+  {
+    "slug": "paper:zhang2025-superad",
+    "path": "/papers/zhang2025-superad",
+    "type": "paper",
+    "title": "SuperAD: A Training-free Anomaly Classification and Segmentation Method for CVPR 2025 VAND 3.0 Workshop Challenge Track 1: Adapt & Detect",
+    "summary": "arXiv 2025",
+    "tags": [
+      "superad"
+    ],
+    "headings": [],
+    "authors": [
+      "H. Zhang",
+      "H. Chen",
+      "Y. Cheng",
+      "S. Wu",
+      "L. Sun",
+      "L. Han",
+      "Z. Shi",
+      "L. Qi"
+    ],
+    "venue": "arXiv"
+  },
+  {
+    "slug": "paper:gao2026-uniadet",
+    "path": "/papers/gao2026-uniadet",
+    "type": "paper",
+    "title": "One Language-Free Foundation Model Is Enough for Universal Vision Anomaly Detection",
+    "summary": "arXiv 2026",
+    "tags": [
+      "uniadet"
+    ],
+    "headings": [],
+    "authors": [
+      "B. Gao",
+      "C. Wang"
+    ],
+    "venue": "arXiv"
+  },
+  {
+    "slug": "paper:fucka2026-anomalyvfm",
+    "path": "/papers/fucka2026-anomalyvfm",
+    "type": "paper",
+    "title": "AnomalyVFM -- Transforming Vision Foundation Models into Zero-Shot Anomaly Detectors",
+    "summary": "CVPR 2026",
+    "tags": [
+      "anomalyvfm"
+    ],
+    "headings": [],
+    "authors": [
+      "M. Fučka",
+      "V. Zavrtanik",
+      "D. Skočaj"
+    ],
+    "venue": "CVPR 2026"
+  },
+  {
+    "slug": "paper:sugawara2024-puad",
+    "path": "/papers/sugawara2024-puad",
+    "type": "paper",
+    "title": "PUAD: Frustratingly Simple Method for Robust Anomaly Detection",
+    "summary": "ICIP 2024",
+    "tags": [
+      "puad"
+    ],
+    "headings": [],
+    "authors": [
+      "S. Sugawara",
+      "R. Imamura"
+    ],
+    "venue": "ICIP 2024"
+  },
+  {
+    "slug": "paper:zhang2026-logico",
+    "path": "/papers/zhang2026-logico",
+    "type": "paper",
+    "title": "LogiCo: A Unified Framework for Logical and Structural Anomaly Detection",
+    "summary": "ECCV 2026",
+    "tags": [
+      "logico"
+    ],
+    "headings": [],
+    "authors": [
+      "X. Zhang",
+      "M. Xu",
+      "X. Zhou"
+    ],
+    "venue": "ECCV 2026"
   }
 ];

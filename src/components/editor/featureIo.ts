@@ -1,5 +1,6 @@
-import { toast } from "sonner";
+import { toast } from "@vitavision/ui";
 import { featuresArraySchema } from "../../store/editor/featureSchema";
+import { FEATURE_FILE_VERSION, migrateFeaturesV1 } from "../../store/editor/featureMigration";
 import { normalizeImportedFeatures, type Feature } from "../../store/editor/useEditorStore";
 
 /** Internal fields stripped from JSON export. */
@@ -36,7 +37,11 @@ function stripForExport(feature: Feature): Record<string, unknown> {
 // axis as the perpendicular of the first.
 function migrateLegacyFeatures(parsed: unknown): unknown {
     if (!Array.isArray(parsed)) return parsed;
-    return parsed.map((entry) => {
+    // `Array.isArray` narrows an `unknown` value to `any[]`, so route through
+    // an explicitly `unknown[]`-typed binding to keep `entry` (and the
+    // returns below) from silently becoming `any`.
+    const entries: unknown[] = parsed;
+    return entries.map((entry) => {
         if (!entry || typeof entry !== "object") return entry;
         const f = entry as Record<string, unknown>;
         if (f.type !== "directed_point" || f.axes !== undefined) return entry;
@@ -57,15 +62,58 @@ function migrateLegacyFeatures(parsed: unknown): unknown {
     });
 }
 
+/** The exported document: the features with the file format version they are written in. */
+export interface FeatureFile {
+    version: typeof FEATURE_FILE_VERSION;
+    features: Record<string, unknown>[];
+}
+
+export function serializeFeatures(features: Feature[]): FeatureFile {
+    return { version: FEATURE_FILE_VERSION, features: features.map(stripForExport) };
+}
+
 export function exportFeaturesAsJson(features: Feature[]) {
-    const exported = features.map(stripForExport);
-    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(exported, null, 2))}`;
+    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(serializeFeatures(features), null, 2))}`;
     const link = document.createElement("a");
     link.setAttribute("href", dataStr);
     link.setAttribute("download", "vitavision_features.json");
     document.body.appendChild(link);
     link.click();
     link.remove();
+}
+
+export type ReadFeatureFileResult = { ok: true; features: Feature[] } | { ok: false; message: string };
+
+/**
+ * The features of a parsed feature file, in the current coordinate frame.
+ *
+ * A bare array, or an object without `version`, is a version 1 file: its coordinates have the
+ * corner of pixel 0 at the origin, so every one is shifted by -0.5 (see `migrateFeaturesV1`).
+ * `{ version: 2, features }` is read as it is. Any other version is refused rather than guessed at.
+ */
+export function readFeatureFile(parsed: unknown): ReadFeatureFileResult {
+    let version = 1;
+    let entries: unknown = parsed;
+    if (!Array.isArray(parsed)) {
+        const record = parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>) : null;
+        if (!record || !Array.isArray(record.features)) {
+            return { ok: false, message: "Invalid feature file: expected a list of features." };
+        }
+        if (record.version !== undefined) {
+            if (record.version !== FEATURE_FILE_VERSION) {
+                return { ok: false, message: `Unsupported feature file version: ${JSON.stringify(record.version)}.` };
+            }
+            version = record.version;
+        }
+        entries = record.features;
+    }
+
+    const result = featuresArraySchema.safeParse(migrateLegacyFeatures(entries));
+    if (!result.success) {
+        return { ok: false, message: `Invalid feature file: ${result.error.issues[0]?.message ?? "unknown error"}` };
+    }
+    const features = normalizeImportedFeatures(result.data);
+    return { ok: true, features: version < FEATURE_FILE_VERSION ? migrateFeaturesV1(features) : features };
 }
 
 export function promptFeatureImport({
@@ -76,8 +124,8 @@ export function promptFeatureImport({
     onLoaded: (features: Feature[]) => void;
 }) {
     if (
-        currentFeatureCount > 0
-        && !window.confirm("Replace the current features with a JSON import? This will clear the current results view.")
+        currentFeatureCount > 0 &&
+        !window.confirm("Replace the current features with a JSON import? This will clear the current results view.")
     ) {
         return;
     }
@@ -95,17 +143,16 @@ export function promptFeatureImport({
         const reader = new FileReader();
         reader.onload = (readerEvent) => {
             try {
-                const parsed = JSON.parse((readerEvent.target?.result as string) || "null");
-                const migrated = migrateLegacyFeatures(parsed);
-                const result = featuresArraySchema.safeParse(migrated);
-                if (!result.success) {
-                    toast.error(`Invalid feature file: ${result.error.issues[0]?.message ?? "unknown error"}`);
+                const parsed: unknown = JSON.parse((readerEvent.target?.result as string) || "null");
+                const result = readFeatureFile(parsed);
+                if (!result.ok) {
+                    toast({ title: result.message, tone: "error" });
                     return;
                 }
 
-                onLoaded(normalizeImportedFeatures(result.data));
+                onLoaded(result.features);
             } catch {
-                toast.error("Failed to parse JSON.");
+                toast({ title: "Failed to parse JSON.", tone: "error" });
             }
         };
         reader.readAsText(file);

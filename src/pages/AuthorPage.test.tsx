@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import AuthorPage from "./AuthorPage.tsx";
 import { PapersProvider } from "../lib/atlas/papersIndex.tsx";
@@ -21,15 +21,47 @@ beforeAll(() => {
 });
 
 const papers: PapersById = {
-    resnet2016: { id: "resnet2016", title: "Deep Residual Learning for Image Recognition", authors: ["K. He", "J. Sun"], year: 2016, venue: "CVPR", url: "https://x" },
-    maskrcnn2017: { id: "maskrcnn2017", title: "Mask R-CNN", authors: ["K. He", "G. Gkioxari"], year: 2017, venue: "ICCV", url: "https://x" },
-    groupnorm2018: { id: "groupnorm2018", title: "Group Normalization", authors: ["Y. Wu", "K. He"], year: 2018, venue: "ECCV", url: "https://x" },
-    ghostpaper: { id: "ghostpaper", title: "An Uncited Workshop Paper", authors: ["G. Host"], year: 2021, venue: "Workshop", url: "https://x" },
+    resnet2016: {
+        id: "resnet2016",
+        title: "Deep Residual Learning for Image Recognition",
+        authors: ["K. He", "J. Sun"],
+        year: 2016,
+        venue: "CVPR",
+        url: "https://x",
+    },
+    maskrcnn2017: {
+        id: "maskrcnn2017",
+        title: "Mask R-CNN",
+        authors: ["K. He", "G. Gkioxari"],
+        year: 2017,
+        venue: "ICCV",
+        url: "https://x",
+    },
+    groupnorm2018: {
+        id: "groupnorm2018",
+        title: "Group Normalization",
+        authors: ["Y. Wu", "K. He"],
+        year: 2018,
+        venue: "ECCV",
+        url: "https://x",
+    },
+    ghostpaper: {
+        id: "ghostpaper",
+        title: "An Uncited Workshop Paper",
+        authors: ["G. Host"],
+        year: 2021,
+        venue: "Workshop",
+        url: "https://x",
+    },
 };
 
 const authorsIndex: AuthorsIndex = {
     authors: {
-        he: { name: "Kaiming He", orcid: "0000-0001-2345-6789", papers: ["resnet2016", "maskrcnn2017", "groupnorm2018"] },
+        he: {
+            name: "Kaiming He",
+            orcid: "0000-0001-2345-6789",
+            papers: ["resnet2016", "maskrcnn2017", "groupnorm2018"],
+        },
         sun: { name: "Jian Sun", papers: ["resnet2016"] },
         ghost: { name: "Ghost Host", papers: ["ghostpaper"] },
     },
@@ -72,7 +104,14 @@ const scholarly: ScholarlyIndex = {
             ],
             group: "representation",
         },
-        sun: { firstYear: 2016, lastYear: 2016, pageCount: 1, primaryPages: ["resnet"], domains: [{ domain: "features", count: 1 }], group: "features" },
+        sun: {
+            firstYear: 2016,
+            lastYear: 2016,
+            pageCount: 1,
+            primaryPages: ["resnet"],
+            domains: [{ domain: "features", count: 1 }],
+            group: "features",
+        },
         ghost: { firstYear: 2021, lastYear: 2021, pageCount: 0, primaryPages: [], domains: [], group: "other" },
     },
     coauthorPapers: { he: { sun: ["resnet2016"] }, sun: { he: ["resnet2016"] } },

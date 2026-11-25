@@ -44,9 +44,7 @@ describe("remark-vv-directive-fallback", () => {
     });
 
     it("renders link with arXiv colon text verbatim and preserves href", async () => {
-        const html = await render(
-            "[arXiv:2104.00680](https://arxiv.org/abs/2104.00680)",
-        );
+        const html = await render("[arXiv:2104.00680](https://arxiv.org/abs/2104.00680)");
         expect(html).toContain("arXiv:2104.00680");
         expect(html).toContain('href="https://arxiv.org/abs/2104.00680"');
         expect(html).not.toContain("<div></div>");
@@ -81,12 +79,7 @@ describe("remark-vv-directive-fallback", () => {
         // the fallback plugin in place. It scans all auto-generated *.ts modules
         // under src/generated/content/ for the empty-div sentinel.
         // process.cwd() is the project root in Vitest's runner context.
-        const generatedContentDir = join(
-            process.cwd(),
-            "src",
-            "generated",
-            "content",
-        );
+        const generatedContentDir = join(process.cwd(), "src", "generated", "content");
 
         if (!existsSync(generatedContentDir)) {
             // Directory does not exist — build hasn't run yet; skip gracefully.
@@ -100,10 +93,7 @@ describe("remark-vv-directive-fallback", () => {
         const violations: string[] = [];
         for (const rel of allFiles) {
             if (!rel.endsWith(".ts")) continue;
-            const content = readFileSync(
-                join(generatedContentDir, rel),
-                "utf-8",
-            );
+            const content = readFileSync(join(generatedContentDir, rel), "utf-8");
             if (content.includes("<div></div>")) {
                 violations.push(rel);
             }
@@ -113,9 +103,7 @@ describe("remark-vv-directive-fallback", () => {
     });
 
     it("renders inline math inside a directive label as KaTeX, not raw TeX", async () => {
-        const html = await render(
-            ":::definition[Global DLT homography ($\\hat{h}$)]\nbody text\n:::",
-        );
+        const html = await render(":::definition[Global DLT homography ($\\hat{h}$)]\nbody text\n:::");
         expect(html).toContain('class="vv-block__label"');
         // Real KaTeX output: a `class="katex"` wrapper with rendered MathML/HTML.
         expect(html).toContain('class="katex"');
@@ -128,12 +116,8 @@ describe("remark-vv-directive-fallback", () => {
     });
 
     it("plain-text directive label still renders as before (no math involved)", async () => {
-        const html = await render(
-            ":::definition[Global DLT homography]\nbody text\n:::",
-        );
-        expect(html).toContain(
-            '<div class="vv-block__label">Global DLT homography</div>',
-        );
+        const html = await render(":::definition[Global DLT homography]\nbody text\n:::");
+        expect(html).toContain('<div class="vv-block__label">Global DLT homography</div>');
         expect(html).not.toContain("katex");
     });
 

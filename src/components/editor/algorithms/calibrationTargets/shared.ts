@@ -4,16 +4,11 @@ import type {
     CalibrationMarker,
     CalibrationTargetResult,
 } from "../../../../lib/types";
-import { overlayTheme } from "../../canvas/overlays/overlayTheme";
+import { DETECTION_COLORS } from "../../../../store/editor/featureColors";
 import type { ArUcoMarkerFeature, Feature } from "../../../../store/editor/useEditorStore";
 
-export const toCanvasCoordinate = (value: number): number => value + 0.5;
-
 const averagePoint = (points: Array<{ x: number; y: number }>): { x: number; y: number } => {
-    const total = points.reduce(
-        (acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }),
-        { x: 0, y: 0 },
-    );
+    const total = points.reduce((acc, point) => ({ x: acc.x + point.x, y: acc.y + point.y }), { x: 0, y: 0 });
     return {
         x: total.x / points.length,
         y: total.y / points.length,
@@ -36,6 +31,9 @@ export const calibrationSummary = (result: CalibrationTargetResult): Array<{ lab
     if (result.summary.alignment_inliers !== null) {
         summary.push({ label: "Alignment inliers", value: `${result.summary.alignment_inliers}` });
     }
+    if (result.summary.alignment_runner_up_inliers !== null) {
+        summary.push({ label: "Runner-up inliers", value: `${result.summary.alignment_runner_up_inliers}` });
+    }
 
     return summary;
 };
@@ -44,7 +42,7 @@ export const calibrationCornerFeatures = (
     result: CalibrationTargetResult,
     runId: string,
     algorithmId: string,
-    color = overlayTheme.cornerAccent,
+    color = DETECTION_COLORS.corner,
 ): Feature[] => {
     return result.detection.corners.map((corner, index) => ({
         id: corner.id,
@@ -53,8 +51,8 @@ export const calibrationCornerFeatures = (
         algorithmId,
         runId,
         readonly: true,
-        x: toCanvasCoordinate(corner.x),
-        y: toCanvasCoordinate(corner.y),
+        x: corner.x,
+        y: corner.y,
         color,
         label: `corner ${index + 1}`,
         meta: {
@@ -81,10 +79,7 @@ export const calibrationMarkerFeatures = (
         .map((marker) => {
             const imgCorners = marker.corners_img as Array<{ x: number; y: number }>;
             const center = averagePoint(imgCorners);
-            const corners = imgCorners.flatMap((c) => [
-                toCanvasCoordinate(c.x),
-                toCanvasCoordinate(c.y),
-            ]) as ArUcoMarkerFeature["corners"];
+            const corners = imgCorners.flatMap((c) => [c.x, c.y]) as ArUcoMarkerFeature["corners"];
             const feature: ArUcoMarkerFeature = {
                 id: `${algorithmId}-marker-${marker.id}`,
                 type: "aruco_marker",
@@ -92,8 +87,8 @@ export const calibrationMarkerFeatures = (
                 algorithmId,
                 runId,
                 readonly: true,
-                x: toCanvasCoordinate(center.x),
-                y: toCanvasCoordinate(center.y),
+                x: center.x,
+                y: center.y,
                 corners,
                 label: `marker ${marker.id}`,
                 meta: {
@@ -112,70 +107,41 @@ export const calibrationMarkerFeatures = (
         });
 };
 
-export const calibrationCircleCandidateFeatures = (
-    candidates: CalibrationCircleCandidate[] | null,
-    runId: string,
-    algorithmId: string,
-    color = overlayTheme.markerStroke,
-): Feature[] => {
-    if (!candidates) {
-        return [];
-    }
-
-    return candidates.map((candidate, index) => ({
-        id: `${algorithmId}-circle-${index + 1}`,
-        type: "point",
-        source: "algorithm",
-        algorithmId,
-        runId,
-        readonly: true,
-        x: toCanvasCoordinate(candidate.center_img.x),
-        y: toCanvasCoordinate(candidate.center_img.y),
-        color,
-        label: `circle ${index + 1}`,
-        meta: {
-            kind: "circle_candidate",
-            grid: candidate.cell,
-            score: candidate.score,
-            polarity: candidate.polarity,
-            contrast: candidate.contrast,
-        },
-    }));
-};
-
 export const calibrationCircleMatchFeatures = (
     matches: CalibrationCircleMatch[] | null,
     candidates: CalibrationCircleCandidate[] | null,
     runId: string,
     algorithmId: string,
-    color = overlayTheme.markerStroke,
+    color = DETECTION_COLORS.marker,
 ): Feature[] => {
     if (!matches || !candidates) return [];
 
     return matches
-        .filter((m) => m.matched_index !== null && m.matched_index! < candidates.length)
-        .map((m) => {
+        .filter((m) => m.matched_index !== null && m.matched_index < candidates.length)
+        .flatMap((m) => {
             const candidate = candidates[m.matched_index!];
-            return {
-                id: `${algorithmId}-circle-match-${m.expected.cell.i}-${m.expected.cell.j}`,
-                type: "point" as const,
-                source: "algorithm" as const,
-                algorithmId,
-                runId,
-                readonly: true,
-                x: toCanvasCoordinate(candidate.center_img.x),
-                y: toCanvasCoordinate(candidate.center_img.y),
-                color,
-                label: `(${m.expected.cell.i}, ${m.expected.cell.j})`,
-                meta: {
-                    kind: "circle_match",
-                    grid: m.expected.cell,
-                    polarity: m.expected.polarity,
-                    score: candidate.score,
-                    contrast: candidate.contrast,
-                    distanceCells: m.distance_cells,
-                    offsetCells: m.offset_cells,
+            if (!candidate) return [];
+            return [
+                {
+                    id: `${algorithmId}-circle-match-${m.expected.cell.i}-${m.expected.cell.j}`,
+                    type: "point" as const,
+                    source: "algorithm" as const,
+                    algorithmId,
+                    runId,
+                    readonly: true,
+                    x: candidate.center_img.x,
+                    y: candidate.center_img.y,
+                    color,
+                    label: `(${m.expected.cell.i}, ${m.expected.cell.j})`,
+                    meta: {
+                        kind: "circle_match",
+                        grid: m.expected.cell,
+                        polarity: m.expected.polarity,
+                        score: candidate.score,
+                        contrast: candidate.contrast,
+                        offsetCells: m.offset_cells,
+                    },
                 },
-            };
+            ];
         });
 };

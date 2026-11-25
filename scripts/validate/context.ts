@@ -4,7 +4,7 @@
  * `buildValidationContext` does ALL disk I/O: loads content/{algorithms,
  * models,concepts,narratives}, docs/papers/index.yaml, and content/tags.yaml,
  * then hands the raw, unparsed data to `buildContextCore` — the same
- * pure-data path `createContext` (the in-memory test builder) drives, so
+ * pure-data path `createTestContext` (the in-memory test builder) drives, so
  * disk-loaded and in-memory contexts are built identically after loading.
  */
 import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
@@ -25,7 +25,15 @@ import { PAPERS_INDEX_PATH } from "../lib/paths.ts";
 import { loadIndexEntries, paperYears as papersIndexYears, sourceKeyMap } from "../lib/papers-index.ts";
 import type { RawIndexEntry } from "../lib/papers-index.ts";
 import { parseSourceRef } from "../lib/source-ref.ts";
-import { loadMarkdownDir, algoSlug, modelSlug, conceptSlug, narrativeSlug, blogSlug, demoSlug } from "../lib/content-kinds.ts";
+import {
+    loadMarkdownDir,
+    algoSlug,
+    modelSlug,
+    conceptSlug,
+    narrativeSlug,
+    blogSlug,
+    demoSlug,
+} from "../lib/content-kinds.ts";
 import type { MarkdownDirEntry } from "../lib/content-kinds.ts";
 import { loadAuthorsYaml } from "../lib/authors.ts";
 import type { AuthorRecord } from "../lib/authors.ts";
@@ -104,7 +112,7 @@ function parseEntries(
         try {
             const parsed = schemaFn(e.data);
             // Treat dev:true pages like drafts for validation purposes.
-            const isDraft = !!(e.data.draft) || !!(e.data.dev);
+            const isDraft = !!e.data.draft || !!e.data.dev;
             out.push({ ...e, frontmatter: parsed, isDraft });
         } catch (err) {
             diagnostics.push({
@@ -196,8 +204,11 @@ function buildContextCore(input: RawContextInput): ValidationContext {
     const allGraphEntries: ContentEntry[] = allEntries.map((e) =>
         entryToContentEntry(
             e,
-            (algoEntries.includes(e) ? "algorithm" :
-                modelEntries.includes(e) ? "model" : "concept") as ContentEntry["type"],
+            (algoEntries.includes(e)
+                ? "algorithm"
+                : modelEntries.includes(e)
+                  ? "model"
+                  : "concept") as ContentEntry["type"],
         ),
     );
 
@@ -245,12 +256,54 @@ function buildContextCore(input: RawContextInput): ValidationContext {
 
     // ── images/links/cross-refs: one normalized body list across all kinds ──
     const bodyEntries: BodyEntry[] = [
-        ...algoEntries.map((e): BodyEntry => ({ kind: "algorithm", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
-        ...modelEntries.map((e): BodyEntry => ({ kind: "model", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
-        ...conceptEntries.map((e): BodyEntry => ({ kind: "concept", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
-        ...narrativeEntries.map((e): BodyEntry => ({ kind: "narrative", file: e.file, slug: e.slug, content: e.content, data: e.frontmatter, isDraft: e.isDraft })),
-        ...blogEntries.map((e): BodyEntry => ({ kind: "blog", file: e.file, slug: e.slug, content: e.content, data: e.data, isDraft: !!(e.data.draft) })),
-        ...demoEntries.map((e): BodyEntry => ({ kind: "demo", file: e.file, slug: e.slug, content: e.content, data: e.data, isDraft: !!(e.data.draft) })),
+        ...algoEntries.map((e): BodyEntry => ({
+            kind: "algorithm",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.frontmatter,
+            isDraft: e.isDraft,
+        })),
+        ...modelEntries.map((e): BodyEntry => ({
+            kind: "model",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.frontmatter,
+            isDraft: e.isDraft,
+        })),
+        ...conceptEntries.map((e): BodyEntry => ({
+            kind: "concept",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.frontmatter,
+            isDraft: e.isDraft,
+        })),
+        ...narrativeEntries.map((e): BodyEntry => ({
+            kind: "narrative",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.frontmatter,
+            isDraft: e.isDraft,
+        })),
+        ...blogEntries.map((e): BodyEntry => ({
+            kind: "blog",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.data,
+            isDraft: !!e.data.draft,
+        })),
+        ...demoEntries.map((e): BodyEntry => ({
+            kind: "demo",
+            file: e.file,
+            slug: e.slug,
+            content: e.content,
+            data: e.data,
+            isDraft: !!e.data.draft,
+        })),
     ];
 
     const imageSet = new Set(input.imagePaths);
@@ -293,7 +346,7 @@ function buildContextCore(input: RawContextInput): ValidationContext {
 // ── Disk loader ──────────────────────────────────────────────────────────────
 
 export function buildValidationContext(options: ValidateContentOptions = {}): ValidationContext {
-    const includeDrafts = options.includeDrafts ?? (process.env.INCLUDE_DRAFTS === "true");
+    const includeDrafts = options.includeDrafts ?? process.env.INCLUDE_DRAFTS === "true";
 
     const algorithms = loadMarkdownDir(join(CONTENT_DIR, "algorithms"), algoSlug);
     const models = loadMarkdownDir(join(CONTENT_DIR, "models"), modelSlug);
@@ -354,7 +407,7 @@ export interface CreateContextInput {
 /** Builds a `ValidationContext` from in-memory fixtures, for rule unit tests.
  *  Runs the exact same core logic as `buildValidationContext` — only the
  *  loading step (disk reads) differs. */
-export function createContext(input: CreateContextInput = {}): ValidationContext {
+export function createTestContext(input: CreateContextInput = {}): ValidationContext {
     return buildContextCore({
         algorithms: input.algorithms ?? [],
         models: input.models ?? [],

@@ -58,9 +58,7 @@ function queryPagesUsing(id: string): void {
         const sources = data.sources as AlgoSources | undefined;
         if (!sources) continue;
 
-        const usesId =
-            sources.primary === id ||
-            (Array.isArray(sources.references) && sources.references.includes(id));
+        const usesId = sources.primary === id || (Array.isArray(sources.references) && sources.references.includes(id));
 
         if (usesId) {
             process.stdout.write(`content/algorithms/${file}\n`);
@@ -73,10 +71,7 @@ function main(): void {
     const id = process.argv[3];
 
     if (!relation || !id) {
-        process.stderr.write(
-            "Usage: bun papers:query <relation> <id>\n" +
-            "Relations: cites, cited-by, pages-using\n"
-        );
+        process.stderr.write("Usage: bun papers:query <relation> <id>\n" + "Relations: cites, cited-by, pages-using\n");
         process.exit(1);
     }
 
@@ -94,8 +89,7 @@ function main(): void {
             break;
         default:
             process.stderr.write(
-                `papers:query — unknown relation: ${relation}\n` +
-                "Relations: cites, cited-by, pages-using\n"
+                `papers:query — unknown relation: ${relation}\n` + "Relations: cites, cited-by, pages-using\n",
             );
             process.exit(1);
     }

@@ -1,5 +1,5 @@
 import type { ChessResponsePattern } from "./types";
-import type { useChessResponse } from "./useChessResponse";
+import type { deriveChessResponse } from "./deriveChessResponse";
 
 export interface ChessDemoProps {
     pattern: ChessResponsePattern;
@@ -22,5 +22,5 @@ export interface ChessDemoProps {
     onShowDrPairsChange: (v: boolean) => void;
     showMrRegions: boolean;
     onShowMrRegionsChange: (v: boolean) => void;
-    response: ReturnType<typeof useChessResponse>;
+    response: ReturnType<typeof deriveChessResponse>;
 }

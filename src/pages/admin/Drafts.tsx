@@ -8,13 +8,13 @@ export default function AdminDrafts() {
         <div className="space-y-6">
             <div className="space-y-1">
                 <h1 className="text-2xl font-bold tracking-tight">Drafts</h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-fg-muted">
                     Posts marked <code className="font-mono text-xs">draft: true</code> — only visible to admins.
                 </p>
             </div>
 
             {drafts.length === 0 ? (
-                <p className="text-muted-foreground py-10 text-center">No drafts.</p>
+                <p className="text-fg-muted py-10 text-center">No drafts.</p>
             ) : (
                 <div className="space-y-4">
                     {drafts.map((post) => (

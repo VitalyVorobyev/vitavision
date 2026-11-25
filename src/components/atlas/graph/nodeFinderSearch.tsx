@@ -17,18 +17,23 @@ export function nodeFinderSearch(query: string): NodeFinderItem[] {
         const node = contentGraph.nodes[slug];
         if (!node || node.draft) continue;
         // failure-mode nodes don't have a matching EntryIcon kind — fall back to algorithm
-        const iconKind = (node.type === "algorithm" || node.type === "model" || node.type === "concept")
-            ? node.type
-            : "algorithm" as const;
+        const iconKind =
+            node.type === "algorithm" || node.type === "model" || node.type === "concept"
+                ? node.type
+                : ("algorithm" as const);
         const kindLabel =
-            node.type === "algorithm" ? "algo" :
-            node.type === "model"     ? "model" :
-            node.type === "concept"   ? "concept" : "other";
+            node.type === "algorithm"
+                ? "algo"
+                : node.type === "model"
+                  ? "model"
+                  : node.type === "concept"
+                    ? "concept"
+                    : "other";
         out.push({
-            id:       slug,
-            title:    node.title,
+            id: slug,
+            title: node.title,
             subtitle: kindLabel,
-            icon:     <EntryIcon slug={slug} kind={iconKind} size={22} />,
+            icon: <EntryIcon slug={slug} kind={iconKind} size={22} />,
         });
     }
     return out;

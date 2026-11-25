@@ -1,38 +1,21 @@
-import type { AlgorithmDefinition, AlgorithmPreset, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
+import type { AlgorithmDefinition, AlgorithmSummaryEntry, DiagnosticEntry } from "../types";
 import type { DirectedPointFeature, Feature } from "../../../../store/editor/useEditorStore";
 import type { ChessCornersResult } from "../../../../lib/types";
 import { detectChessCornersWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 
-import ChessCornersConfigForm, { type ChessCornersConfig } from "./ChessCornersConfigForm";
-
-const initialConfig: ChessCornersConfig = {
-    threshold: 30,
-    nmsRadius: 2,
-    minClusterSize: 2,
-    broadMode: false,
-    pyramidLevels: 4,
-    pyramidMinSize: 128,
-    upscaleFactor: 0,
-    refiner: "center_of_mass",
-};
-
-const presets: AlgorithmPreset[] = [
-    {
-        label: "Sensitive",
-        description: "Lower response floor, broad mode, more pyramid levels",
-        config: { threshold: 12, nmsRadius: 2, minClusterSize: 2, broadMode: true, pyramidLevels: 5, pyramidMinSize: 128, upscaleFactor: 0, refiner: "center_of_mass" },
-    },
-    {
-        label: "Balanced",
-        description: "Default detection settings",
-        config: { ...initialConfig },
-    },
-];
+import { createConfigForm } from "../createConfigForm";
+import { initialConfig, presets } from "./config";
+import { schema } from "./schema";
+import { ui } from "./ui";
 
 const toDiagnostics = (result: ChessCornersResult): DiagnosticEntry[] => {
     const entries: DiagnosticEntry[] = [];
     if (result.summary.count === 0) {
-        entries.push({ level: "warning", message: "No corners detected", detail: "Try lowering the threshold or check that the image contains X-junctions." });
+        entries.push({
+            level: "warning",
+            message: "No corners detected",
+            detail: "Try lowering the threshold or check that the image contains X-junctions.",
+        });
     }
     return entries;
 };
@@ -52,12 +35,24 @@ const toFeatures = (result: ChessCornersResult, runId: string): Feature[] => {
         algorithmId: "chess-corners",
         runId,
         readonly: true,
-        // Detector origin is center of top-left pixel; canvas origin is its top-left corner.
-        x: corner.x + 0.5,
-        y: corner.y + 0.5,
+        // The detector's own frame: the centre of the top-left pixel is (0, 0), as on the stage.
+        x: corner.x,
+        y: corner.y,
+        // `sigmaRad` is the persisted name of the axis error slot (saved feature JSON uses it);
+        // the value is the fit standard error, not a calibrated 1-sigma (see ChessCornerAxis).
         axes: [
-            { dx: corner.axes[0].direction.dx, dy: corner.axes[0].direction.dy, angleRad: corner.axes[0].angle_rad, sigmaRad: corner.axes[0].sigma_rad },
-            { dx: corner.axes[1].direction.dx, dy: corner.axes[1].direction.dy, angleRad: corner.axes[1].angle_rad, sigmaRad: corner.axes[1].sigma_rad },
+            {
+                dx: corner.axes[0].direction.dx,
+                dy: corner.axes[0].direction.dy,
+                angleRad: corner.axes[0].angle_rad,
+                sigmaRad: corner.axes[0].fit_std_error_rad,
+            },
+            {
+                dx: corner.axes[1].direction.dx,
+                dy: corner.axes[1].direction.dy,
+                angleRad: corner.axes[1].angle_rad,
+                sigmaRad: corner.axes[1].fit_std_error_rad,
+            },
         ],
         score: corner.confidence,
         label: `corner ${corner.id.slice(0, 8)}`,
@@ -74,23 +69,9 @@ export const chessCornersAlgorithm: AlgorithmDefinition = {
     initialConfig,
     presets,
     executionModes: ["wasm"],
-    ConfigComponent: ChessCornersConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("ChESS corner detection is only available via client-side WASM.");
-    },
-    runWasm: async ({ pixels, width, height, config }) => {
-        const typedConfig = config as ChessCornersConfig;
-        return detectChessCornersWasm(pixels, width, height, {
-            threshold: typedConfig.threshold,
-            nmsRadius: typedConfig.nmsRadius,
-            minClusterSize: typedConfig.minClusterSize,
-            broadMode: typedConfig.broadMode,
-            pyramidLevels: typedConfig.pyramidLevels,
-            pyramidMinSize: typedConfig.pyramidMinSize,
-            upscaleFactor: typedConfig.upscaleFactor,
-            refiner: typedConfig.refiner,
-        });
-    },
+    ConfigComponent: createConfigForm({ schema, ui }),
+    run: () => Promise.reject(new Error("ChESS corner detection is only available via client-side WASM.")),
+    runWasm: ({ pixels, width, height, config }) => detectChessCornersWasm(pixels, width, height, config),
     toFeatures: (result, runId) => toFeatures(result as ChessCornersResult, runId),
     summary: (result) => toSummary(result as ChessCornersResult),
     diagnostics: (result) => toDiagnostics(result as ChessCornersResult),

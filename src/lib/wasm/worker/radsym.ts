@@ -2,20 +2,15 @@ import { generateId } from "./util";
 import { getRadsymModule } from "./modules";
 
 /** Adapt extract_proposals output (stride 3: x, y, score) to RadsymResult. */
-export function adaptRadsymProposalResult(
-    raw: Float32Array,
-    width: number,
-    height: number,
-    runtimeMs: number,
-) {
+export function adaptRadsymProposalResult(raw: Float32Array, width: number, height: number, runtimeMs: number) {
     const stride = 3;
-    const count = raw.length / stride;
     const circles = [];
 
-    for (let i = 0; i < count; i++) {
-        const x = raw[i * stride];
-        const y = raw[i * stride + 1];
-        const score = raw[i * stride + 2];
+    // Whole triples only: a trailing partial triple is ignored.
+    for (let i = 0; i + stride <= raw.length; i += stride) {
+        const x = raw[i] ?? NaN;
+        const y = raw[i + 1] ?? NaN;
+        const score = raw[i + 2] ?? NaN;
 
         if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
 
@@ -51,54 +46,27 @@ export function adaptRadsymProposalResult(
     };
 }
 
-type RadsymModule = typeof import("@vitavision/radsym");
-type RadSymProcessor = InstanceType<RadsymModule["RadSymProcessor"]>;
-
-/**
- * Apply the UI config onto a `RadSymProcessor` via its setter methods.
- *
- * `mode: "full"` (detection, `handleRadsym`) applies every setter in the same
- * order the old inline block did. `mode: "heatmap"` (`handleRadsymHeatmap`)
- * applies exactly the subset that block used — radii, alpha,
- * gradientThreshold, smoothingFactor, polarity, gradientOperator, in that
- * same relative order — by skipping the detection-only setters (nmsRadius,
- * nmsThreshold, maxDetections, radiusHint, minScore) in place rather than
- * reordering calls, so both call sequences stay byte-identical to before.
- */
-function applyRadsymConfig(
-    processor: RadSymProcessor,
-    config: Record<string, unknown>,
-    mode: "full" | "heatmap",
-): void {
-    if (config.radii) processor.set_radii(config.radii as Uint32Array);
-    if (config.alpha != null) processor.set_alpha(config.alpha as number);
-    if (config.gradientThreshold != null) processor.set_gradient_threshold(config.gradientThreshold as number);
-    if (config.smoothingFactor != null) processor.set_smoothing_factor(config.smoothingFactor as number);
-    if (mode === "full") {
-        if (config.nmsRadius != null) processor.set_nms_radius(config.nmsRadius as number);
-        if (config.nmsThreshold != null) processor.set_nms_threshold(config.nmsThreshold as number);
-        if (config.maxDetections != null) processor.set_max_detections(config.maxDetections as number);
-    }
-    if (config.polarity) processor.set_polarity(config.polarity as string);
-    if (mode === "full") {
-        if (config.radiusHint != null) processor.set_radius_hint(config.radiusHint as number);
-        if (config.minScore != null) processor.set_min_score(config.minScore as number);
-    }
-    if (config.gradientOperator) processor.set_gradient_operator(config.gradientOperator as string);
+/** What the editor stores for radsym: the proposal algorithm beside the package's `DetectCirclesConfig`. */
+interface RadsymRequest {
+    algorithm?: string;
+    config?: Record<string, unknown>;
 }
 
-export async function handleRadsym(
-    pixels: Uint8Array,
-    width: number,
-    height: number,
-    config: Record<string, unknown>,
-) {
+/**
+ * A processor built from the config document (`schemas/detect_circles_config.json`).
+ * `with_config_json` fills missing fields from the library defaults and throws on an
+ * ill-typed or invalid one; enum values keep their Rust names ("Bright", "Sobel").
+ */
+async function createProcessor(request: RadsymRequest) {
     const mod = await getRadsymModule();
-    const processor = new mod.RadSymProcessor();
-    try {
-        applyRadsymConfig(processor, config, "full");
+    return mod.RadSymProcessor.with_config_json(JSON.stringify(request.config ?? {}));
+}
 
-        const algorithm = (config.algorithm as string) ?? "frst";
+export async function handleRadsym(pixels: Uint8Array, width: number, height: number, config: Record<string, unknown>) {
+    const request = config as RadsymRequest;
+    const processor = await createProcessor(request);
+    try {
+        const algorithm = request.algorithm ?? "frst";
 
         const t0 = performance.now();
         const result = processor.extract_proposals(pixels, width, height, algorithm);
@@ -116,12 +84,10 @@ export async function handleRadsymHeatmap(
     height: number,
     config: Record<string, unknown>,
 ): Promise<{ rgba: Uint8Array; width: number; height: number }> {
-    const mod = await getRadsymModule();
-    const processor = new mod.RadSymProcessor();
+    const request = config as RadsymRequest;
+    const processor = await createProcessor(request);
     try {
-        applyRadsymConfig(processor, config, "heatmap");
-
-        const algorithm = (config.algorithm as string) ?? "frst";
+        const algorithm = request.algorithm ?? "frst";
         const colormap = (config.colormap as string) ?? "magma";
         const rgba = processor.response_heatmap(pixels, width, height, algorithm, colormap);
 

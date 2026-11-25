@@ -1,3 +1,4 @@
+import { DETECTION_COLORS, RING_COLORS } from "./featureColors";
 import type { Feature } from "./useEditorStore";
 
 export interface FeatureGroup {
@@ -31,20 +32,20 @@ const TYPE_LABELS: Record<string, string> = {
     aruco_marker: "ArUco markers",
 };
 
-export const featureSwatch = (feature: Feature): string => {
+const featureSwatch = (feature: Feature): string => {
     if (feature.color) {
         return feature.color;
     }
     if (feature.type === "directed_point") {
-        return "#60a5fa";
+        return DETECTION_COLORS.directedPoint;
     }
     if (feature.type === "ring_marker") {
-        return "#0f766e";
+        return RING_COLORS.outer;
     }
     if (feature.type === "aruco_marker") {
-        return "#b45309";
+        return DETECTION_COLORS.marker;
     }
-    return "#94a3b8";
+    return DETECTION_COLORS.fallback;
 };
 
 export function getFeatureGroupKey(feature: Feature): string {
@@ -54,25 +55,20 @@ export function getFeatureGroupKey(feature: Feature): string {
     return `type:${feature.type}`;
 }
 
-export function getFeatureGroupLabel(key: string): string {
-    const [prefix, value] = key.split(":");
+function getFeatureGroupLabel(key: string): string {
+    // Keys are built by getFeatureGroupKey as `<prefix>:<value>`.
+    const [prefix, value = ""] = key.split(":");
     if (prefix === "algo") {
         return KIND_LABELS[value] ?? value;
     }
     return TYPE_LABELS[value] ?? value;
 }
 
-export function isFeatureGroupVisible(
-    key: string,
-    visibility: Record<string, boolean>,
-): boolean {
+export function isFeatureGroupVisible(key: string, visibility: Record<string, boolean>): boolean {
     return visibility[key] ?? true;
 }
 
-export function isFeatureVisible(
-    feature: Feature,
-    visibility: Record<string, boolean>,
-): boolean {
+export function isFeatureVisible(feature: Feature, visibility: Record<string, boolean>): boolean {
     return isFeatureGroupVisible(getFeatureGroupKey(feature), visibility);
 }
 
@@ -154,7 +150,8 @@ export function buildFeatureGroups(features: Feature[]): FeatureGroup[] {
         return {
             key,
             label: getFeatureGroupLabel(key),
-            color: featureSwatch(items[0]),
+            // Every group is created together with its first feature, so it is non-empty.
+            color: featureSwatch(items[0]!),
             features: items,
         };
     });

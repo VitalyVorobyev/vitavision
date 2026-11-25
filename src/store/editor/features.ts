@@ -1,9 +1,9 @@
-import { featureSchema } from './featureSchema';
-import type { Feature, FeatureSource } from './editorTypes';
+import { featureSchema } from "./featureSchema";
+import type { Feature, FeatureSource } from "./editorTypes";
 
 export const normalizeFeature = (feature: Feature): Feature => {
-    const source: FeatureSource = feature.source === 'algorithm' ? 'algorithm' : 'manual';
-    const readonly = feature.readonly ?? source === 'algorithm';
+    const source: FeatureSource = feature.source === "algorithm" ? "algorithm" : "manual";
+    const readonly = feature.readonly ?? source === "algorithm";
     return {
         ...feature,
         source,
@@ -19,7 +19,7 @@ export const normalizeImportedFeatures = (value: unknown): Feature[] => {
     return value
         .map((item) => featureSchema.safeParse(item))
         .filter((result): result is { success: true; data: Feature } => result.success)
-        .map((result) => normalizeFeature(result.data as Feature));
+        .map((result) => normalizeFeature(result.data));
 };
 
 export const isReadonlyFeature = (feature: Feature): boolean => {

@@ -16,7 +16,12 @@ interface NarrativeLegendProps {
     hasQuestionNodes?: boolean;
 }
 
-export default function NarrativeLegend({ edgeTypes, areas, variant = "overlay", hasQuestionNodes = false }: NarrativeLegendProps) {
+export default function NarrativeLegend({
+    edgeTypes,
+    areas,
+    variant = "overlay",
+    hasQuestionNodes = false,
+}: NarrativeLegendProps) {
     if (edgeTypes.length === 0 && areas.length === 0 && !hasQuestionNodes) return null;
 
     const areaIds = areas.map((a) => a.id);
@@ -28,11 +33,11 @@ export default function NarrativeLegend({ edgeTypes, areas, variant = "overlay",
                     <span className="inline-flex items-center gap-1.5">
                         <span
                             aria-hidden="true"
-                            className="grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border border-dashed border-muted-foreground text-[9px] font-semibold leading-none text-muted-foreground"
+                            className="grid h-3.5 w-3.5 shrink-0 place-items-center rounded-full border border-dashed border-fg-muted text-[9px] font-semibold leading-none text-fg-muted"
                         >
                             ?
                         </span>
-                        <span className="text-[10.5px] text-muted-foreground">Open question</span>
+                        <span className="text-[10.5px] text-fg-muted">Open question</span>
                     </span>
                 </div>
             )}
@@ -42,14 +47,17 @@ export default function NarrativeLegend({ edgeTypes, areas, variant = "overlay",
                         <span key={t} className="inline-flex items-center gap-1.5">
                             <svg width="18" height="6" aria-hidden="true" className="shrink-0">
                                 <line
-                                    x1="0" y1="3" x2="18" y2="3"
+                                    x1="0"
+                                    y1="3"
+                                    x2="18"
+                                    y2="3"
                                     stroke={narrativeEdgeColor(t)}
                                     strokeWidth="1.6"
                                     strokeDasharray={NARRATIVE_EDGE_DASH[t]}
                                     strokeLinecap="round"
                                 />
                             </svg>
-                            <span className="text-[10.5px] text-muted-foreground">{NARRATIVE_EDGE_LABEL[t]}</span>
+                            <span className="text-[10.5px] text-fg-muted">{NARRATIVE_EDGE_LABEL[t]}</span>
                         </span>
                     ))}
                 </div>
@@ -63,7 +71,7 @@ export default function NarrativeLegend({ edgeTypes, areas, variant = "overlay",
                                 className="w-2 h-2 rounded-full shrink-0"
                                 style={{ background: areaColor(areaIds, a.id) }}
                             />
-                            <span className="text-[10.5px] text-muted-foreground">{a.label}</span>
+                            <span className="text-[10.5px] text-fg-muted">{a.label}</span>
                         </span>
                     ))}
                 </div>
@@ -76,7 +84,7 @@ export default function NarrativeLegend({ edgeTypes, areas, variant = "overlay",
     }
 
     return (
-        <div className="absolute bottom-3 left-3 z-10 flex flex-col gap-1.5 rounded-lg border border-border bg-surface/90 backdrop-blur px-2.5 py-2 shadow-sm max-w-[min(420px,60%)]">
+        <div className="absolute bottom-3 left-3 z-10 flex flex-col gap-1.5 rounded-panel border border-line bg-surface/90 backdrop-blur px-2.5 py-2 shadow-sm max-w-[min(420px,60%)]">
             {body}
         </div>
     );

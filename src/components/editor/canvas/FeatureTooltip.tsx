@@ -10,11 +10,9 @@ interface FeatureTooltipProps {
     tooltip: DirectedPointTooltipState | null;
 }
 
-function axisAngleDeg(axis: { dx: number; dy: number; angleRad?: number }): number {
-    const rad = axis.angleRad !== undefined
-        ? axis.angleRad
-        : Math.atan2(axis.dy, axis.dx);
-    return (((rad * 180) / Math.PI) % 360 + 360) % 360;
+function axisAngleDeg(axis: { dx: number; dy: number; angleRad?: number | undefined }): number {
+    const rad = axis.angleRad !== undefined ? axis.angleRad : Math.atan2(axis.dy, axis.dx);
+    return ((((rad * 180) / Math.PI) % 360) + 360) % 360;
 }
 
 export default function FeatureTooltip(props: FeatureTooltipProps) {
@@ -29,12 +27,11 @@ export default function FeatureTooltip(props: FeatureTooltipProps) {
 
     return (
         <div
-            className="absolute z-30 pointer-events-none rounded-md border border-border bg-background/95 backdrop-blur-sm px-1.5 py-1 text-[10px] font-mono leading-none shadow-xs whitespace-nowrap"
+            className="absolute z-30 pointer-events-none rounded-control border border-line bg-ground/95 backdrop-blur-sm px-1.5 py-1 text-[10px] font-mono leading-none shadow-xs whitespace-nowrap"
             style={{ left: tooltip.left, top: tooltip.top }}
         >
-            x {feature.x.toFixed(2)} y {feature.y.toFixed(2)} s {feature.score.toFixed(3)}
-            {" "}θ₀ {a0.toFixed(1)}° θ₁ {a1.toFixed(1)}°
-            {feature.contrast !== undefined && <> c {feature.contrast.toFixed(3)}</>}
+            x {feature.x.toFixed(2)} y {feature.y.toFixed(2)} s {feature.score.toFixed(3)} θ₀ {a0.toFixed(1)}° θ₁{" "}
+            {a1.toFixed(1)}°{feature.contrast !== undefined && <> c {feature.contrast.toFixed(3)}</>}
             {feature.fitRms !== undefined && <> rms {feature.fitRms.toFixed(3)}</>}
         </div>
     );

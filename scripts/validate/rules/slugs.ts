@@ -11,11 +11,7 @@ import type { Diagnostic, ValidationContext } from "../types.ts";
 export function slugsRule(ctx: ValidationContext): Diagnostic[] {
     const diagnostics: Diagnostic[] = [];
 
-    function checkRelationshipField(
-        file: string,
-        fieldName: string,
-        slugs: string[] | undefined,
-    ): void {
+    function checkRelationshipField(file: string, fieldName: string, slugs: string[] | undefined): void {
         if (!slugs || slugs.length === 0) return;
         for (const slug of slugs) {
             if (!ctx.knownSlugs.has(slug)) {
@@ -30,7 +26,10 @@ export function slugsRule(ctx: ValidationContext): Diagnostic[] {
         const relations = (e.frontmatter.relations as Array<{ target?: string }> | undefined) ?? [];
         for (const rel of relations) {
             if (rel?.target && !ctx.knownSlugs.has(rel.target)) {
-                diagnostics.push({ level: "error", message: `[${e.file}] unknown slug "${rel.target}" in relations[].target` });
+                diagnostics.push({
+                    level: "error",
+                    message: `[${e.file}] unknown slug "${rel.target}" in relations[].target`,
+                });
             }
         }
     }

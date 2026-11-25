@@ -2,7 +2,7 @@
 // Plots every node as a dot (faded when it's outside the current focus) plus
 // a rectangle for the current viewport, derived from the live pan/zoom state.
 
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import type { ScholarlyNetworkNode, ScholarlyGroup } from "../../../lib/atlas/scholarlyTypes.ts";
 import { GROUP_COLOR } from "../../../lib/atlas/peopleNetwork.ts";
 import type { ViewportBounds, ViewportState } from "../../../lib/graph/useViewport.ts";
@@ -25,10 +25,14 @@ export function Minimap({ nodes, groupOf, bounds, view, vp, dimId }: MinimapProp
     const boundsH = bounds.maxY - bounds.minY || 1;
     const scale = Math.min((MW - PAD * 2) / boundsW, (MH - PAD * 2) / boundsH);
 
-    const toMini = (x: number, y: number) => ({
-        x: PAD + (x - bounds.minX) * scale,
-        y: PAD + (y - bounds.minY) * scale,
-    });
+    const { minX: boundsMinX, minY: boundsMinY } = bounds;
+    const toMini = useCallback(
+        (x: number, y: number) => ({
+            x: PAD + (x - boundsMinX) * scale,
+            y: PAD + (y - boundsMinY) * scale,
+        }),
+        [boundsMinX, boundsMinY, scale],
+    );
 
     const dots = useMemo(
         () =>
@@ -36,8 +40,7 @@ export function Minimap({ nodes, groupOf, bounds, view, vp, dimId }: MinimapProp
                 const p = toMini(n.x, n.y);
                 return { id: n.id, ...p, color: GROUP_COLOR[groupOf(n.id)] ?? GROUP_COLOR.other, dim: dimId(n.id) };
             }),
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-        [nodes, groupOf, dimId, bounds],
+        [nodes, groupOf, dimId, toMini],
     );
 
     // Visible content box, inverted from the plane's translate/scale transform.
@@ -49,11 +52,24 @@ export function Minimap({ nodes, groupOf, bounds, view, vp, dimId }: MinimapProp
     const rectBR = toMini(visMinX + visW, visMinY + visH);
 
     return (
-        <div className="absolute left-3 top-3 hidden md:flex flex-col gap-1 rounded-md border border-border bg-surface/95 backdrop-blur px-2 py-1.5 shadow-sm">
-            <span className="text-[9px] uppercase tracking-wide text-muted-foreground">Whole network</span>
-            <svg width={MW} height={MH} viewBox={`0 0 ${MW} ${MH}`} role="img" aria-label="Overview of the whole co-author network">
+        <div className="absolute left-3 top-3 hidden md:flex flex-col gap-1 rounded-control border border-line bg-surface/95 backdrop-blur px-2 py-1.5 shadow-sm">
+            <span className="text-[9px] uppercase tracking-wide text-fg-muted">Whole network</span>
+            <svg
+                width={MW}
+                height={MH}
+                viewBox={`0 0 ${MW} ${MH}`}
+                role="img"
+                aria-label="Overview of the whole co-author network"
+            >
                 {dots.map((d) => (
-                    <circle key={d.id} cx={d.x} cy={d.y} r={1.2} fill={d.color} fillOpacity={d.dim ? 0.35 : 0.9} />
+                    <circle
+                        key={d.id}
+                        cx={d.x}
+                        cy={d.y}
+                        r={1.2}
+                        style={{ fill: d.color }}
+                        fillOpacity={d.dim ? 0.35 : 0.9}
+                    />
                 ))}
                 <rect
                     x={Math.max(PAD, rectTL.x)}
@@ -62,7 +78,7 @@ export function Minimap({ nodes, groupOf, bounds, view, vp, dimId }: MinimapProp
                     height={Math.max(2, Math.min(MH - PAD, rectBR.y) - Math.max(PAD, rectTL.y))}
                     fill="none"
                     stroke="currentColor"
-                    className="text-foreground"
+                    className="text-fg"
                     strokeWidth={1.2}
                     rx={2}
                 />

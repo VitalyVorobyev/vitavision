@@ -56,7 +56,7 @@ function capitalize(value: string): string {
     return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
-function createSvg(pattern: ChessResponsePattern, term: typeof TERM_CONFIGS[number]): string {
+function createSvg(pattern: ChessResponsePattern, term: (typeof TERM_CONFIGS)[number]): string {
     const computation = computeChessResponse({
         pattern,
         rotationDeg: ROTATION_DEG,

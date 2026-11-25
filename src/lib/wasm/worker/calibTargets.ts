@@ -1,4 +1,18 @@
-import { generateId, toPoint, toPointOrNull, toPointArray, toPointArrayOrNull, gridFromWasm, alignmentFromWasm, deepMerge, unwrapMaps, mapTargetBundle, type TargetBundle, type RawTargetBundle } from "./util";
+import {
+    generateId,
+    toPoint,
+    toPointOrNull,
+    toPointArray,
+    toPointArrayOrNull,
+    gridFromWasm,
+    alignmentFromWasm,
+    mergeConfig,
+    unwrapMaps,
+    mapTargetBundle,
+    type TargetBundle,
+    type RawTargetBundle,
+    type ScreenBundle,
+} from "./util";
 import { getCalibModule } from "./modules";
 
 export function adaptCalibTargetResult(
@@ -31,6 +45,7 @@ export function adaptCalibTargetResult(
                 circle_candidate_count: null,
                 circle_match_count: null,
                 alignment_inliers: null,
+                alignment_runner_up_inliers: null,
                 runtime_ms: runtimeMs,
             },
             detection: { kind, corners: [] },
@@ -94,6 +109,7 @@ export function adaptCalibTargetResult(
     let circleCandidates = null;
     let circleMatches = null;
     let alignmentInliers = null;
+    let alignmentRunnerUpInliers = null;
     if (algorithm === "markerboard") {
         if (r.circle_candidates) {
             circleCandidates = (r.circle_candidates as Array<Record<string, unknown>>).map((cc) => ({
@@ -108,11 +124,11 @@ export function adaptCalibTargetResult(
             circleMatches = (r.circle_matches as Array<Record<string, unknown>>).map((cm) => ({
                 expected: cm.expected as { cell: { i: number; j: number }; polarity: "white" | "black" },
                 matched_index: (cm.matched_index as number) ?? null,
-                distance_cells: (cm.distance_cells as number) ?? null,
                 offset_cells: (cm.offset_cells as { di: number; dj: number }) ?? null,
             }));
         }
         alignmentInliers = (r.alignment_inliers as number) ?? null;
+        alignmentRunnerUpInliers = (r.alignment_runner_up_inliers as number) ?? null;
     }
 
     // Alignment (charuco and markerboard)
@@ -138,6 +154,7 @@ export function adaptCalibTargetResult(
             circle_candidate_count: circleCandidates ? circleCandidates.length : null,
             circle_match_count: circleMatches ? circleMatches.filter((m) => m.matched_index !== null).length : null,
             alignment_inliers: alignmentInliers,
+            alignment_runner_up_inliers: alignmentRunnerUpInliers,
             runtime_ms: runtimeMs,
         },
         detection: { kind, corners },
@@ -148,6 +165,79 @@ export function adaptCalibTargetResult(
     };
 }
 
+/** Shape of `diagnose_marker_board` after `unwrapMaps`. */
+export interface MarkerBoardDiagnosis {
+    result?: { corners: unknown[]; alignment: unknown } | null | undefined;
+    diagnostics?:
+        | {
+              circle_candidates: unknown[];
+              circle_matches: unknown[];
+              alignment_inliers: number;
+              alignment_runner_up_inliers: number;
+              alignment_ambiguous: boolean;
+          }
+        | null
+        | undefined;
+}
+
+/**
+ * Turn a (Map-unwrapped) `diagnose_marker_board` payload into the internal
+ * `{ detection, alignment, circle_* }` shape `adaptCalibTargetResult` expects,
+ * or `null` when the detector found nothing.
+ *
+ * Throws when the detector reports `alignment_ambiguous`. calib-targets 0.15
+ * resolves the board frame by hypothesis-and-verify over the four 90-degree
+ * rotations; when a second frame explains the circles as well as the best one
+ * it returns NO result at all (`result` is `undefined`, the corners are
+ * withheld) rather than guessing. Without this check that case would fall into
+ * the "nothing detected" branch and surface as a misleading "No corners
+ * detected" — the board is there, it is its orientation that is undecidable.
+ * `== null`, not `=== null`: Rust `None` serialises as `undefined`.
+ */
+export function adaptMarkerBoardDiagnosis(withDiag: MarkerBoardDiagnosis) {
+    const diag = withDiag.diagnostics;
+    if (withDiag.result == null) {
+        if (diag?.alignment_ambiguous) {
+            throw new Error(
+                `Marker board orientation is ambiguous: a second board frame explains the circles as well as the best one ` +
+                    `(${diag.alignment_inliers} vs ${diag.alignment_runner_up_inliers} circle inliers), so no alignment was returned. ` +
+                    `Check that the three circle cells and polarities (and the circle diameter) match the printed board.`,
+            );
+        }
+        return null;
+    }
+    return {
+        detection: { kind: "checkerboard_marker", corners: withDiag.result.corners },
+        alignment: withDiag.result.alignment,
+        circle_candidates: diag?.circle_candidates ?? [],
+        circle_matches: diag?.circle_matches ?? [],
+        alignment_inliers: diag?.alignment_inliers ?? null,
+        alignment_runner_up_inliers: diag?.alignment_runner_up_inliers ?? null,
+    };
+}
+
+/** A config document is an object; anything else is a malformed deep link or a caller bug. */
+const asRecord = (value: unknown, what: string): Record<string, unknown> => {
+    if (value === null || typeof value !== "object" || Array.isArray(value)) {
+        throw new Error(`${what} must be an object`);
+    }
+    return value as Record<string, unknown>;
+};
+
+/**
+ * Run one of the three board detectors. `config` is the package's own params document:
+ *
+ * - chessboard: `{ chess, params }` — `detect_chessboard` takes the ChESS front-end
+ *   (`schemas/chess_config.json`) and the chessboard params (`schemas/chessboard_params.json`)
+ *   as separate arguments.
+ * - charuco / markerboard: `CharucoParams` / `MarkerBoardParams`, which carry their front-end
+ *   under `chess`, so the separate argument is `null`.
+ *
+ * Each is merged over the library's defaults first, so a document with fields missing (a
+ * hand-edited deep link) is completed rather than rejected. `mergeConfig`, not `deepMerge`:
+ * the ChESS config holds externally tagged enums (`strategy`, `refiner`, `multiscale`, `upscale`), and
+ * merging the default's variant key into another variant's yields an invalid two-key object.
+ */
 export async function handleCalibTarget(
     algorithm: "chessboard" | "charuco" | "markerboard",
     pixels: Uint8Array,
@@ -160,98 +250,88 @@ export async function handleCalibTarget(
     // Convert RGBA to grayscale
     const gray = mod.rgba_to_gray(pixels, width, height);
 
-    // Start from WASM defaults and merge user overrides. `upscale` on
-    // ChessConfig is an internally-tagged Rust enum (exactly one variant key)
-    // — a plain deepMerge would union the default's variant key with the
-    // override's, and the WASM deserializer rejects that ("invalid length 2,
-    // expected 1"). Replace it wholesale when overridden instead of merging.
-    //
-    // `threshold` was such an enum in 0.10.1; 0.11 collapsed it to a plain f32
-    // absolute response floor (default 15). It stays in the wholesale-replace
-    // list because replacing a scalar is what deepMerge would do anyway, and
-    // keeping both fields on the same path means a future re-tagging cannot
-    // reintroduce the union bug silently.
-    const chessCfg = config.chessCfg
-        ? (() => {
-            const overrides = config.chessCfg as Record<string, unknown>;
-            const merged = deepMerge(mod.default_chess_config(), overrides);
-            if (overrides.threshold !== undefined) merged.threshold = overrides.threshold;
-            if (overrides.upscale !== undefined) merged.upscale = overrides.upscale;
-            return merged;
-        })()
-        : undefined;
-
     const t0 = performance.now();
     let result: unknown;
 
     if (algorithm === "chessboard") {
-        const defaults = mod.default_chessboard_params() as Record<string, unknown>;
-        const userParams = (config.params ?? {}) as Record<string, unknown>;
-        const params = deepMerge(defaults, userParams);
-        const raw = mod.detect_chessboard(width, height, gray, chessCfg, params) as
-            | { corners: unknown[]; cell_size: number | null }
-            | null;
+        const chess = mergeConfig(
+            mod.default_chess_config() as Record<string, unknown>,
+            asRecord(config.chess ?? {}, "chessboard config.chess"),
+        );
+        const params = mergeConfig(
+            mod.default_chessboard_params() as Record<string, unknown>,
+            asRecord(config.params ?? {}, "chessboard config.params"),
+        );
+        const raw = mod.detect_chessboard(width, height, gray, chess, params) as {
+            corners: unknown[];
+            cell_size: number | null;
+        } | null;
         // 0.10.1 flattened ChessboardDetectionResult to { corners, cell_size } —
         // the `target`/`detection` wrapper is gone entirely. Re-wrap into the
         // internal { detection: { kind, corners } } shape adaptCalibTargetResult
         // and the rest of the app expect. `cell_size` has no current consumer.
         result = raw ? { detection: { kind: "chessboard", corners: raw.corners } } : null;
     } else if (algorithm === "charuco") {
-        // Charuco has no dedicated defaults function.
-        // Its `chessboard` sub-object uses the same schema as standalone chessboard params —
-        // merge user overrides on top of chessboard defaults for that section.
-        const userParams = (config.params ?? {}) as Record<string, unknown>;
-        const userChessboard = (userParams.chessboard ?? {}) as Record<string, unknown>;
-        const chessboardDefaults = mod.default_chessboard_params() as Record<string, unknown>;
-        const mergedChessboard = deepMerge(chessboardDefaults, userChessboard);
-        const params = { ...userParams, chessboard: mergedChessboard };
-        const raw = mod.detect_charuco(width, height, gray, chessCfg, params) as {
+        // The defaults depend on the board (marker size, dictionary), so they are asked for
+        // with the board the config describes.
+        const board = asRecord(config.board, "charuco config.board");
+        const defaults = mod.default_charuco_params(
+            board.rows as number,
+            board.cols as number,
+            board.marker_size_rel as number,
+            board.dictionary as string,
+        ) as Record<string, unknown>;
+        const params = mergeConfig(defaults, config);
+        // calib-targets 0.18 returns `null` for "no board found" (it used to throw
+        // "chessboard not detected"); invalid input still throws. A miss is an empty result.
+        const raw = mod.detect_charuco(width, height, gray, null, params) as {
             corners: unknown[];
             markers: unknown[];
             alignment: unknown;
-        };
+        } | null;
         // 0.10.1 flattened CharucoDetectionResult to { corners, markers, alignment }.
-        result = {
-            detection: { kind: "charuco", corners: raw.corners },
-            markers: raw.markers,
-            alignment: raw.alignment,
-        };
+        result = raw
+            ? {
+                  detection: { kind: "charuco", corners: raw.corners },
+                  markers: raw.markers,
+                  alignment: raw.alignment,
+              }
+            : null;
     } else {
         const defaults = mod.default_marker_board_params() as Record<string, unknown>;
-        const userParams = (config.params ?? {}) as Record<string, unknown>;
-        const params = deepMerge(defaults, userParams);
+        const params = mergeConfig(defaults, config);
         // 0.10.1 flattened MarkerBoardDetectionResult to { corners, alignment } and
         // moved circle_candidates / circle_matches / alignment_inliers into the
         // diagnostics channel. Call the diagnose_* variant and deep-unwrap
         // its Map-based payload (see unwrapMaps) to keep those fields populated —
         // the overlay's circle-candidate/match rendering depends on them.
-        const withDiag = unwrapMaps(
-            mod.diagnose_marker_board(width, height, gray, chessCfg, params),
-        ) as {
-            result?: { corners: unknown[]; alignment: unknown } | null;
-            diagnostics: { circle_candidates: unknown[]; circle_matches: unknown[]; alignment_inliers: number } | null;
-        };
-        // `== null`, not `=== null`: serde-wasm-bindgen serialises Rust `None` as
-        // *undefined*, so the key is present with an undefined value and a strict
-        // null check never matches. Verified against the real module — a failed
-        // detection under a strict check reached `withDiag.result.corners` and
-        // threw `TypeError: undefined is not an object`. The puzzleboard branch
-        // (see worker/puzzleboard.ts) has always used the loose check for this
-        // same reason.
-        result = withDiag.result == null
-            ? null
-            : {
-                detection: { kind: "checkerboard_marker", corners: withDiag.result.corners },
-                alignment: withDiag.result.alignment,
-                circle_candidates: withDiag.diagnostics?.circle_candidates ?? [],
-                circle_matches: withDiag.diagnostics?.circle_matches ?? [],
-                alignment_inliers: withDiag.diagnostics?.alignment_inliers ?? null,
-            };
+        result = adaptMarkerBoardDiagnosis(
+            unwrapMaps(mod.diagnose_marker_board(width, height, gray, null, params)) as MarkerBoardDiagnosis,
+        );
     }
 
     const runtimeMs = performance.now() - t0;
 
     return adaptCalibTargetResult(result, algorithm, width, height, runtimeMs);
+}
+
+/**
+ * The `[circumference_squares, start_row]` pairs for which a PuzzlePole strip
+ * closes seamlessly (`puzzlepole_periods()`), as a plain array of pairs.
+ *
+ * Shape verified against the real module on 0.15.1: a JS array of
+ * two-element number arrays. The library, not a TypeScript copy, owns this
+ * table (it is pinned by a Rust test), so the app reads it at runtime.
+ */
+export async function handlePuzzlepolePeriods(): Promise<Array<[number, number]>> {
+    const mod = await getCalibModule();
+    const raw = mod.puzzlepole_periods() as unknown;
+    const isNumberPair = (p: unknown): p is [number, number] =>
+        Array.isArray(p) && p.length === 2 && p.every((n) => typeof n === "number");
+    if (!Array.isArray(raw) || raw.length === 0 || !raw.every(isNumberPair)) {
+        throw new Error(`puzzlepole_periods() returned an unexpected shape: ${JSON.stringify(raw)?.slice(0, 120)}`);
+    }
+    return raw.map(([circumference, startRow]) => [circumference, startRow]);
 }
 
 /**
@@ -269,4 +349,23 @@ export async function handleRenderTargetBundle(doc: unknown): Promise<TargetBund
     const mod = await getCalibModule();
     const bundle = mod.render_target_bundle_json(doc) as RawTargetBundle;
     return mapTargetBundle(bundle);
+}
+
+/** The slice of the calib-targets module the screen renderer needs. Taking it
+ * as a parameter lets `scripts/test-target-generators.ts` drive the exact code
+ * the worker runs without the worker's lazy module loader. */
+export interface CalibScreenModule {
+    render_screen_target(target: unknown, screen: unknown): { png_bytes: Uint8Array; json_text: string };
+}
+
+/** Render a chessboard / ChArUco / PuzzleBoard for 1:1 display. Throws the
+ * library's own error string for invalid input. */
+export function renderScreenTargetWith(mod: CalibScreenModule, target: unknown, screen: unknown): ScreenBundle {
+    const bundle = mod.render_screen_target(target, screen);
+    return { png: bundle.png_bytes, json: bundle.json_text };
+}
+
+export async function handleRenderScreenTarget(target: unknown, screen: unknown): Promise<ScreenBundle> {
+    const mod = await getCalibModule();
+    return renderScreenTargetWith(mod, target, screen);
 }

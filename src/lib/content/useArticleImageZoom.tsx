@@ -1,28 +1,32 @@
 import { useEffect, type RefObject } from "react";
 
-export function useArticleImageZoom(
-    ref: RefObject<HTMLElement | null>,
-    deps: unknown[],
-): void {
+export function useArticleImageZoom(ref: RefObject<HTMLElement | null>, deps: unknown[]): void {
     useEffect(() => {
         const root = ref.current;
         if (!root) return;
 
-        const imgs = Array.from(
-            root.querySelectorAll<HTMLImageElement>("img"),
-        ).filter((img) => !img.closest("[data-vv-illustration]"));
+        const imgs = Array.from(root.querySelectorAll<HTMLImageElement>("img")).filter(
+            (img) => !img.closest("[data-vv-illustration]"),
+        );
 
         if (imgs.length === 0) return;
 
         let active: HTMLImageElement | null = null;
         let backdrop: HTMLDivElement | null = null;
+        // Fade-out removal timers still pending, keyed by timer id.
+        const pendingRemovals = new Map<number, HTMLDivElement>();
 
         const close = () => {
             if (!active || !backdrop) return;
             active.classList.remove("vv-zoom-active");
             const b = backdrop;
             b.classList.remove("vv-zoom-backdrop-active");
-            window.setTimeout(() => b.remove(), 250);
+            b.removeEventListener("click", close);
+            const timer = window.setTimeout(() => {
+                pendingRemovals.delete(timer);
+                b.remove();
+            }, 250);
+            pendingRemovals.set(timer, b);
             active = null;
             backdrop = null;
             document.body.style.overflow = "";
@@ -64,8 +68,14 @@ export function useArticleImageZoom(
                 img.style.cursor = "";
             });
             document.removeEventListener("keydown", onKey);
+            backdrop?.removeEventListener("click", close);
             close();
+            pendingRemovals.forEach((el, timer) => {
+                window.clearTimeout(timer);
+                el.remove();
+            });
+            pendingRemovals.clear();
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // oxlint-disable-next-line react/exhaustive-deps -- caller-supplied `deps` array is the intentional re-run trigger (article HTML changes)
     }, deps);
 }

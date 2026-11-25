@@ -2,6 +2,7 @@ import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { resolvePageDimensions } from "./svg/paperConstants";
 import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
+import { puzzlepoleBoardSizeMm } from "./puzzlepole/geometry";
 import { isPreviewOverlayTarget } from "./previewInteractions";
 import ZoomControls from "../shared/ZoomControls";
 import CanvasControlsHint from "../shared/CanvasControlsHint";
@@ -48,6 +49,10 @@ function computeBoardDims(state: TargetGeneratorState) {
                 h: target.config.rows * target.config.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM,
             };
         }
+        case "puzzlepole": {
+            const { widthMm, heightMm } = puzzlepoleBoardSizeMm(target.config);
+            return { w: widthMm, h: heightMm };
+        }
     }
 }
 
@@ -56,13 +61,13 @@ interface Props {
     dispatch: React.Dispatch<TargetGeneratorAction>;
 }
 
-export default function TargetPreview({ state, dispatch }: Props) {
+function PrintPreview({ state, dispatch }: Props) {
     const [zoom, setZoom] = useState(1);
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [dragging, setDragging] = useState(false);
-    const lastMouse = useRef({ x: 0, y: 0 });
-    const dragDistance = useRef(0);
-    const touchGesture = useRef<{
+    const lastMouseRef = useRef({ x: 0, y: 0 });
+    const dragDistanceRef = useRef(0);
+    const touchGestureRef = useRef<{
         lastCenter: { x: number; y: number } | null;
         lastDistance: number | null;
         moved: boolean;
@@ -74,7 +79,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
         lastTouchPoint: null,
     });
     const containerRef = useRef<HTMLDivElement>(null);
-    const hasAutoFit = useRef(false);
+    const hasAutoFitRef = useRef(false);
     const { isTouchPrimary } = useViewportMode();
 
     const dims = useMemo(() => {
@@ -116,8 +121,8 @@ export default function TargetPreview({ state, dispatch }: Props) {
     useEffect(() => {
         if (!containerRef.current) return;
         const id = requestAnimationFrame(() => {
-            if (!hasAutoFit.current) {
-                hasAutoFit.current = true;
+            if (!hasAutoFitRef.current) {
+                hasAutoFitRef.current = true;
                 fitToScreen();
             }
         });
@@ -134,7 +139,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
         const container = containerRef.current;
         if (!container) return null;
 
-        const svg = container.querySelector("svg") as SVGSVGElement | null;
+        const svg = container.querySelector("svg");
         if (!svg) return null;
 
         const ctm = svg.getScreenCTM();
@@ -143,61 +148,64 @@ export default function TargetPreview({ state, dispatch }: Props) {
         return new DOMPoint(clientX, clientY).matrixTransform(ctm.inverse());
     }, []);
 
-    const moveMarkerboardCircle = useCallback((clientX: number, clientY: number) => {
-        if (state.target.targetType !== "markerboard") {
-            return;
-        }
-
-        const point = getSvgPoint(clientX, clientY);
-        if (!point) {
-            return;
-        }
-
-        const config = state.target.config;
-        const page = dims.page;
-        const totalCols = config.innerCols + 1;
-        const totalRows = config.innerRows + 1;
-        const squareSize = config.squareSizeMm;
-        const boardW = totalCols * squareSize;
-        const boardH = totalRows * squareSize;
-        const boardOx = (page.widthMm - boardW) / 2;
-        const boardOy = (page.heightMm - boardH) / 2;
-        const bx = point.x - boardOx;
-        const by = point.y - boardOy;
-
-        if (bx < 0 || bx >= boardW || by < 0 || by >= boardH) {
-            return;
-        }
-
-        const col = Math.floor(bx / squareSize);
-        const row = Math.floor(by / squareSize);
-
-        // Already occupied — nothing to move.
-        if (config.circles.some((circle) => circle.cell.i === row && circle.cell.j === col)) {
-            return;
-        }
-
-        // Move the nearest existing circle (smallest squared distance in
-        // (i, j) cell space) to the clicked cell — the library fixes the
-        // circle count at exactly three, so clicks relocate rather than add/remove.
-        let nearestIdx = 0;
-        let nearestDist = Infinity;
-        config.circles.forEach((circle, idx) => {
-            const di = circle.cell.i - row;
-            const dj = circle.cell.j - col;
-            const dist = di * di + dj * dj;
-            if (dist < nearestDist) {
-                nearestDist = dist;
-                nearestIdx = idx;
+    const moveMarkerboardCircle = useCallback(
+        (clientX: number, clientY: number) => {
+            if (state.target.targetType !== "markerboard") {
+                return;
             }
-        });
 
-        const circles = config.circles.map((circle, idx) =>
-            idx === nearestIdx ? { cell: { i: row, j: col } } : circle,
-        ) as typeof config.circles;
+            const point = getSvgPoint(clientX, clientY);
+            if (!point) {
+                return;
+            }
 
-        dispatch({ type: "UPDATE_CONFIG", partial: { circles } });
-    }, [dims.page, dispatch, getSvgPoint, state.target]);
+            const config = state.target.config;
+            const page = dims.page;
+            const totalCols = config.innerCols + 1;
+            const totalRows = config.innerRows + 1;
+            const squareSize = config.squareSizeMm;
+            const boardW = totalCols * squareSize;
+            const boardH = totalRows * squareSize;
+            const boardOx = (page.widthMm - boardW) / 2;
+            const boardOy = (page.heightMm - boardH) / 2;
+            const bx = point.x - boardOx;
+            const by = point.y - boardOy;
+
+            if (bx < 0 || bx >= boardW || by < 0 || by >= boardH) {
+                return;
+            }
+
+            const col = Math.floor(bx / squareSize);
+            const row = Math.floor(by / squareSize);
+
+            // Already occupied — nothing to move.
+            if (config.circles.some((circle) => circle.cell.i === row && circle.cell.j === col)) {
+                return;
+            }
+
+            // Move the nearest existing circle (smallest squared distance in
+            // (i, j) cell space) to the clicked cell — the library fixes the
+            // circle count at exactly three, so clicks relocate rather than add/remove.
+            let nearestIdx = 0;
+            let nearestDist = Infinity;
+            config.circles.forEach((circle, idx) => {
+                const di = circle.cell.i - row;
+                const dj = circle.cell.j - col;
+                const dist = di * di + dj * dj;
+                if (dist < nearestDist) {
+                    nearestDist = dist;
+                    nearestIdx = idx;
+                }
+            });
+
+            const circles = config.circles.map((circle, idx) =>
+                idx === nearestIdx ? { cell: { i: row, j: col } } : circle,
+            ) as typeof config.circles;
+
+            dispatch({ type: "UPDATE_CONFIG", partial: { circles } });
+        },
+        [dims.page, dispatch, getSvgPoint, state.target],
+    );
 
     const handleMouseDown = useCallback((event: React.MouseEvent) => {
         if (event.button !== 2) {
@@ -206,166 +214,186 @@ export default function TargetPreview({ state, dispatch }: Props) {
 
         event.preventDefault();
         setDragging(true);
-        lastMouse.current = { x: event.clientX, y: event.clientY };
-        dragDistance.current = 0;
+        lastMouseRef.current = { x: event.clientX, y: event.clientY };
+        dragDistanceRef.current = 0;
     }, []);
 
-    const handleMouseMove = useCallback((event: React.MouseEvent) => {
-        if (!dragging) {
-            return;
-        }
-
-        const dx = event.clientX - lastMouse.current.x;
-        const dy = event.clientY - lastMouse.current.y;
-        dragDistance.current += Math.abs(dx) + Math.abs(dy);
-        lastMouse.current = { x: event.clientX, y: event.clientY };
-        setPan((value) => ({ x: value.x + dx, y: value.y + dy }));
-    }, [dragging]);
-
-    const handleMouseUp = useCallback(() => setDragging(false), []);
-
-    const handleClick = useCallback((event: React.MouseEvent) => {
-        if (isTouchPrimary || isPreviewOverlayTarget(event.target)) {
-            return;
-        }
-        moveMarkerboardCircle(event.clientX, event.clientY);
-    }, [isTouchPrimary, moveMarkerboardCircle]);
-
-    const handleTouchStart = useCallback((event: React.TouchEvent) => {
-        if (!isTouchPrimary) {
-            return;
-        }
-
-        const touches = event.touches;
-        if (touches.length === 1) {
-            touchGesture.current = {
-                lastCenter: { x: touches[0].clientX, y: touches[0].clientY },
-                lastDistance: null,
-                moved: false,
-                lastTouchPoint: { x: touches[0].clientX, y: touches[0].clientY },
-            };
-            return;
-        }
-
-        if (touches.length >= 2) {
-            const t0 = touches[0];
-            const t1 = touches[1];
-            touchGesture.current = {
-                lastCenter: {
-                    x: (t0.clientX + t1.clientX) / 2,
-                    y: (t0.clientY + t1.clientY) / 2,
-                },
-                lastDistance: Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY),
-                moved: true,
-                lastTouchPoint: null,
-            };
-        }
-    }, [isTouchPrimary]);
-
-    const handleTouchMove = useCallback((event: React.TouchEvent) => {
-        if (!isTouchPrimary) {
-            return;
-        }
-
-        const touches = event.touches;
-        if (touches.length === 1) {
-            const current = touches[0];
-            const previous = touchGesture.current.lastCenter;
-            if (!previous) {
-                touchGesture.current.lastCenter = { x: current.clientX, y: current.clientY };
+    const handleMouseMove = useCallback(
+        (event: React.MouseEvent) => {
+            if (!dragging) {
                 return;
             }
 
-            const dx = current.clientX - previous.x;
-            const dy = current.clientY - previous.y;
-            if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
-                touchGesture.current.moved = true;
+            const dx = event.clientX - lastMouseRef.current.x;
+            const dy = event.clientY - lastMouseRef.current.y;
+            dragDistanceRef.current += Math.abs(dx) + Math.abs(dy);
+            lastMouseRef.current = { x: event.clientX, y: event.clientY };
+            setPan((value) => ({ x: value.x + dx, y: value.y + dy }));
+        },
+        [dragging],
+    );
+
+    const handleMouseUp = useCallback(() => setDragging(false), []);
+
+    const handleClick = useCallback(
+        (event: React.MouseEvent) => {
+            if (isTouchPrimary || isPreviewOverlayTarget(event.target)) {
+                return;
+            }
+            moveMarkerboardCircle(event.clientX, event.clientY);
+        },
+        [isTouchPrimary, moveMarkerboardCircle],
+    );
+
+    const handleTouchStart = useCallback(
+        (event: React.TouchEvent) => {
+            if (!isTouchPrimary) {
+                return;
             }
 
-            touchGesture.current.lastCenter = { x: current.clientX, y: current.clientY };
-            touchGesture.current.lastTouchPoint = { x: current.clientX, y: current.clientY };
-            setPan((value) => ({ x: value.x + dx, y: value.y + dy }));
+            const touches = event.touches;
+            const t0 = touches[0];
+            if (t0 === undefined) {
+                return;
+            }
+
+            if (touches.length === 1) {
+                touchGestureRef.current = {
+                    lastCenter: { x: t0.clientX, y: t0.clientY },
+                    lastDistance: null,
+                    moved: false,
+                    lastTouchPoint: { x: t0.clientX, y: t0.clientY },
+                };
+                return;
+            }
+
+            const t1 = touches[1];
+            if (t1 !== undefined) {
+                touchGestureRef.current = {
+                    lastCenter: {
+                        x: (t0.clientX + t1.clientX) / 2,
+                        y: (t0.clientY + t1.clientY) / 2,
+                    },
+                    lastDistance: Math.hypot(t1.clientX - t0.clientX, t1.clientY - t0.clientY),
+                    moved: true,
+                    lastTouchPoint: null,
+                };
+            }
+        },
+        [isTouchPrimary],
+    );
+
+    const handleTouchMove = useCallback(
+        (event: React.TouchEvent) => {
+            if (!isTouchPrimary) {
+                return;
+            }
+
+            const touches = event.touches;
+            const first = touches[0];
+            if (first === undefined) {
+                return;
+            }
+
+            if (touches.length === 1) {
+                const current = first;
+                const previous = touchGestureRef.current.lastCenter;
+                if (!previous) {
+                    touchGestureRef.current.lastCenter = { x: current.clientX, y: current.clientY };
+                    return;
+                }
+
+                const dx = current.clientX - previous.x;
+                const dy = current.clientY - previous.y;
+                if (Math.abs(dx) > 1 || Math.abs(dy) > 1) {
+                    touchGestureRef.current.moved = true;
+                }
+
+                touchGestureRef.current.lastCenter = { x: current.clientX, y: current.clientY };
+                touchGestureRef.current.lastTouchPoint = { x: current.clientX, y: current.clientY };
+                setPan((value) => ({ x: value.x + dx, y: value.y + dy }));
+                event.preventDefault();
+                return;
+            }
+
+            const second = touches[1];
+            if (second === undefined) {
+                return;
+            }
+
             event.preventDefault();
-            return;
-        }
+            const t0 = { x: first.clientX, y: first.clientY };
+            const t1 = { x: second.clientX, y: second.clientY };
+            const distance = Math.hypot(t1.x - t0.x, t1.y - t0.y);
+            const center = { x: (t0.x + t1.x) / 2, y: (t0.y + t1.y) / 2 };
+            const container = containerRef.current;
+            const previousCenter = touchGestureRef.current.lastCenter;
+            const previousDistance = touchGestureRef.current.lastDistance;
 
-        if (touches.length < 2) {
-            return;
-        }
+            if (!container) {
+                return;
+            }
 
-        event.preventDefault();
-        const t0 = { x: touches[0].clientX, y: touches[0].clientY };
-        const t1 = { x: touches[1].clientX, y: touches[1].clientY };
-        const distance = Math.hypot(t1.x - t0.x, t1.y - t0.y);
-        const center = { x: (t0.x + t1.x) / 2, y: (t0.y + t1.y) / 2 };
-        const container = containerRef.current;
-        const previousCenter = touchGesture.current.lastCenter;
-        const previousDistance = touchGesture.current.lastDistance;
+            if (previousCenter && previousDistance) {
+                const rect = container.getBoundingClientRect();
+                const localCenter = { x: center.x - rect.left, y: center.y - rect.top };
+                const containerCenter = { x: rect.width / 2 + pan.x, y: rect.height / 2 + pan.y };
+                const oldScale = zoom;
+                const pointTo = {
+                    x: (localCenter.x - containerCenter.x) / oldScale,
+                    y: (localCenter.y - containerCenter.y) / oldScale,
+                };
+                const newZoom = Math.max(0.1, Math.min(10, zoom * (distance / previousDistance)));
+                const deltaCenter = {
+                    x: center.x - previousCenter.x,
+                    y: center.y - previousCenter.y,
+                };
 
-        if (!container) {
-            return;
-        }
+                setZoom(newZoom);
+                setPan({
+                    x: localCenter.x - pointTo.x * newZoom - rect.width / 2 + deltaCenter.x,
+                    y: localCenter.y - pointTo.y * newZoom - rect.height / 2 + deltaCenter.y,
+                });
+            }
 
-        if (previousCenter && previousDistance) {
-            const rect = container.getBoundingClientRect();
-            const localCenter = { x: center.x - rect.left, y: center.y - rect.top };
-            const containerCenter = { x: rect.width / 2 + pan.x, y: rect.height / 2 + pan.y };
-            const oldScale = zoom;
-            const pointTo = {
-                x: (localCenter.x - containerCenter.x) / oldScale,
-                y: (localCenter.y - containerCenter.y) / oldScale,
+            touchGestureRef.current.lastCenter = center;
+            touchGestureRef.current.lastDistance = distance;
+            touchGestureRef.current.moved = true;
+        },
+        [isTouchPrimary, pan.x, pan.y, zoom],
+    );
+
+    const handleTouchEnd = useCallback(
+        (event: React.TouchEvent) => {
+            if (!isTouchPrimary) {
+                return;
+            }
+
+            if (
+                !isPreviewOverlayTarget(event.target) &&
+                !touchGestureRef.current.moved &&
+                touchGestureRef.current.lastTouchPoint
+            ) {
+                moveMarkerboardCircle(
+                    touchGestureRef.current.lastTouchPoint.x,
+                    touchGestureRef.current.lastTouchPoint.y,
+                );
+            }
+
+            touchGestureRef.current = {
+                lastCenter: null,
+                lastDistance: null,
+                moved: false,
+                lastTouchPoint: null,
             };
-            const newZoom = Math.max(0.1, Math.min(10, zoom * (distance / previousDistance)));
-            const deltaCenter = {
-                x: center.x - previousCenter.x,
-                y: center.y - previousCenter.y,
-            };
-
-            setZoom(newZoom);
-            setPan({
-                x: localCenter.x - pointTo.x * newZoom - rect.width / 2 + deltaCenter.x,
-                y: localCenter.y - pointTo.y * newZoom - rect.height / 2 + deltaCenter.y,
-            });
-        }
-
-        touchGesture.current.lastCenter = center;
-        touchGesture.current.lastDistance = distance;
-        touchGesture.current.moved = true;
-    }, [isTouchPrimary, pan.x, pan.y, zoom]);
-
-    const handleTouchEnd = useCallback((event: React.TouchEvent) => {
-        if (!isTouchPrimary) {
-            return;
-        }
-
-        if (
-            !isPreviewOverlayTarget(event.target)
-            && !touchGesture.current.moved
-            && touchGesture.current.lastTouchPoint
-        ) {
-            moveMarkerboardCircle(touchGesture.current.lastTouchPoint.x, touchGesture.current.lastTouchPoint.y);
-        }
-
-        touchGesture.current = {
-            lastCenter: null,
-            lastDistance: null,
-            moved: false,
-            lastTouchPoint: null,
-        };
-    }, [isTouchPrimary, moveMarkerboardCircle]);
+        },
+        [isTouchPrimary, moveMarkerboardCircle],
+    );
 
     const isMarkerboard = state.target.targetType === "markerboard";
     const controlHints = isTouchPrimary
-        ? [
-            ...(isMarkerboard ? ["Tap moves nearest circle"] : []),
-            "Drag pans",
-            "Pinch zooms",
-        ]
-        : [
-            ...(isMarkerboard ? ["Left click moves nearest circle"] : []),
-            "Right drag pans",
-            "Wheel zooms",
-        ];
+        ? [...(isMarkerboard ? ["Tap moves nearest circle"] : []), "Drag pans", "Pinch zooms"]
+        : [...(isMarkerboard ? ["Left click moves nearest circle"] : []), "Right drag pans", "Wheel zooms"];
 
     const handleContextMenu = useCallback((event: React.MouseEvent) => {
         event.preventDefault();
@@ -375,7 +403,7 @@ export default function TargetPreview({ state, dispatch }: Props) {
         <div
             ref={containerRef}
             className={
-                "relative h-full flex-1 overflow-hidden bg-muted/20 " +
+                "relative h-full flex-1 overflow-hidden bg-raised/20 " +
                 (isMarkerboard ? "cursor-crosshair" : "cursor-default")
             }
             onWheel={handleWheel}
@@ -398,13 +426,14 @@ export default function TargetPreview({ state, dispatch }: Props) {
             >
                 <div
                     className="bg-white shadow-lg"
+                    // oxlint-disable-next-line react/no-danger -- SVG is produced locally by the calib-targets/ringgrid WASM renderers from numeric config, never from user-supplied markup
                     dangerouslySetInnerHTML={{ __html: state.previewSvg }}
                 />
             </div>
 
             <div
                 data-preview-overlay
-                className="absolute bottom-3 left-3 rounded-md border border-border bg-background/80 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground backdrop-blur-sm"
+                className="absolute bottom-3 left-3 rounded-control border border-line bg-ground/80 px-2.5 py-1.5 text-[11px] leading-relaxed text-fg-muted backdrop-blur-sm"
             >
                 <div>
                     Board: {dims.board.w.toFixed(1)} x {dims.board.h.toFixed(1)} mm
@@ -433,4 +462,59 @@ export default function TargetPreview({ state, dispatch }: Props) {
             </div>
         </div>
     );
+}
+
+/** PNG bytes as a `data:` URL — pure, so unlike a blob URL it needs no revoke. */
+function pngDataUrl(png: Uint8Array): string {
+    let binary = "";
+    const CHUNK = 0x8000;
+    for (let i = 0; i < png.length; i += CHUNK) {
+        binary += String.fromCharCode(...png.subarray(i, i + CHUNK));
+    }
+    return `data:image/png;base64,${btoa(binary)}`;
+}
+
+/**
+ * Screen medium: the real rendered PNG, scaled to fit with nearest-neighbour
+ * sampling so single pixels stay visible. Deliberately no pan/zoom surface —
+ * the file is meant to be viewed at 100 % on the target display, not here.
+ */
+function ScreenPreview({ state }: { state: TargetGeneratorState }) {
+    const result = state.screenResult;
+    const src = useMemo(() => (result ? pngDataUrl(result.png) : null), [result]);
+    const hasErrors = state.validation.errors.length > 0;
+
+    return (
+        <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-raised/20 p-3">
+            {src && result ? (
+                <img
+                    src={src}
+                    alt={`Rendered screen target, ${result.widthPx} by ${result.heightPx} pixels`}
+                    width={result.widthPx}
+                    height={result.heightPx}
+                    className="max-h-full max-w-full bg-white object-contain shadow-lg"
+                    style={{ imageRendering: "pixelated" }}
+                />
+            ) : (
+                <p className="text-sm text-fg-muted">
+                    {hasErrors ? "Fix the validation errors to see the preview." : "Rendering…"}
+                </p>
+            )}
+            {result && (
+                <div
+                    data-preview-overlay
+                    className="absolute bottom-3 left-3 rounded-control border border-line bg-ground/80 px-2.5 py-1.5 text-[11px] leading-relaxed text-fg-muted backdrop-blur-sm"
+                >
+                    <div>
+                        Native size: {result.widthPx} x {result.heightPx} px (8-bit grayscale)
+                    </div>
+                    <div>Shown scaled to fit; the file is 1:1 with the display.</div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default function TargetPreview(props: Props) {
+    return props.state.medium === "screen" ? <ScreenPreview state={props.state} /> : <PrintPreview {...props} />;
 }

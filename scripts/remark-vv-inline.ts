@@ -12,11 +12,7 @@ interface DirectiveNode extends Parent {
 
 function isDirectiveNode(node: unknown): node is DirectiveNode {
     const n = node as { type?: string };
-    return (
-        n.type === "containerDirective" ||
-        n.type === "leafDirective" ||
-        n.type === "textDirective"
-    );
+    return n.type === "containerDirective" || n.type === "leafDirective" || n.type === "textDirective";
 }
 
 // Color palette aligned with .vv-color--* styles in src/styles/article.css.

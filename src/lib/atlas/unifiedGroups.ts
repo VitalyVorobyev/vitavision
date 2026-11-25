@@ -1,8 +1,4 @@
-import {
-    type AlgorithmIndexEntry,
-    type ModelIndexEntry,
-    type ConceptIndexEntry,
-} from "../content/schema.ts";
+import { type AlgorithmIndexEntry, type ModelIndexEntry, type ConceptIndexEntry } from "../content/schema.ts";
 import { domainLabels, domainOrder } from "../../components/algorithms/domainLabels.ts";
 import { contentGraph } from "../../generated/content-graph.ts";
 import type { AlgorithmsKind } from "./atlasFilters.ts";
@@ -11,8 +7,8 @@ import type { AlgorithmsKind } from "./atlasFilters.ts";
 
 export type UnifiedEntry =
     | { kind: "algorithm"; slug: string; frontmatter: AlgorithmIndexEntry["frontmatter"] }
-    | { kind: "model";     slug: string; frontmatter: ModelIndexEntry["frontmatter"] }
-    | { kind: "concept";   slug: string; frontmatter: ConceptIndexEntry["frontmatter"] };
+    | { kind: "model"; slug: string; frontmatter: ModelIndexEntry["frontmatter"] }
+    | { kind: "concept"; slug: string; frontmatter: ConceptIndexEntry["frontmatter"] };
 
 // ── Depth-based comparator ────────────────────────────────────────────────────
 
@@ -47,19 +43,25 @@ export function computeUnifiedGroups(
         const groups: CatalogGroup[] = [];
 
         const algoEntries: UnifiedEntry[] = filteredAlgorithms.map((e) => ({
-            kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter,
+            kind: "algorithm",
+            slug: e.slug,
+            frontmatter: e.frontmatter,
         }));
         algoEntries.sort(comparator);
         if (algoEntries.length > 0) groups.push({ id: "algorithm", label: "Algorithms", entries: algoEntries });
 
         const modelEntries: UnifiedEntry[] = filteredModels.map((e) => ({
-            kind: "model", slug: e.slug, frontmatter: e.frontmatter,
+            kind: "model",
+            slug: e.slug,
+            frontmatter: e.frontmatter,
         }));
         modelEntries.sort(comparator);
         if (modelEntries.length > 0) groups.push({ id: "model", label: "Models", entries: modelEntries });
 
         const conceptEntries: UnifiedEntry[] = filteredConcepts.map((e) => ({
-            kind: "concept", slug: e.slug, frontmatter: e.frontmatter,
+            kind: "concept",
+            slug: e.slug,
+            frontmatter: e.frontmatter,
         }));
         conceptEntries.sort(comparator);
         if (conceptEntries.length > 0) groups.push({ id: "concept", label: "Concepts", entries: conceptEntries });
@@ -70,11 +72,13 @@ export function computeUnifiedGroups(
     // When a specific kind is selected: group by domain over domainOrder.
     const sourceItems: UnifiedEntry[] = [];
     if (kind === "algorithm") {
-        for (const e of filteredAlgorithms) sourceItems.push({ kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter });
+        for (const e of filteredAlgorithms)
+            sourceItems.push({ kind: "algorithm", slug: e.slug, frontmatter: e.frontmatter });
     } else if (kind === "model") {
         for (const e of filteredModels) sourceItems.push({ kind: "model", slug: e.slug, frontmatter: e.frontmatter });
     } else {
-        for (const e of filteredConcepts) sourceItems.push({ kind: "concept", slug: e.slug, frontmatter: e.frontmatter });
+        for (const e of filteredConcepts)
+            sourceItems.push({ kind: "concept", slug: e.slug, frontmatter: e.frontmatter });
     }
 
     const byDomain = new Map<string, UnifiedEntry[]>();
@@ -88,7 +92,7 @@ export function computeUnifiedGroups(
     return domainOrder
         .map((dom) => {
             const entries = (byDomain.get(dom) ?? []).sort(comparator);
-            return { id: dom, label: domainLabels[dom as keyof typeof domainLabels] ?? dom, entries };
+            return { id: dom, label: domainLabels[dom] ?? dom, entries };
         })
         .filter((g) => g.entries.length > 0);
 }

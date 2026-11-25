@@ -50,7 +50,7 @@ describe("selectRecentlyAdded", () => {
         ];
         const result = selectRecentlyAdded(entries, NOW);
         expect(result).toHaveLength(1);
-        expect(result[0].frontmatter.title).toBe("Recent");
+        expect(result[0]?.frontmatter.title).toBe("Recent");
     });
 
     it("sorts newest-first", () => {
@@ -60,9 +60,9 @@ describe("selectRecentlyAdded", () => {
             { frontmatter: { date: "2026-06-10", title: "Middle" } },
         ];
         const result = selectRecentlyAdded(entries, NOW);
-        expect(result[0].frontmatter.title).toBe("Newer");
-        expect(result[1].frontmatter.title).toBe("Middle");
-        expect(result[2].frontmatter.title).toBe("Older");
+        expect(result[0]?.frontmatter.title).toBe("Newer");
+        expect(result[1]?.frontmatter.title).toBe("Middle");
+        expect(result[2]?.frontmatter.title).toBe("Older");
     });
 
     it("tie-breaks equal dates by title ascending", () => {
@@ -72,9 +72,9 @@ describe("selectRecentlyAdded", () => {
             { frontmatter: { date: "2026-06-15", title: "Mango" } },
         ];
         const result = selectRecentlyAdded(entries, NOW);
-        expect(result[0].frontmatter.title).toBe("Alpha");
-        expect(result[1].frontmatter.title).toBe("Mango");
-        expect(result[2].frontmatter.title).toBe("Zebra");
+        expect(result[0]?.frontmatter.title).toBe("Alpha");
+        expect(result[1]?.frontmatter.title).toBe("Mango");
+        expect(result[2]?.frontmatter.title).toBe("Zebra");
     });
 
     it("caps the result length at RECENT_SECTION_MAX and keeps the newest", () => {
@@ -82,16 +82,14 @@ describe("selectRecentlyAdded", () => {
         const entries = Array.from({ length: 10 }, (_, i) => ({
             frontmatter: {
                 // dates: 2026-06-27, 2026-06-26, ..., 2026-06-18
-                date: new Date(NOW.getTime() - i * 24 * 60 * 60 * 1000)
-                    .toISOString()
-                    .slice(0, 10),
+                date: new Date(NOW.getTime() - i * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
                 title: `Entry ${String(i).padStart(2, "0")}`,
             },
         }));
         const result = selectRecentlyAdded(entries, NOW);
         expect(result).toHaveLength(RECENT_SECTION_MAX);
         // The 8 newest (i=0..7) should be kept
-        expect(result[0].frontmatter.title).toBe("Entry 00");
-        expect(result[RECENT_SECTION_MAX - 1].frontmatter.title).toBe("Entry 07");
+        expect(result[0]?.frontmatter.title).toBe("Entry 00");
+        expect(result[RECENT_SECTION_MAX - 1]?.frontmatter.title).toBe("Entry 07");
     });
 });

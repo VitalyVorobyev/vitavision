@@ -2,11 +2,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { useEditorStore, type OverlayToggles, type PanelMode } from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
-import { getLoadedAlgorithm } from "../algorithms/registry";
+import { DensityProvider, Panel, SegmentedControl, ToggleChip } from "@vitavision/ui";
+import { hasLatticeOverlay } from "../overlay/targetDetection";
 
 import ConfigurePanel from "./ConfigurePanel";
 import FeatureListPanel from "./FeatureListPanel";
-import RailSection from "./RailSection";
 import ResultsPanel from "./ResultsPanel";
 
 const MODES: { key: PanelMode; label: string }[] = [
@@ -19,24 +19,21 @@ const MAX_WIDTH = 600;
 const DEFAULT_WIDTH = 320;
 type TouchPanelTab = PanelMode | "features";
 
+/** A segmented strip that fills its row, one equal segment per option. */
+const FULL_WIDTH_SEGMENTS = "flex w-full [&>label]:flex-1 [&>label]:text-center";
+
 function ModeToggle({ value, onChange }: { value: PanelMode; onChange: (m: PanelMode) => void }) {
     return (
-        <div className="flex rounded-lg border border-border overflow-hidden">
-            {MODES.map(({ key, label }) => (
-                <button
-                    key={key}
-                    type="button"
-                    onClick={() => onChange(key)}
-                    className={`flex-1 text-xs py-1.5 font-medium transition-colors ${
-                        value === key
-                            ? "bg-primary/10 text-primary"
-                            : "bg-background text-muted-foreground hover:bg-muted/60"
-                    }`}
-                >
-                    {label}
-                </button>
-            ))}
-        </div>
+        <SegmentedControl
+            aria-label="Panel"
+            value={value}
+            options={MODES.map(({ key, label }) => ({ value: key, label }))}
+            onValueChange={(next) => {
+                const mode = MODES.find(({ key }) => key === next);
+                if (mode) onChange(mode.key);
+            }}
+            className={FULL_WIDTH_SEGMENTS}
+        />
     );
 }
 
@@ -48,26 +45,23 @@ const TOGGLE_ITEMS: { key: keyof OverlayToggles; label: string }[] = [
 ];
 
 function OverlayTogglePanel() {
-    const { overlayToggles, setOverlayToggle } = useEditorStore(useShallow((s) => ({
-        overlayToggles: s.overlayToggles,
-        setOverlayToggle: s.setOverlayToggle,
-    })));
+    const { overlayToggles, setOverlayToggle } = useEditorStore(
+        useShallow((s) => ({
+            overlayToggles: s.overlayToggles,
+            setOverlayToggle: s.setOverlayToggle,
+        })),
+    );
 
     return (
         <div className="flex flex-wrap gap-1.5">
             {TOGGLE_ITEMS.map(({ key, label }) => (
-                <button
+                <ToggleChip
                     key={key}
-                    type="button"
-                    onClick={() => setOverlayToggle(key, !overlayToggles[key])}
-                    className={`text-[10px] px-2 py-0.5 rounded-full border transition-colors ${
-                        overlayToggles[key]
-                            ? "border-primary/40 bg-primary/10 text-primary"
-                            : "border-border text-muted-foreground hover:bg-muted/30"
-                    }`}
+                    checked={overlayToggles[key]}
+                    onCheckedChange={(checked) => setOverlayToggle(key, checked)}
                 >
                     {label}
-                </button>
+                </ToggleChip>
             ))}
         </div>
     );
@@ -76,20 +70,20 @@ function OverlayTogglePanel() {
 /* ── main panel ──────────────────────────────────────────────── */
 
 export default function EditorRightPanel({ variant = "desktop" }: { variant?: "desktop" | "touch" }) {
-    const { panelMode, setPanelMode, lastAlgorithmResult } = useEditorStore(useShallow((s) => ({
-        panelMode: s.panelMode,
-        setPanelMode: s.setPanelMode,
-        lastAlgorithmResult: s.lastAlgorithmResult,
-    })));
+    const { panelMode, setPanelMode, lastAlgorithmResult } = useEditorStore(
+        useShallow((s) => ({
+            panelMode: s.panelMode,
+            setPanelMode: s.setPanelMode,
+            lastAlgorithmResult: s.lastAlgorithmResult,
+        })),
+    );
     const [width, setWidth] = useState(DEFAULT_WIDTH);
-    const isDragging = useRef(false);
+    const isDraggingRef = useRef(false);
     const [touchTabOverride, setTouchTabOverride] = useState<"features" | null>(null);
     const touchTab: TouchPanelTab = touchTabOverride ?? panelMode;
 
-    // By the time lastAlgorithmResult is set, the algorithm is already loaded.
-    const hasOverlay = lastAlgorithmResult
-        ? !!(getLoadedAlgorithm(lastAlgorithmResult.algorithmId)?.OverlayComponent)
-        : false;
+    // Boards draw a lattice (edges, index labels); the other algorithms have no overlay to toggle.
+    const hasOverlay = lastAlgorithmResult ? hasLatticeOverlay(lastAlgorithmResult.algorithmId) : false;
 
     // AbortController used to clean up drag listeners if the component unmounts mid-drag.
     const dragAbortRef = useRef<AbortController | null>(null);
@@ -103,7 +97,7 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
 
     const handlePointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
         e.preventDefault();
-        isDragging.current = true;
+        isDraggingRef.current = true;
         const handle = e.currentTarget;
         handle.setPointerCapture(e.pointerId);
 
@@ -117,7 +111,7 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
             setWidth(newWidth);
         };
         const onUp = () => {
-            isDragging.current = false;
+            isDraggingRef.current = false;
             controller.abort();
             dragAbortRef.current = null;
         };
@@ -133,47 +127,39 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
         ];
 
         return (
-            <div className="flex h-full flex-col overflow-hidden bg-muted/10">
-                <div className="border-b border-border px-4 py-3">
-                    <div className="grid grid-cols-3 gap-2">
-                        {tabs.map(({ key, label }) => (
-                            <button
-                                key={key}
-                                type="button"
-                                onClick={() => {
-                                    if (key === "features") {
-                                        setTouchTabOverride("features");
-                                    } else {
-                                        setTouchTabOverride(null);
-                                        setPanelMode(key);
-                                    }
-                                }}
-                                className={`rounded-md px-3 py-2 text-sm font-medium transition-colors ${
-                                    touchTab === key
-                                        ? "bg-primary text-primary-foreground shadow-xs"
-                                        : "border border-border bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground"
-                                }`}
-                            >
-                                {label}
-                            </button>
-                        ))}
-                    </div>
+            // Touch keeps ui's comfortable density: its controls are finger-sized.
+            <div className="flex h-full flex-col overflow-hidden">
+                <div className="border-b border-line px-4 py-3">
+                    <SegmentedControl
+                        aria-label="Panel"
+                        value={touchTab}
+                        options={tabs.map(({ key, label }) => ({ value: key, label }))}
+                        onValueChange={(next) => {
+                            if (next === "features") {
+                                setTouchTabOverride("features");
+                            } else if (next === "configure" || next === "results") {
+                                setTouchTabOverride(null);
+                                setPanelMode(next);
+                            }
+                        }}
+                        className={FULL_WIDTH_SEGMENTS}
+                    />
                 </div>
 
                 <div className="flex-1 overflow-y-auto px-4 py-4">
-                    <div className="space-y-5">
+                    <div className="space-y-4">
                         {touchTab === "configure" && <ConfigurePanel />}
                         {touchTab === "results" && <ResultsPanel />}
                         {touchTab === "features" && (
                             <>
                                 {hasOverlay && (
-                                    <RailSection label="Overlay">
+                                    <Panel title="Overlay">
                                         <OverlayTogglePanel />
-                                    </RailSection>
+                                    </Panel>
                                 )}
-                                <RailSection label="Features">
+                                <Panel title="Features">
                                     <FeatureListPanel />
-                                </RailSection>
+                                </Panel>
                             </>
                         )}
                     </div>
@@ -183,37 +169,36 @@ export default function EditorRightPanel({ variant = "desktop" }: { variant?: "d
     }
 
     return (
-        <div
-            className="border-l border-border bg-muted/20 shrink-0 flex h-full overflow-hidden relative"
-            style={{ width }}
-        >
+        <div className="border-l border-line bg-ground shrink-0 flex h-full overflow-hidden relative" style={{ width }}>
             {/* resize handle */}
             <div
                 onPointerDown={handlePointerDown}
                 className="absolute left-0 top-0 bottom-0 w-1 cursor-col-resize z-10 group"
             >
-                <div className="absolute inset-y-0 left-0 w-1 bg-transparent group-hover:bg-primary/20 group-active:bg-primary/30 transition-colors" />
+                <div className="absolute inset-y-0 left-0 w-1 bg-transparent group-hover:bg-signal/20 group-active:bg-signal/30 transition-colors" />
             </div>
 
-            <div className="flex flex-col h-full w-full p-4 pl-3">
-                <div className="mb-4 shrink-0">
-                    <ModeToggle value={panelMode} onChange={setPanelMode} />
-                </div>
-                <div className="flex-1 overflow-y-auto space-y-5 pr-0.5">
-                    {panelMode === "configure" && <ConfigurePanel />}
-                    {panelMode === "results" && <ResultsPanel />}
+            <DensityProvider value="compact">
+                <div className="flex flex-col h-full w-full p-4 pl-3">
+                    <div className="mb-4 shrink-0">
+                        <ModeToggle value={panelMode} onChange={setPanelMode} />
+                    </div>
+                    <div className="flex-1 overflow-y-auto space-y-4 pr-0.5">
+                        {panelMode === "configure" && <ConfigurePanel />}
+                        {panelMode === "results" && <ResultsPanel />}
 
-                    {hasOverlay && (
-                        <RailSection label="Overlay">
-                            <OverlayTogglePanel />
-                        </RailSection>
-                    )}
+                        {hasOverlay && (
+                            <Panel title="Overlay">
+                                <OverlayTogglePanel />
+                            </Panel>
+                        )}
 
-                    <RailSection label="Features">
-                        <FeatureListPanel />
-                    </RailSection>
+                        <Panel title="Features">
+                            <FeatureListPanel />
+                        </Panel>
+                    </div>
                 </div>
-            </div>
+            </DensityProvider>
         </div>
     );
 }

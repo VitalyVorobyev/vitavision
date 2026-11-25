@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import SeoHead from "../components/seo/SeoHead.tsx";
 
 const SKILLS = ["Computer vision", "Machine learning", "Algorithms", "C++", "Rust", "Python", "TypeScript", "React"];
@@ -23,45 +23,38 @@ export default function About() {
             />
             {/* Two-column on md+, stacked on mobile */}
             <div className="flex flex-col md:flex-row gap-10 md:gap-14 items-start">
-
                 {/* Photo */}
                 <figure className="w-full flex flex-col items-center md:items-start md:w-auto shrink-0">
                     <img
                         src="/AIAvatar.jpg"
                         alt="AI-stylized portrait of Vitaly Vorobyev"
                         loading="lazy"
-                        className="w-52 md:w-64 aspect-square object-cover object-[50%_15%] rounded-2xl border border-border"
+                        className="w-52 md:w-64 aspect-square object-cover object-[50%_15%] rounded-2xl border border-line"
                     />
-                    <figcaption className="mt-3 max-w-52 md:max-w-64 text-center md:text-left text-xs leading-5 text-muted-foreground">
+                    <figcaption className="mt-3 max-w-52 md:max-w-64 text-center md:text-left text-xs leading-5 text-fg-muted">
                         Portrait based on a real photo, lightly stylized with AI.
                     </figcaption>
                 </figure>
 
                 {/* Text column */}
                 <div className="flex flex-col gap-6 min-w-0">
-
                     {/* Name + role */}
                     <div>
-                        <h1 className="text-3xl font-semibold tracking-tight text-foreground">
-                            Vitaly Vorobyev (PhD)
-                        </h1>
-                        <p className="mt-1 text-accent font-medium">
-                            Team Lead · Computer Vision · QUISS GmbH
-                        </p>
+                        <h1 className="text-3xl font-semibold tracking-tight text-fg">Vitaly Vorobyev (PhD)</h1>
+                        <p className="mt-1 text-fg-muted font-medium">Team Lead · Computer Vision · QUISS GmbH</p>
                     </div>
 
                     {/* Bio */}
-                    <div className="space-y-4 text-muted-foreground leading-7">
+                    <div className="space-y-4 text-fg-muted leading-7">
                         <p>
-                            I build computer vision systems for industrial inspection. My path started
-                            in particle physics research at the Budker Institute in Novosibirsk, where
-                            I spent over a decade on detectors, data analysis, and simulation. That
-                            background shaped how I think about measurement, uncertainty, and precision.
+                            I build computer vision systems for industrial inspection. My path started in particle
+                            physics research at the Budker Institute in Novosibirsk, where I spent over a decade on
+                            detectors, data analysis, and simulation. That background shaped how I think about
+                            measurement, uncertainty, and precision.
                         </p>
                         <p>
-                            Today I lead a team at QUISS GmbH working on machine-vision algorithms and products.
-                            I also built vitavision — this tool — to explore and
-                            prototype CV ideas directly in the browser.
+                            Today I lead a team at QUISS GmbH working on machine-vision algorithms and products. I also
+                            built vitavision — this tool — to explore and prototype CV ideas directly in the browser.
                         </p>
                     </div>
 
@@ -70,7 +63,7 @@ export default function About() {
                         {SKILLS.map((skill) => (
                             <span
                                 key={skill}
-                                className="bg-accent-soft text-accent text-sm rounded-full px-3 py-1 font-medium"
+                                className="bg-raised text-fg-muted text-sm rounded-full px-3 py-1 font-medium"
                             >
                                 {skill}
                             </span>
@@ -81,12 +74,10 @@ export default function About() {
                     <ul className="space-y-2">
                         {CAREER.map(({ role, place, period }) => (
                             <li key={role} className="flex flex-col sm:flex-row sm:items-baseline sm:gap-2">
-                                <span className="text-foreground text-sm font-medium">
+                                <span className="text-fg text-sm font-medium">
                                     {role} · {place}
                                 </span>
-                                <span className="text-accent-2 text-xs sm:ml-auto shrink-0">
-                                    {period}
-                                </span>
+                                <span className="text-fg-subtle text-xs sm:ml-auto shrink-0">{period}</span>
                             </li>
                         ))}
                     </ul>

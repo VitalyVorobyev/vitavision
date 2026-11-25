@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { adaptCalibTargetResult } from "../calibTargets";
+import { adaptCalibTargetResult, adaptMarkerBoardDiagnosis } from "../calibTargets";
 
 describe("adaptCalibTargetResult", () => {
     it("returns an empty chessboard result when raw is null (no detection)", () => {
@@ -21,14 +21,12 @@ describe("adaptCalibTargetResult", () => {
         const raw = {
             detection: {
                 kind: "chessboard",
-                corners: [
-                    { position: [64, 48], grid: { u: 1, v: 2 }, score: 0.9, input_index: 5 },
-                ],
+                corners: [{ position: [64, 48], grid: { u: 1, v: 2 }, score: 0.9, input_index: 5 }],
             },
         };
         const result = adaptCalibTargetResult(raw, "chessboard", 640, 480, 3);
         expect(result.detection.corners).toHaveLength(1);
-        const c = result.detection.corners[0];
+        const c = result.detection.corners[0]!;
         expect(c.x).toBe(64);
         expect(c.y).toBe(48);
         expect(c.x_norm).toBeCloseTo(0.1);
@@ -41,8 +39,8 @@ describe("adaptCalibTargetResult", () => {
     it("falls back corner_id to array index when neither input_index nor id is present", () => {
         const raw = { detection: { kind: "chessboard", corners: [{ position: [0, 0], grid: null, score: 0 }] } };
         const result = adaptCalibTargetResult(raw, "chessboard", 10, 10, 1);
-        expect(result.detection.corners[0].corner_id).toBe(0);
-        expect(result.detection.corners[0].grid).toBeNull();
+        expect(result.detection.corners[0]!.corner_id).toBe(0);
+        expect(result.detection.corners[0]!.grid).toBeNull();
     });
 
     it("maps charuco markers, converting gc {u,v} to grid_cell {gx,gy}", () => {
@@ -58,15 +56,20 @@ describe("adaptCalibTargetResult", () => {
                     border_score: 0.8,
                     code: 7,
                     inverted: false,
-                    corners_rect: [[0, 0], [1, 0], [1, 1], [0, 1]],
+                    corners_rect: [
+                        [0, 0],
+                        [1, 0],
+                        [1, 1],
+                        [0, 1],
+                    ],
                     corners_img: null,
                 },
             ],
         };
         const result = adaptCalibTargetResult(raw, "charuco", 100, 100, 1);
         expect(result.markers).toHaveLength(1);
-        expect(result.markers![0].grid_cell).toEqual({ gx: 2, gy: 4 });
-        expect(result.markers![0].corners_img).toBeNull();
+        expect(result.markers![0]!.grid_cell).toEqual({ gx: 2, gy: 4 });
+        expect(result.markers![0]!.corners_img).toBeNull();
         expect(result.summary.marker_count).toBe(1);
     });
 
@@ -77,11 +80,22 @@ describe("adaptCalibTargetResult", () => {
                 { center_img: [5, 6], cell: { i: 0, j: 0 }, polarity: "white", score: 0.5, contrast: 0.2 },
             ],
             circle_matches: [
-                { expected: { cell: { i: 0, j: 0 }, polarity: "white" }, matched_index: 0, distance_cells: 0, offset_cells: { di: 0, dj: 0 } },
-                { expected: { cell: { i: 1, j: 1 }, polarity: "black" }, matched_index: null, distance_cells: null, offset_cells: null },
+                {
+                    expected: { cell: { i: 0, j: 0 }, polarity: "white" },
+                    matched_index: 0,
+                    offset_cells: { di: 0, dj: 0 },
+                },
+                { expected: { cell: { i: 1, j: 1 }, polarity: "black" }, matched_index: null, offset_cells: null },
             ],
             alignment_inliers: 3,
-            alignment: { matrix: [[1, 0], [0, 1]], translation: [2, 3] },
+            alignment_runner_up_inliers: 2,
+            alignment: {
+                matrix: [
+                    [1, 0],
+                    [0, 1],
+                ],
+                translation: [2, 3],
+            },
         };
         const result = adaptCalibTargetResult(raw, "markerboard", 100, 100, 1);
         expect(result.circle_candidates).toHaveLength(1);
@@ -89,6 +103,8 @@ describe("adaptCalibTargetResult", () => {
         expect(result.summary.circle_candidate_count).toBe(1);
         expect(result.summary.circle_match_count).toBe(1); // only the matched one counts
         expect(result.summary.alignment_inliers).toBe(3);
+        expect(result.summary.alignment_runner_up_inliers).toBe(2);
+        expect(result.circle_matches![0]).not.toHaveProperty("distance_cells");
         expect(result.alignment).toEqual({ transform: { a: 1, b: 0, c: 0, d: 1 }, translation: [2, 3] });
     });
 
@@ -98,5 +114,63 @@ describe("adaptCalibTargetResult", () => {
         expect(result.circle_candidates).toBeNull();
         expect(result.circle_matches).toBeNull();
         expect(result.summary.alignment_inliers).toBeNull();
+        expect(result.summary.alignment_runner_up_inliers).toBeNull();
+    });
+});
+
+describe("adaptMarkerBoardDiagnosis", () => {
+    const diagnostics = (over: Record<string, unknown> = {}) => ({
+        circle_candidates: [],
+        circle_matches: [],
+        alignment_inliers: 3,
+        alignment_runner_up_inliers: 2,
+        alignment_ambiguous: false,
+        ...over,
+    });
+
+    it("maps a successful diagnosis, including the runner-up inlier count", () => {
+        const out = adaptMarkerBoardDiagnosis({
+            result: {
+                corners: [{ position: [1, 2] }],
+                alignment: {
+                    matrix: [
+                        [1, 0],
+                        [0, 1],
+                    ],
+                    translation: [0, 0],
+                },
+            },
+            diagnostics: diagnostics(),
+        });
+        expect(out).not.toBeNull();
+        expect(out!.detection.kind).toBe("checkerboard_marker");
+        expect(out!.alignment_inliers).toBe(3);
+        expect(out!.alignment_runner_up_inliers).toBe(2);
+    });
+
+    it("returns null when nothing was detected and the frame is not ambiguous", () => {
+        // serde-wasm-bindgen serialises Rust `None` as undefined, not null.
+        expect(
+            adaptMarkerBoardDiagnosis({
+                result: undefined,
+                diagnostics: diagnostics({ alignment_inliers: 0, alignment_runner_up_inliers: 0 }),
+            }),
+        ).toBeNull();
+        expect(adaptMarkerBoardDiagnosis({ result: null, diagnostics: null })).toBeNull();
+    });
+
+    it("throws a clear error when a second frame explains the circles as well (no alignment returned)", () => {
+        // Shape observed on calib-targets 0.15.1: result is undefined and
+        // alignment_ambiguous is set; corners are withheld.
+        const ambiguous = {
+            result: undefined,
+            diagnostics: diagnostics({
+                alignment_inliers: 2,
+                alignment_runner_up_inliers: 2,
+                alignment_ambiguous: true,
+            }),
+        };
+        expect(() => adaptMarkerBoardDiagnosis(ambiguous)).toThrow(/Marker board orientation is ambiguous/);
+        expect(() => adaptMarkerBoardDiagnosis(ambiguous)).toThrow(/2 vs 2 circle inliers/);
     });
 });

@@ -1,8 +1,9 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useAuth, SignInButton } from "@clerk/clerk-react";
 import { Lock } from "lucide-react";
+import { Button } from "@vitavision/ui";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import { blogPosts } from "../generated/content-index.ts";
 import { blogHtmlLoaders } from "../generated/blog-loaders.ts";
@@ -20,19 +21,18 @@ import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.
 import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
 import ReadingProgress from "../components/blog/ReadingProgress.tsx";
 import TableOfContents from "../components/blog/TableOfContents.tsx";
+import LoadingIndicator from "../components/shared/LoadingIndicator.tsx";
 
 function MembersGate() {
     return (
-        <div className="border border-border rounded-xl p-8 text-center space-y-4 my-10">
-            <Lock className="mx-auto h-8 w-8 text-muted-foreground" />
+        <div className="border border-line rounded-xl p-8 text-center space-y-4 my-10">
+            <Lock className="mx-auto h-8 w-8 text-fg-muted" />
             <h2 className="text-xl font-semibold">This post is for members</h2>
-            <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+            <p className="text-fg-muted text-sm max-w-sm mx-auto">
                 Sign in to read the full article. Membership is by invitation.
             </p>
             <SignInButton mode="modal">
-                <button className="inline-flex items-center justify-center rounded-md bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors">
-                    Sign in to continue
-                </button>
+                <Button variant="primary">Sign in to continue</Button>
             </SignInButton>
         </div>
     );
@@ -48,9 +48,7 @@ export default function BlogPost() {
 
     // Resolve content synchronously from SSR context (postbuild prerender).
     // On the client useStaticContent() returns null, so the async loader runs instead.
-    const syncHtml = slug
-        ? staticContent?.blogHtmlBySlug?.[slug] ?? null
-        : null;
+    const syncHtml = slug ? (staticContent?.blogHtmlBySlug?.[slug] ?? null) : null;
 
     // Async loading state — reset when slug changes (render-time state reset pattern).
     const [trackedSlug, setTrackedSlug] = useState(slug);
@@ -66,7 +64,7 @@ export default function BlogPost() {
     // download the draft HTML chunk even when the UI renders NotFound.
     const isDraftBlocked = Boolean(post?.frontmatter.draft) && !isAdmin;
 
-    const html = isDraftBlocked ? null : syncHtml ?? asyncHtml;
+    const html = isDraftBlocked ? null : (syncHtml ?? asyncHtml);
     const loadFailed = !isDraftBlocked && html === null && (!slug || !(slug in blogHtmlLoaders) || asyncFailed);
 
     useMermaid(articleRef, [html]);
@@ -82,24 +80,23 @@ export default function BlogPost() {
 
         let cancelled = false;
         loader()
-            .then((mod) => { if (!cancelled) setAsyncHtml(mod.html); })
-            .catch(() => { if (!cancelled) setAsyncFailed(true); });
-        return () => { cancelled = true; };
+            .then((mod) => {
+                if (!cancelled) setAsyncHtml(mod.html);
+            })
+            .catch(() => {
+                if (!cancelled) setAsyncFailed(true);
+            });
+        return () => {
+            cancelled = true;
+        };
     }, [slug, syncHtml, isDraftBlocked]);
 
     if (!post) {
         return (
             <div className="max-w-[800px] mx-auto py-16 px-4 text-center space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight">
-                    Post not found
-                </h1>
-                <p className="text-muted-foreground">
-                    The post you're looking for doesn't exist.
-                </p>
-                <Link
-                    to="/blog"
-                    className="inline-block text-primary underline hover:text-primary/80"
-                >
+                <h1 className="text-4xl font-bold tracking-tight">Post not found</h1>
+                <p className="text-fg-muted">The post you're looking for doesn't exist.</p>
+                <Link to="/blog" className="inline-block text-signal underline hover:text-signal/80">
                     Back to blog
                 </Link>
             </div>
@@ -117,117 +114,109 @@ export default function BlogPost() {
         <div className="mx-auto w-full min-w-0 max-w-[1120px] px-4 sm:px-8 py-16 animate-in fade-in xl:grid xl:grid-cols-[minmax(0,760px)_240px] xl:gap-16 xl:justify-center">
             <ReadingProgress articleRef={articleRef} />
             <div className="w-full min-w-0 max-w-[760px] mx-auto xl:mx-0 xl:max-w-none">
-            <SeoHead
-                title={frontmatter.title}
-                description={frontmatter.summary}
-                ogImage={frontmatter.coverImage}
-                ogType="article"
-                url={`/blog/${slug}`}
-            />
-            <Helmet>
-                <script type="application/ld+json">
-                    {JSON.stringify(jsonLd)}
-                </script>
-            </Helmet>
-            <header className="space-y-4 mb-8">
-                <Link
-                    to="/blog"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                >
-                    &larr; Back to blog
-                </Link>
-                <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
-                    {frontmatter.draft && (
-                        <span className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
-                            draft
-                        </span>
-                    )}
-                    {frontmatter.title}
-                </h1>
-                <div className="flex items-center gap-3 text-sm text-muted-foreground font-sans">
-                    <span>{frontmatter.author}</span>
-                    <span>&middot;</span>
-                    <time>{frontmatter.date}</time>
-                    {frontmatter.updated && (
-                        <>
-                            <span>&middot;</span>
-                            <span>Updated {frontmatter.updated}</span>
-                        </>
-                    )}
-                    {frontmatter.readingTimeMinutes && (
-                        <>
-                            <span>&middot;</span>
-                            <span>{frontmatter.readingTimeMinutes} min read</span>
-                        </>
-                    )}
-                </div>
-                {frontmatter.difficulty && (
-                    <div><DifficultyBadge level={frontmatter.difficulty} /></div>
-                )}
-                <div className="flex flex-wrap gap-1.5">
-                    {frontmatter.tags.map((tag) => (
-                        <TagBadge key={tag} tag={tag} />
-                    ))}
-                </div>
-            </header>
-
-            <div className="border-t border-border mb-10" />
-
-            {frontmatter.access === "members" && !isLoaded ? (
-                <div className="flex items-center justify-center py-16">
-                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                </div>
-            ) : frontmatter.access === "members" && !isSignedIn ? (
-                <MembersGate />
-            ) : html === null ? (
-                loadFailed ? (
-                    <div className="py-10 text-sm text-muted-foreground">
-                        Post content failed to load.
+                <SeoHead
+                    title={frontmatter.title}
+                    description={frontmatter.summary}
+                    ogImage={frontmatter.coverImage}
+                    ogType="article"
+                    url={`/blog/${slug}`}
+                />
+                <Helmet>
+                    <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
+                </Helmet>
+                <header className="space-y-4 mb-8">
+                    <Link to="/blog" className="text-sm text-fg-muted hover:text-fg transition-colors">
+                        &larr; Back to blog
+                    </Link>
+                    <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
+                        {frontmatter.draft && (
+                            <span className="text-sm font-mono uppercase tracking-wider text-ink-amber border border-ink-amber/40 rounded px-2 py-1 mr-3 align-middle">
+                                draft
+                            </span>
+                        )}
+                        {frontmatter.title}
+                    </h1>
+                    <div className="flex items-center gap-3 text-sm text-fg-muted font-sans">
+                        <span>{frontmatter.author}</span>
+                        <span>&middot;</span>
+                        <time>{frontmatter.date}</time>
+                        {frontmatter.updated && (
+                            <>
+                                <span>&middot;</span>
+                                <span>Updated {frontmatter.updated}</span>
+                            </>
+                        )}
+                        {frontmatter.readingTimeMinutes && (
+                            <>
+                                <span>&middot;</span>
+                                <span>{frontmatter.readingTimeMinutes} min read</span>
+                            </>
+                        )}
                     </div>
+                    {frontmatter.difficulty && (
+                        <div>
+                            <DifficultyBadge level={frontmatter.difficulty} />
+                        </div>
+                    )}
+                    <div className="flex flex-wrap gap-1.5">
+                        {frontmatter.tags.map((tag) => (
+                            <TagBadge key={tag} tag={tag} />
+                        ))}
+                    </div>
+                </header>
+
+                <div className="border-t border-line mb-10" />
+
+                {frontmatter.access === "members" && !isLoaded ? (
+                    <LoadingIndicator />
+                ) : frontmatter.access === "members" && !isSignedIn ? (
+                    <MembersGate />
+                ) : html === null ? (
+                    loadFailed ? (
+                        <div className="py-10 text-sm text-fg-muted">Post content failed to load.</div>
+                    ) : (
+                        <LoadingIndicator />
+                    )
                 ) : (
-                    <div className="flex items-center justify-center py-16">
-                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                    </div>
-                )
-            ) : (
-                <ErrorBoundary>
-                    <article
-                        ref={articleRef}
-                        className={proseClasses}
-                        dangerouslySetInnerHTML={{ __html: html }}
-                    />
-                </ErrorBoundary>
-            )}
+                    <ErrorBoundary>
+                        <article
+                            ref={articleRef}
+                            className={proseClasses}
+                            // oxlint-disable-next-line react/no-danger -- html is build-time rehype-sanitize/shiki/katex output from scripts/content-build.ts (static content/ markdown), never runtime user input
+                            dangerouslySetInnerHTML={{ __html: html }}
+                        />
+                    </ErrorBoundary>
+                )}
 
-            <RelatedPosts slugs={frontmatter.relatedAlgorithms} type="algorithm" />
-            <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
+                <RelatedPosts slugs={frontmatter.relatedAlgorithms} type="algorithm" />
+                <RelatedPosts slugs={frontmatter.relatedDemos} type="demo" />
 
-            {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
-                <footer className="mt-12 pt-6 border-t border-border space-y-3">
-                    {frontmatter.repoLinks?.map((url) => (
-                        <a
-                            key={url}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block text-primary underline hover:text-primary/80 text-sm"
-                        >
-                            Repository: {url}
-                        </a>
-                    ))}
-                    {frontmatter.demoLinks?.map((url) => (
-                        <a
-                            key={url}
-                            href={url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="block text-primary underline hover:text-primary/80 text-sm"
-                        >
-                            Demo: {url}
-                        </a>
-                    ))}
-                </footer>
-            )}
+                {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
+                    <footer className="mt-12 pt-6 border-t border-line space-y-3">
+                        {frontmatter.repoLinks?.map((url) => (
+                            <a
+                                key={url}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block text-signal underline hover:text-signal/80 text-sm"
+                            >
+                                Repository: {url}
+                            </a>
+                        ))}
+                        {frontmatter.demoLinks?.map((url) => (
+                            <a
+                                key={url}
+                                href={url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="block text-signal underline hover:text-signal/80 text-sm"
+                            >
+                                Demo: {url}
+                            </a>
+                        ))}
+                    </footer>
+                )}
             </div>
             <aside className="hidden xl:block">
                 <div className="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pr-2">

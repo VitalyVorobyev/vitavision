@@ -23,7 +23,10 @@ export async function checkSteps(
     for (const step of steps) {
         for (const focusId of step.focus) {
             if (!nodeIds.has(focusId)) {
-                diagnostics.push({ level: "error", message: `[${file}] step "${step.title}" focus references unknown node "${focusId}"` });
+                diagnostics.push({
+                    level: "error",
+                    message: `[${file}] step "${step.title}" focus references unknown node "${focusId}"`,
+                });
             }
         }
     }

@@ -27,10 +27,96 @@ Open `http://localhost:5173/editor`, upload an image or pick a sample, choose an
 
 ```bash
 bun run build                          # Type-check + Vite production build
-bun run lint                           # ESLint
+bun run lint                           # Oxlint
+bun run format                         # oxfmt (.oxfmtrc.json; CI runs format:check)
 npx vitest run                         # Unit tests
 bun run scripts/test-wasm-schemas.ts   # WASM integration tests
+bun run test:screens                   # screenshots: main routes + editor canvas per algorithm (after a build)
+bun run test:e2e                       # behavioural editor specs (after a build)
 ```
+
+`test:screens` serves `dist/` with `vite preview` and captures seventeen main routes in
+light and dark. Its baseline (`e2e/.screens/`) is local and uncommitted: capture it with
+`--update-snapshots` before a change such as a dependency upgrade, and compare after it
+on the same machine. It is not a CI gate. The project also holds `editor-visual.spec.ts`
+(the editor canvas after each algorithm run, light theme), the before/after check for a
+canvas-renderer change.
+
+`test:e2e` drives the editor in a browser against `vite preview` and asserts on data, not
+pixels, so it is renderer-agnostic: `editor-algorithms` runs each registered algorithm on its
+sample and compares the exported features (counts per kind, first three positions) with the
+committed `e2e/fixtures/editor-algorithm-counts.json`; `editor-drawing` and `editor-touch`
+draw, select, move and delete shapes with real pointer events and check the exported geometry,
+pan and zoom. Regenerate the fixture with `UPDATE_E2E_FIXTURES=1 bun run test:e2e` after an
+intended detector change; set `E2E_COORD_OFFSET=-0.5` to accept a half-pixel convention
+change. It is not a CI gate either: the fixture was captured on one machine and
+cross-platform bit-exactness of the WASM runs is unverified.
+
+The toolchain follows the shared vitavision baseline: compiler options from
+`@vitavision/config-ts` and lint from `@vitavision/config-oxlint` (type-aware, Oxlint with `oxlint-tsgolint`), with no
+exceptions: `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` are on. Index
+reads are narrowed rather than asserted where it reads naturally; a `!` is reserved for
+an access whose bound is visible right there (a loop bound, a length check, a fixed-size
+buffer). An optional prop that callers legitimately pass `undefined` to is declared
+`prop?: T | undefined`.
+
+---
+
+## Styling and theme
+
+The site is styled with Tailwind v4 (through `@tailwindcss/postcss`) on the tokens of
+[`@vitavision/ui`](https://github.com/VitalyVorobyev/lab-ui/tree/main/packages/ui), the
+shared vitavision design system (lab-ui PLAN L3-3):
+
+- **Tokens.** `src/index.css` imports `@vitavision/ui/styles.css`: `ground`, `surface`,
+  `raised`, `overlay`, `line`, `line-strong`, `fg`, `fg-muted`, `fg-subtle`, `signal`
+  (the one accent), the verdicts `normal` / `defect` / `warn`, and the radii
+  `rounded-control` / `rounded-panel`. Use the utilities (`bg-surface`, `text-fg-muted`)
+  or `var(--surface)`; never a hex or HSL literal in a component.
+- **Editorial token layer.** `src/styles/editorial-tokens.css` holds only what ui has no
+  name for: the article reading colours (`--article-body`, `--article-heading`,
+  `--article-link`), the Atlas graph and paper-lineage category palettes (`--graph-*`,
+  `--lineage-*`), the article block and inline-colour palettes used by
+  `src/styles/article.css` (`--vv-*`), and the logo's cyan pupil (`--vv-brand-mark`).
+  Chrome there is written in ui tokens; category colours are literals, held at 4.5:1 as
+  text in both themes.
+- **Type.** IBM Plex Sans and Plex Mono from `@vitavision/ui/fonts.css` (imported in
+  `main.tsx`: see the comment there for why not in `index.css`); Source Serif 4
+  (`font-serif`) for editorial body text only. Prose keeps Source Serif's own figures
+  (`.prose, .font-serif` reset ui's `tabular-nums`).
+- **Theme.** ui's controller, under the storage key `"theme"` (`src/lib/theme.ts`):
+  `light`, `dark` or `system` (the default, following the OS). The inline script in
+  `index.html` paints the `dark` class and the favicon before the first paint;
+  `main.tsx` calls `initTheme`; the Navbar renders ui's `ThemeToggle`. Read the painted
+  theme with `useIsDark()`, never from storage. ui's `ThemeToggle`, `Tooltip` and
+  `InfoHint` need a `TooltipProvider` above them: the app root, the prerender tree in
+  `entry-server.tsx` and each article-illustration island have one.
+- **Controls.** Everything interactive (the editor, the target generator, the article
+  illustrations) is built from ui's components: `Button`, `Field` with `NumberInput`,
+  `Select`, `SegmentedControl`, `Checkbox`, `Switch`, `Slider`, `ToggleChip`, `Section`,
+  `Disclosure`, `Panel`, `Dialog`, `Callout`, `Tooltip` and `InfoHint`. The seams to the
+  typed configs are in `src/lib/fieldBindings.ts`: `numberInputProps` (text ↔ an optional
+  number), `choiceProps` (a string union ↔ ui's string options) and `fieldGridClass`. A
+  field with a help mark is a `Field as="group"` with an `InfoHint` annotation and an
+  `aria-label` on its control: a button must not sit inside the field's `<label>`. The
+  editor rail and the target generator's side panel are `DensityProvider value="compact"`;
+  touch layouts keep the comfortable density. Editorial pages keep their own markup
+  (visual-language §7).
+- **Tokens only (G5.1).** `.oxlintrc.json` turns on `vitavision/tokens-only` for `src/**`: no raw
+  Tailwind palette class, no hex literal. The editor's image canvas (`@vitavision/stage2d`
+  and `@vitavision/overlays`) paints in overlay roles (`--stage-feature`, `--stage-model`,
+  `--stage-selection`, … from `@vitavision/stage2d/styles.css`), never a literal colour or a
+  score tone. Colours that are data sit in
+  a few allowlisted modules, each exempted in `.oxlintrc.json` with its reason:
+  `src/store/editor/featureColors.ts`, `src/components/targetgen/printColors.ts`,
+  `src/components/illustrations/_shared/dataColors.ts` (and Shiki's output in
+  `src/generated/`).
+- **Toasts.** `toast()` and the single `<Toaster />` from `@vitavision/ui` (mounted once in `App.tsx`): news that needs no
+  answer. Something that must be acknowledged is a `Dialog`; an error tied to one control is
+  that control's `Field` `error`.
+- **CSP.** The inline theme script is allowed by its sha256 in the CSP of `index.html`
+  and `public/_headers`. Any edit to the script's text changes the hash: recompute it
+  from the built page (`dist/index.html`) and update both.
 
 ---
 
@@ -39,7 +125,7 @@ bun run scripts/test-wasm-schemas.ts   # WASM integration tests
 The frontend is deployed as a static site on **Cloudflare Pages**. Every merge to `main` triggers CI:
 
 1. **`validate-content`** — frontmatter, images, links
-2. **`build-frontend`** — lint + type-check + Vite build
+2. **`build-frontend`** — lint + format check + type-check + Vite build
 
 Security headers are configured in `public/_headers` (CSP, HSTS, etc.).
 
@@ -56,11 +142,13 @@ src/
       wasmWorkerProxy.ts     # Main-thread API: typed proxy + zero-copy transfer
       imageDecoder.ts        # Canvas-based RGBA pixel decoder
   components/editor/
-    algorithms/              # Algorithm adapters, configs, overlays
-    canvas/                  # Konva canvas layers (features, heatmap)
+    algorithms/              # Algorithm adapters and configs
+    annotations/             # Hand-drawn shapes: layers, tool surface, drawing and shape-edit arithmetic
+    overlay/                 # Features to a `TargetDetection` (what `@vitavision/overlays` draws)
+    canvas/                  # canvas helpers (pixel readout, feature tooltip)
     panels/                  # Right panel (configure, results, features)
   store/editor/
-    useEditorStore.ts        # Zustand store (features, zoom, algorithm state)
+    useEditorStore.ts        # Zustand store (features, stage view, algorithm state)
   pages/
     Editor.tsx               # Main editor page
 ```

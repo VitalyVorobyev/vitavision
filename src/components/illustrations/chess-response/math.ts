@@ -1,8 +1,4 @@
-import {
-    createGrid,
-    createLocalMeanSamples,
-    createRingSamples,
-} from "./patterns";
+import { createGrid, createLocalMeanSamples, createRingSamples } from "./patterns";
 import type {
     ChessResponseComputation,
     ChessResponseControls,
@@ -16,21 +12,23 @@ function mean(values: number[]): number {
 }
 
 function oppositeSample(samples: ChessResponsePoint[], index: number): ChessResponsePoint {
-    return samples[(index + 8) % samples.length];
+    // Modulo keeps the index within [0, samples.length).
+    return samples[(index + 8) % samples.length]!;
 }
 
-export function computeChessResponse(
-    controls: ChessResponseControls,
-): ChessResponseComputation {
+export function computeChessResponse(controls: ChessResponseControls): ChessResponseComputation {
     const grid = createGrid(controls);
     const samples = createRingSamples(controls);
     const localMeanSamples = createLocalMeanSamples(controls);
 
+    // Term indices below are < CHESS_RESPONSE_SAMPLE_COUNT (16), the ring-sample count.
+    const intensityAt = (index: number) => samples[index]!.intensity;
+
     const srTerms: ChessResponseSumTerm[] = Array.from({ length: 4 }, (_, phase) => {
         const pairA: [number, number] = [phase, phase + 8];
         const pairB: [number, number] = [phase + 4, phase + 12];
-        const sumA = samples[pairA[0]].intensity + samples[pairA[1]].intensity;
-        const sumB = samples[pairB[0]].intensity + samples[pairB[1]].intensity;
+        const sumA = intensityAt(pairA[0]) + intensityAt(pairA[1]);
+        const sumB = intensityAt(pairB[0]) + intensityAt(pairB[1]);
 
         return {
             phase,
@@ -47,7 +45,7 @@ export function computeChessResponse(
         return {
             index,
             pair: [index, opposite.index],
-            value: Math.abs(samples[index].intensity - opposite.intensity),
+            value: Math.abs(intensityAt(index) - opposite.intensity),
         };
     });
 
@@ -73,9 +71,7 @@ export function computeChessResponse(
     };
 }
 
-export function describePatternResponse(
-    controls: ChessResponseControls,
-): string {
+export function describePatternResponse(controls: ChessResponseControls): string {
     switch (controls.pattern) {
         case "corner":
             return "Corner samples form the expected two-cycle structure, so SR stays dominant while DR and MR remain comparatively small.";
@@ -93,17 +89,17 @@ export function responseStatus(value: number): {
     if (value > 150) {
         return {
             label: "strong corner response",
-            className: "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+            className: "border-normal/30 bg-normal/10 text-normal",
         };
     }
     if (value > 0) {
         return {
             label: "weak positive response",
-            className: "border-sky-500/30 bg-sky-500/10 text-sky-700 dark:text-sky-300",
+            className: "border-signal/30 bg-signal/10 text-signal",
         };
     }
     return {
         label: "suppressed response",
-        className: "border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300",
+        className: "border-warn/30 bg-warn/10 text-warn",
     };
 }

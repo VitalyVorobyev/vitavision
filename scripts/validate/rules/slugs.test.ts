@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { slugsRule } from "./slugs.ts";
 import type { MarkdownDirEntry } from "../../lib/content-kinds.ts";
 
@@ -14,7 +14,7 @@ function algo(file: string, overrides: Record<string, unknown> = {}): MarkdownDi
 
 describe("slugsRule", () => {
     it("passes when prerequisites/failureModes/relations all resolve", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", {
                     prerequisites: ["b"],
@@ -28,7 +28,7 @@ describe("slugsRule", () => {
     });
 
     it("flags an unknown slug in prerequisites and in relations[].target", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [
                 algo("a.md", {
                     prerequisites: ["ghost"],

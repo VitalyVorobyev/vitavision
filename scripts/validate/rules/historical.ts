@@ -29,9 +29,7 @@ export function historicalRule(ctx: ValidationContext): Diagnostic[] {
         }
 
         // At least one relations entry must be a high-confidence generalized_by.
-        const supersededBy = relations.find(
-            (r) => r.type === "generalized_by" && r.confidence === "high",
-        );
+        const supersededBy = relations.find((r) => r.type === "generalized_by" && r.confidence === "high");
         if (!supersededBy) {
             diagnostics.push({
                 level: "error",

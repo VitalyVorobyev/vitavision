@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import NarrativePage from "./NarrativePage";
 
@@ -9,7 +9,7 @@ import NarrativePage from "./NarrativePage";
 vi.mock("@clerk/clerk-react", () => ({
     useAuth: () => ({ isLoaded: true, isSignedIn: true }),
     useUser: () => ({ isLoaded: true, user: { publicMetadata: { role: "admin" } } }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     SignInButton: ({ children }: { children: any }) => <>{children}</>,
 }));
 
@@ -47,9 +47,7 @@ describe("NarrativePage", () => {
     it("renders the header, the constellation, and the full essay", async () => {
         renderAt("/atlas/narratives/example-draft");
 
-        expect(
-            screen.getByRole("heading", { name: /Example Narrative \(draft fixture\)/ }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: /Example Narrative \(draft fixture\)/ })).toBeInTheDocument();
         expect(screen.getByText("5 stops · 2 chapters")).toBeInTheDocument();
 
         // Node chips come from the async narrative module.
@@ -58,9 +56,7 @@ describe("NarrativePage", () => {
 
         // Walkthrough starts collapsed; the full essay renders below the canvas.
         expect(screen.getByRole("button", { name: "Start the walkthrough" })).toBeInTheDocument();
-        expect(
-            screen.getByText(/minimal draft fixture for the narrative content kind/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/minimal draft fixture for the narrative content kind/i)).toBeInTheDocument();
     });
 
     it("shows the step's chapter and dims unfocused nodes when ?step= is set", async () => {
@@ -71,8 +67,7 @@ describe("NarrativePage", () => {
         expect(screen.getAllByText(/DINOv2 keeps the ViT backbone/)).toHaveLength(2);
 
         // `attn` is not in step 2's focus, so its chip is dimmed.
-        const chip = (id: string) =>
-            document.querySelector<HTMLElement>(`[data-narrative-node="${id}"]`);
+        const chip = (id: string) => document.querySelector<HTMLElement>(`[data-narrative-node="${id}"]`);
         expect(chip("attn")?.style.opacity).toBe("0.26");
         expect(chip("vit-node")?.style.opacity).toBe("1");
     });
@@ -99,9 +94,7 @@ describe("NarrativePage", () => {
 
         // Inspector shows the "Question" kind label, the takeaway, and NO link/button.
         expect(await screen.findByText("Question")).toBeInTheDocument();
-        expect(
-            screen.getByText(/DINOv2 suggests no, but the picture is not fully settled/),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/DINOv2 suggests no, but the picture is not fully settled/)).toBeInTheDocument();
         expect(screen.queryByRole("link", { name: /Open page/ })).toBeNull();
         expect(screen.queryByRole("link", { name: /Read the paper/ })).toBeNull();
     });
@@ -110,9 +103,7 @@ describe("NarrativePage", () => {
         renderAt("/atlas/narratives/example-draft?step=1");
 
         expect(await screen.findByText("Step 1/2")).toBeInTheDocument();
-        expect(
-            screen.getByText(/Attention was already the general mechanism/),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/Attention was already the general mechanism/)).toBeInTheDocument();
     });
 
     it("hides the not-yet-revealed question node in reveal mode at step 1", async () => {

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Download, Archive } from "lucide-react";
 import JSZip from "jszip";
+import { Button } from "@vitavision/ui";
 import { rasterizeSvgToPng } from "../pngRasterizer";
+import { screenDownloadBase } from "../screenTarget";
 import type { TargetConfig, PageConfig, TargetGeneratorState } from "../types";
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -34,8 +36,61 @@ function buildFilename(state: TargetGeneratorState, ext: string): string {
         case "puzzleboard":
             dims = `${t.config.rows}x${t.config.cols}`;
             break;
+        case "puzzlepole":
+            dims = `${t.config.circumferenceSquares}x${t.config.axialSquares}`;
+            break;
     }
     return `vitavision_${t.targetType}_${dims}.${ext}`;
+}
+
+/**
+ * Screen medium: the native-resolution PNG plus its JSON sidecar (realised
+ * geometry). SVG, DXF and print downloads do not apply to a screen target.
+ */
+function ScreenDownloads({ state }: { state: TargetGeneratorState }) {
+    const result = state.screenResult;
+    const disabled = state.validation.errors.length > 0 || !result;
+    const base = screenDownloadBase(state.target, state.screen);
+
+    const savePng = () => {
+        if (!result) return;
+        // Copy into a fresh ArrayBuffer-backed view: Blob parts reject SharedArrayBuffer-typed views.
+        downloadBlob(new Blob([new Uint8Array(result.png)], { type: "image/png" }), `${base}.png`);
+    };
+    const saveJson = () => {
+        if (!result) return;
+        downloadBlob(new Blob([result.sidecarJson], { type: "application/json" }), `${base}.json`);
+    };
+    const saveBoth = () => {
+        savePng();
+        saveJson();
+    };
+
+    return (
+        <div className="space-y-2">
+            <Button
+                variant="primary"
+                className="w-full"
+                onClick={saveBoth}
+                disabled={disabled}
+                title="Download the PNG and its JSON sidecar"
+                icon={<Archive />}
+            >
+                Download PNG + JSON
+            </Button>
+            <div className="grid grid-cols-2 gap-2">
+                <Button onClick={savePng} disabled={disabled} title="Download PNG" icon={<Download />}>
+                    PNG
+                </Button>
+                <Button onClick={saveJson} disabled={disabled} title="Download JSON sidecar" icon={<Download />}>
+                    JSON
+                </Button>
+            </div>
+            <p className="text-[11px] leading-5 text-fg-muted">
+                Keep the JSON next to the PNG: it records the realised geometry to calibrate with.
+            </p>
+        </div>
+    );
 }
 
 /**
@@ -53,7 +108,7 @@ export type DxfGenerator = (target: TargetConfig, page: PageConfig) => Promise<s
 
 interface Props {
     state: TargetGeneratorState;
-    generateDxf?: DxfGenerator;
+    generateDxf?: DxfGenerator | undefined;
 }
 
 export default function DownloadBar({ state, generateDxf }: Props) {
@@ -64,10 +119,7 @@ export default function DownloadBar({ state, generateDxf }: Props) {
 
     const handleSvg = () => {
         if (!svg) return;
-        downloadBlob(
-            new Blob([svg], { type: "image/svg+xml" }),
-            buildFilename(state, "svg"),
-        );
+        downloadBlob(new Blob([svg], { type: "image/svg+xml" }), buildFilename(state, "svg"));
     };
 
     // Deliberately rasterizes the app's own preview SVG (which already has
@@ -88,10 +140,7 @@ export default function DownloadBar({ state, generateDxf }: Props) {
         setGeneratingDxf(true);
         try {
             const dxf = await generateDxf(state.target, state.page);
-            downloadBlob(
-                new Blob([dxf], { type: "application/dxf" }),
-                buildFilename(state, "dxf"),
-            );
+            downloadBlob(new Blob([dxf], { type: "application/dxf" }), buildFilename(state, "dxf"));
         } catch (error) {
             console.error("Failed to generate DXF", error);
         } finally {
@@ -100,15 +149,8 @@ export default function DownloadBar({ state, generateDxf }: Props) {
     };
 
     const handleJson = () => {
-        const json = JSON.stringify(
-            { target: state.target, page: state.page },
-            null,
-            2,
-        );
-        downloadBlob(
-            new Blob([json], { type: "application/json" }),
-            buildFilename(state, "json"),
-        );
+        const json = JSON.stringify({ target: state.target, page: state.page }, null, 2);
+        downloadBlob(new Blob([json], { type: "application/json" }), buildFilename(state, "json"));
     };
 
     const handleZip = async () => {
@@ -131,48 +173,44 @@ export default function DownloadBar({ state, generateDxf }: Props) {
         }
     };
 
+    if (state.medium === "screen") return <ScreenDownloads state={state} />;
+
     const disabled = hasErrors || !svg || generatingDxf || zipping;
     // DXF and the ZIP bundle both need the injected generator.
     const dxfDisabled = disabled || !generateDxf;
 
-    const btnClass =
-        "flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium transition-colors " +
-        "hover:border-muted-foreground/40 hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed";
-
     return (
         <div className="space-y-2">
             <div className="grid grid-cols-2 gap-2">
-                <button className={btnClass} onClick={handleSvg} disabled={disabled} title="Download SVG">
-                    <Download size={14} />
+                <Button onClick={handleSvg} disabled={disabled} title="Download SVG" icon={<Download />}>
                     SVG
-                </button>
-                <button className={btnClass} onClick={handlePng} disabled={disabled} title="Download PNG">
-                    <Download size={14} />
+                </Button>
+                <Button onClick={() => void handlePng()} disabled={disabled} title="Download PNG" icon={<Download />}>
                     PNG
-                </button>
-                <button className={btnClass} onClick={handleJson} disabled={disabled} title="Download config JSON">
-                    <Download size={14} />
+                </Button>
+                <Button onClick={handleJson} disabled={disabled} title="Download config JSON" icon={<Download />}>
                     JSON
-                </button>
-                <button
-                    className={btnClass}
+                </Button>
+                <Button
                     onClick={() => void handleDxf()}
                     disabled={dxfDisabled}
                     title="Download DXF"
+                    icon={<Download />}
                 >
-                    <Download size={14} />
                     DXF
-                </button>
+                </Button>
             </div>
-            <button
-                className={`${btnClass} w-full justify-center`}
+            <Button
+                variant="primary"
+                className="w-full"
                 onClick={() => void handleZip()}
                 disabled={dxfDisabled}
+                loading={zipping}
                 title="Download all formats as ZIP"
+                icon={<Archive />}
             >
-                <Archive size={14} />
                 {zipping ? "Bundling…" : "Download All (ZIP)"}
-            </button>
+            </Button>
         </div>
     );
 }

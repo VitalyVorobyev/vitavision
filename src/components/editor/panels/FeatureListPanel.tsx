@@ -1,5 +1,6 @@
 import { Fragment, useCallback, useEffect, useMemo, useRef } from "react";
 import { ChevronLeft, ChevronRight, Download, Eye, EyeOff, Lock, Trash2, Upload } from "lucide-react";
+import { Button, cn } from "@vitavision/ui";
 
 import { exportFeaturesAsJson, promptFeatureImport } from "../featureIo";
 import {
@@ -8,9 +9,15 @@ import {
     isFeatureGroupVisible,
     type FeatureGroup,
 } from "../../../store/editor/featureGroups";
-import { isReadonlyFeature, useEditorStore, type Feature, type FeatureMeta } from "../../../store/editor/useEditorStore";
+import {
+    isReadonlyFeature,
+    useEditorStore,
+    type Feature,
+    type FeatureMeta,
+} from "../../../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
-import { fmtCoord, fmtScore, fmtDistance } from "./formatNumber";
+import { useFeatureNav } from "../hooks/useFeatureNav";
+import { fmtCoord, fmtScore } from "./formatNumber";
 
 /* ── helpers ─────────────────────────────────────────────────── */
 
@@ -31,18 +38,12 @@ function buildDetailMeta(meta: FeatureMeta): MetaRow[] {
         meta.targetPosition !== undefined && meta.targetPosition !== null
             ? { label: "Target pos", value: `${fmtCoord(meta.targetPosition.x)}, ${fmtCoord(meta.targetPosition.y)}` }
             : null,
-        meta.rotation !== undefined
-            ? { label: "Rotation", value: `${meta.rotation.toFixed(1)}°` }
-            : null,
-        meta.hamming !== undefined && meta.hamming !== null
-            ? { label: "Hamming", value: String(meta.hamming) }
-            : null,
+        meta.rotation !== undefined ? { label: "Rotation", value: `${meta.rotation.toFixed(1)}°` } : null,
+        meta.hamming !== undefined && meta.hamming !== null ? { label: "Hamming", value: String(meta.hamming) } : null,
         meta.borderScore !== undefined && meta.borderScore !== null
             ? { label: "Border score", value: fmtScore(meta.borderScore) }
             : null,
-        meta.code !== undefined && meta.code !== null
-            ? { label: "Code", value: String(meta.code) }
-            : null,
+        meta.code !== undefined && meta.code !== null ? { label: "Code", value: String(meta.code) } : null,
         meta.inverted !== undefined && meta.inverted !== null
             ? { label: "Inverted", value: meta.inverted ? "yes" : "no" }
             : null,
@@ -51,9 +52,6 @@ function buildDetailMeta(meta: FeatureMeta): MetaRow[] {
             : null,
         meta.contrast !== undefined && meta.contrast !== null
             ? { label: "Contrast", value: fmtScore(meta.contrast) }
-            : null,
-        meta.distanceCells !== undefined && meta.distanceCells !== null
-            ? { label: "Distance", value: `${fmtDistance(meta.distanceCells)} cells` }
             : null,
         meta.offsetCells !== undefined && meta.offsetCells !== null
             ? { label: "Offset", value: `di=${meta.offsetCells.di}, dj=${meta.offsetCells.dj}` }
@@ -67,14 +65,20 @@ function featureXY(feature: Feature): { x: number; y: number } | null {
     if (feature.type === "point" || feature.type === "directed_point" || feature.type === "labeled_point") {
         return { x: feature.x, y: feature.y };
     }
-    if (feature.type === "bbox" || feature.type === "ellipse" || feature.type === "ring_marker" || feature.type === "aruco_marker") {
+    if (
+        feature.type === "bbox" ||
+        feature.type === "ellipse" ||
+        feature.type === "ring_marker" ||
+        feature.type === "aruco_marker"
+    ) {
         return { x: feature.x, y: feature.y };
     }
     if (feature.type === "line") {
         return { x: feature.points[0], y: feature.points[1] };
     }
     if (feature.type === "polyline" && feature.points.length >= 2) {
-        return { x: feature.points[0], y: feature.points[1] };
+        // Length checked just above, so indices 0 and 1 are in bounds.
+        return { x: feature.points[0]!, y: feature.points[1]! };
     }
     return null;
 }
@@ -90,33 +94,11 @@ function FeatureNavigator({
     selectedFeatureId: string | null;
     setSelectedFeatureId: (id: string) => void;
 }) {
-    // Find which group the selected feature belongs to
-    const activeGroupIndex = useMemo(() => {
-        if (!selectedFeatureId) return -1;
-        return groups.findIndex((g) => g.features.some((f) => f.id === selectedFeatureId));
-    }, [groups, selectedFeatureId]);
-
-    const group = activeGroupIndex >= 0 ? groups[activeGroupIndex] : null;
-
-    const indexInGroup = useMemo(() => {
-        if (!group || !selectedFeatureId) return -1;
-        return group.features.findIndex((f) => f.id === selectedFeatureId);
-    }, [group, selectedFeatureId]);
-
-    const ids = useMemo(() => group?.features.map((f) => f.id) ?? [], [group]);
-    const total = ids.length;
-
-    const goPrev = useCallback(() => {
-        if (total === 0) return;
-        const next = indexInGroup > 0 ? indexInGroup - 1 : total - 1;
-        setSelectedFeatureId(ids[next]);
-    }, [indexInGroup, total, ids, setSelectedFeatureId]);
-
-    const goNext = useCallback(() => {
-        if (total === 0) return;
-        const next = indexInGroup < total - 1 ? indexInGroup + 1 : 0;
-        setSelectedFeatureId(ids[next]);
-    }, [indexInGroup, total, ids, setSelectedFeatureId]);
+    const { activeGroupIndex, group, total, goPrev, goNext, position } = useFeatureNav(
+        groups,
+        selectedFeatureId,
+        setSelectedFeatureId,
+    );
 
     const handleKeyDown = useCallback(
         (e: React.KeyboardEvent) => {
@@ -142,41 +124,33 @@ function FeatureNavigator({
 
     if (total === 0) return null;
 
-    const display = indexInGroup >= 0
-        ? `${indexInGroup + 1} / ${total}`
-        : `— / ${total}`;
-
     return (
         <div
             ref={containerRef}
             tabIndex={0}
             onKeyDown={handleKeyDown}
-            className="flex items-center justify-center gap-3 outline-none focus:ring-1 focus:ring-primary/30 rounded-md py-1"
+            className="flex items-center justify-center gap-3 rounded-control py-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-signal"
         >
-            <button
-                type="button"
+            <Button
+                variant="ghost"
+                className="px-1.5"
                 onClick={goPrev}
                 disabled={total === 0}
-                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-30"
-                title="Previous feature"
-            >
-                <ChevronLeft size={16} />
-            </button>
-            <span className="text-xs text-foreground font-medium text-center">
-                {group && (
-                    <span className="text-muted-foreground">{group.label} </span>
-                )}
-                <span className="tabular-nums">{display}</span>
+                aria-label="Previous feature"
+                icon={<ChevronLeft />}
+            />
+            <span className="text-xs text-fg font-medium text-center">
+                {group && <span className="text-fg-muted">{group.label} </span>}
+                <span className="tabular-nums">{position}</span>
             </span>
-            <button
-                type="button"
+            <Button
+                variant="ghost"
+                className="px-1.5"
                 onClick={goNext}
                 disabled={total === 0}
-                className="p-1 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors disabled:opacity-30"
-                title="Next feature"
-            >
-                <ChevronRight size={16} />
-            </button>
+                aria-label="Next feature"
+                icon={<ChevronRight />}
+            />
         </div>
     );
 }
@@ -196,36 +170,36 @@ function SelectedFeatureCard({
     const xy = featureXY(feature);
 
     // Resolve score from meta or features that carry it directly.
-    const score = meta?.score
-        ?? (feature.type === "directed_point" ? feature.score : null)
-        ?? (feature.type === "labeled_point" ? feature.score : null);
+    const score =
+        meta?.score ??
+        (feature.type === "directed_point" ? feature.score : null) ??
+        (feature.type === "labeled_point" ? feature.score : null);
     const detailRows = meta ? buildDetailMeta(meta) : [];
 
     // labeled_point (puzzleboard / charuco corners) carries its grid + target-board
     // info directly on the feature, not inside meta — surface it here.
-    const labeledPointInfo = feature.type === "labeled_point"
-        ? {
-            gridIndex: feature.gridIndex,
-            masterId: feature.masterId,
-            targetPosMm: feature.targetPosMm,
-        }
-        : null;
+    const labeledPointInfo =
+        feature.type === "labeled_point"
+            ? {
+                  gridIndex: feature.gridIndex,
+                  masterId: feature.masterId,
+                  targetPosMm: feature.targetPosMm,
+              }
+            : null;
 
     return (
-        <div className="rounded-lg border border-primary/30 bg-primary/6 px-4 py-3 space-y-2.5">
+        <div className="rounded-panel border border-signal/30 bg-signal/6 px-4 py-3 space-y-2.5">
             {/* Header */}
             <div className="flex items-center justify-between">
-                <span className="text-[10px] font-semibold uppercase tracking-wider text-primary">
-                    Selected
-                </span>
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-signal">Selected</span>
                 <div className="flex items-center gap-1.5">
                     {hidden && (
-                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-raised text-fg-muted">
                             <EyeOff size={9} /> hidden
                         </span>
                     )}
                     {readonly && (
-                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                        <span className="inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded-full bg-raised text-fg-muted">
                             <Lock size={9} /> read-only
                         </span>
                     )}
@@ -236,7 +210,7 @@ function SelectedFeatureCard({
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
                 {xy && (
                     <>
-                        <dt className="text-muted-foreground whitespace-nowrap">Position</dt>
+                        <dt className="text-fg-muted whitespace-nowrap">Position</dt>
                         <dd className="font-medium tabular-nums text-right">
                             {fmtCoord(xy.x)}, {fmtCoord(xy.y)}
                         </dd>
@@ -244,35 +218,40 @@ function SelectedFeatureCard({
                 )}
                 {score !== null && (
                     <>
-                        <dt className="text-muted-foreground">Score</dt>
+                        <dt className="text-fg-muted">Score</dt>
                         <dd className="font-medium tabular-nums text-right">{fmtScore(score)}</dd>
                     </>
                 )}
                 {meta?.grid && (
                     <>
-                        <dt className="text-muted-foreground">Grid</dt>
-                        <dd className="font-medium tabular-nums text-right">({meta.grid.i}, {meta.grid.j})</dd>
+                        <dt className="text-fg-muted">Grid</dt>
+                        <dd className="font-medium tabular-nums text-right">
+                            ({meta.grid.i}, {meta.grid.j})
+                        </dd>
                     </>
                 )}
                 {meta?.gridCell && !meta?.grid && (
                     <>
-                        <dt className="text-muted-foreground">Cell</dt>
-                        <dd className="font-medium tabular-nums text-right">({meta.gridCell.gx}, {meta.gridCell.gy})</dd>
+                        <dt className="text-fg-muted">Cell</dt>
+                        <dd className="font-medium tabular-nums text-right">
+                            ({meta.gridCell.gx}, {meta.gridCell.gy})
+                        </dd>
                     </>
                 )}
                 {labeledPointInfo && (
                     <>
-                        <dt className="text-muted-foreground whitespace-nowrap">Master idx</dt>
+                        <dt className="text-fg-muted whitespace-nowrap">Master idx</dt>
                         <dd className="font-medium tabular-nums text-right">
                             ({labeledPointInfo.gridIndex.i}, {labeledPointInfo.gridIndex.j})
                         </dd>
-                        <dt className="text-muted-foreground whitespace-nowrap">Master ID</dt>
+                        <dt className="text-fg-muted whitespace-nowrap">Master ID</dt>
                         <dd className="font-medium tabular-nums text-right">{labeledPointInfo.masterId}</dd>
                         {labeledPointInfo.targetPosMm && (
                             <>
-                                <dt className="text-muted-foreground whitespace-nowrap">Target (mm)</dt>
+                                <dt className="text-fg-muted whitespace-nowrap">Target (mm)</dt>
                                 <dd className="font-medium tabular-nums text-right">
-                                    {fmtCoord(labeledPointInfo.targetPosMm.x)}, {fmtCoord(labeledPointInfo.targetPosMm.y)}
+                                    {fmtCoord(labeledPointInfo.targetPosMm.x)},{" "}
+                                    {fmtCoord(labeledPointInfo.targetPosMm.y)}
                                 </dd>
                             </>
                         )}
@@ -280,47 +259,18 @@ function SelectedFeatureCard({
                 )}
                 {detailRows.map((row) => (
                     <Fragment key={row.label}>
-                        <dt className="text-muted-foreground whitespace-nowrap">{row.label}</dt>
+                        <dt className="text-fg-muted whitespace-nowrap">{row.label}</dt>
                         <dd className="font-medium tabular-nums text-right">{row.value}</dd>
                     </Fragment>
                 ))}
             </dl>
 
             {!readonly && (
-                <button
-                    onClick={onDelete}
-                    className="flex items-center gap-1 text-[11px] text-destructive hover:text-destructive/70 transition-colors"
-                >
-                    <Trash2 size={11} /> Delete
-                </button>
+                <Button variant="danger" onClick={onDelete} icon={<Trash2 />}>
+                    Delete
+                </Button>
             )}
         </div>
-    );
-}
-
-function ActionButton({
-    children,
-    className,
-    disabled,
-    onClick,
-    title,
-}: {
-    children: React.ReactNode;
-    className?: string;
-    disabled?: boolean;
-    onClick: () => void;
-    title: string;
-}) {
-    return (
-        <button
-            type="button"
-            onClick={onClick}
-            disabled={disabled}
-            title={title}
-            className={`inline-flex items-center gap-1.5 rounded-md border px-2.5 py-1.5 text-[11px] font-medium transition-colors disabled:opacity-45 disabled:cursor-not-allowed ${className ?? "border-border bg-background text-foreground hover:bg-muted/50"}`}
-        >
-            {children}
-        </button>
     );
 }
 
@@ -336,16 +286,18 @@ export default function FeatureListPanel() {
         deleteFeature,
         featureGroupVisibility,
         setFeatureGroupVisibility,
-    } = useEditorStore(useShallow((s) => ({
-        features: s.features,
-        selectedFeatureId: s.selectedFeatureId,
-        setSelectedFeatureId: s.setSelectedFeatureId,
-        setFeatures: s.setFeatures,
-        clearFeatures: s.clearFeatures,
-        deleteFeature: s.deleteFeature,
-        featureGroupVisibility: s.featureGroupVisibility,
-        setFeatureGroupVisibility: s.setFeatureGroupVisibility,
-    })));
+    } = useEditorStore(
+        useShallow((s) => ({
+            features: s.features,
+            selectedFeatureId: s.selectedFeatureId,
+            setSelectedFeatureId: s.setSelectedFeatureId,
+            setFeatures: s.setFeatures,
+            clearFeatures: s.clearFeatures,
+            deleteFeature: s.deleteFeature,
+            featureGroupVisibility: s.featureGroupVisibility,
+            setFeatureGroupVisibility: s.setFeatureGroupVisibility,
+        })),
+    );
 
     const selectedFeature = features.find((feature) => feature.id === selectedFeatureId) ?? null;
     const selectedFeatureHidden = selectedFeature
@@ -384,27 +336,26 @@ export default function FeatureListPanel() {
     return (
         <div className="flex flex-col gap-3">
             <div className="grid grid-cols-3 gap-1.5">
-                <ActionButton title="Import feature JSON" onClick={handleImport}>
-                    <Upload size={12} />
+                <Button title="Import feature JSON" onClick={handleImport} icon={<Upload />}>
                     Import
-                </ActionButton>
-                <ActionButton
+                </Button>
+                <Button
                     title="Export current features"
                     onClick={handleExport}
                     disabled={features.length === 0}
+                    icon={<Download />}
                 >
-                    <Download size={12} />
                     Export
-                </ActionButton>
-                <ActionButton
+                </Button>
+                <Button
+                    variant="danger"
                     title="Clear all features"
                     onClick={handleClear}
                     disabled={features.length === 0}
-                    className="border-destructive/20 bg-destructive/5 text-destructive hover:bg-destructive/10"
+                    icon={<Trash2 />}
                 >
-                    <Trash2 size={12} />
                     Clear
-                </ActionButton>
+                </Button>
             </div>
 
             {selectedFeature && (
@@ -428,44 +379,36 @@ export default function FeatureListPanel() {
                     {groups.map((group) => {
                         const isActive = group.key === activeGroupKey;
                         const isVisible = isFeatureGroupVisible(group.key, featureGroupVisibility);
+                        const firstFeatureId = group.features[0]?.id;
                         return (
-                            <div
-                                key={group.key}
-                                className={`inline-flex items-center rounded-full border text-[11px] transition-colors ${
-                                    isActive
-                                        ? "border-primary/40 bg-primary/8 text-primary"
-                                        : isVisible
-                                            ? "border-border bg-background text-foreground"
-                                            : "border-border/50 bg-muted/20 text-muted-foreground/60"
-                                }`}
-                            >
-                                {/* Main clickable area — selects group */}
-                                <button
-                                    type="button"
-                                    onClick={() => setSelectedFeatureId(group.features[0].id)}
-                                    className="inline-flex items-center gap-1.5 pl-2 pr-1 py-1 hover:opacity-80 transition-opacity"
+                            <div key={group.key} className="inline-flex items-center">
+                                {/* Selects the group: the navigator then steps through it. */}
+                                <Button
+                                    variant={isActive ? "secondary" : "ghost"}
+                                    aria-pressed={isActive}
+                                    className={cn("gap-1.5 px-2", !isVisible && "text-fg-subtle")}
+                                    onClick={() => {
+                                        if (firstFeatureId !== undefined) setSelectedFeatureId(firstFeatureId);
+                                    }}
                                 >
-                                    <div
-                                        className="w-2 h-2 rounded-full shrink-0"
+                                    <span
+                                        aria-hidden
+                                        className="size-2 shrink-0 rounded-full"
                                         style={{ backgroundColor: group.color, opacity: isVisible ? 1 : 0.4 }}
                                     />
-                                    <span className="font-medium">{group.label}</span>
-                                    <span className="text-[10px] text-muted-foreground tabular-nums">
+                                    <span>{group.label}</span>
+                                    <span className="font-mono text-[10px] text-fg-muted tabular-nums">
                                         {group.features.length}
                                     </span>
-                                </button>
-                                {/* Visibility toggle */}
-                                <button
-                                    type="button"
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        setFeatureGroupVisibility(group.key, !isVisible);
-                                    }}
-                                    className="pr-2 pl-0.5 py-1 text-muted-foreground hover:text-foreground transition-colors"
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    className="px-1.5"
+                                    aria-label={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
                                     title={isVisible ? `Hide ${group.label}` : `Show ${group.label}`}
-                                >
-                                    {isVisible ? <Eye size={10} /> : <EyeOff size={10} />}
-                                </button>
+                                    onClick={() => setFeatureGroupVisibility(group.key, !isVisible)}
+                                    icon={isVisible ? <Eye /> : <EyeOff />}
+                                />
                             </div>
                         );
                     })}
@@ -473,8 +416,8 @@ export default function FeatureListPanel() {
             )}
 
             {features.length === 0 && (
-                <div className="rounded-lg border border-dashed border-border/60 py-6 text-center">
-                    <p className="text-xs text-muted-foreground">No features yet</p>
+                <div className="rounded-panel border border-dashed border-line py-6 text-center">
+                    <p className="text-xs text-fg-muted">No features yet</p>
                 </div>
             )}
         </div>

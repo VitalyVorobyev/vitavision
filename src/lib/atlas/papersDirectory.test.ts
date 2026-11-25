@@ -23,15 +23,49 @@ function scholarly(papers: ScholarlyIndex["papers"], pages: ScholarlyIndex["page
 }
 
 const PAPERS: PapersById = {
-    resnet: { id: "resnet", title: "Deep Residual Learning for Image Recognition", authors: ["Kaiming He", "Xiangyu Zhang"], year: 2016, venue: "CVPR", url: "" },
-    vit: { id: "vit", title: "An Image is Worth 16x16 Words", authors: ["Alexey Dosovitskiy"], year: 2020, venue: "ICLR", url: "" },
-    sift: { id: "sift", title: "Distinctive Image Features from Scale-Invariant Keypoints", authors: ["David Lowe"], year: 2004, venue: "IJCV", url: "" },
-    fast: { id: "fast", title: "Machine Learning for High-Speed Corner Detection", authors: ["Edward Rosten"], year: 2006, venue: "ECCV", url: "" },
+    resnet: {
+        id: "resnet",
+        title: "Deep Residual Learning for Image Recognition",
+        authors: ["Kaiming He", "Xiangyu Zhang"],
+        year: 2016,
+        venue: "CVPR",
+        url: "",
+    },
+    vit: {
+        id: "vit",
+        title: "An Image is Worth 16x16 Words",
+        authors: ["Alexey Dosovitskiy"],
+        year: 2020,
+        venue: "ICLR",
+        url: "",
+    },
+    sift: {
+        id: "sift",
+        title: "Distinctive Image Features from Scale-Invariant Keypoints",
+        authors: ["David Lowe"],
+        year: 2004,
+        venue: "IJCV",
+        url: "",
+    },
+    fast: {
+        id: "fast",
+        title: "Machine Learning for High-Speed Corner Detection",
+        authors: ["Edward Rosten"],
+        year: 2006,
+        venue: "ECCV",
+        url: "",
+    },
 };
 
 const SCHOLARLY = scholarly(
     {
-        resnet: { primaryPages: ["resnet-page"], citingPages: ["a", "b"], cites: [], citedBy: Array.from({ length: 15 }, (_, i) => `c${i}`), narratives: [] },
+        resnet: {
+            primaryPages: ["resnet-page"],
+            citingPages: ["a", "b"],
+            cites: [],
+            citedBy: Array.from({ length: 15 }, (_, i) => `c${i}`),
+            narratives: [],
+        },
         vit: { primaryPages: ["vit-page"], citingPages: [], cites: [], citedBy: ["c1"], narratives: [] },
         sift: { primaryPages: [], citingPages: ["a"], cites: [], citedBy: ["c1", "c2"], narratives: [] },
         // fast: no scholarly entry at all — never cited/citing.
@@ -86,11 +120,19 @@ describe("filterPaperRows", () => {
     });
 
     it("'has-page' keeps only papers with a primary page", () => {
-        expect(filterPaperRows(rows, "has-page").map((r) => r.id).sort()).toEqual(["resnet", "vit"]);
+        expect(
+            filterPaperRows(rows, "has-page")
+                .map((r) => r.id)
+                .sort(),
+        ).toEqual(["resnet", "vit"]);
     });
 
     it("'no-page' keeps only papers without one", () => {
-        expect(filterPaperRows(rows, "no-page").map((r) => r.id).sort()).toEqual(["fast", "sift"]);
+        expect(
+            filterPaperRows(rows, "no-page")
+                .map((r) => r.id)
+                .sort(),
+        ).toEqual(["fast", "sift"]);
     });
 });
 
@@ -175,7 +217,7 @@ describe("decadeOf / groupPapersByDecade", () => {
         const rows = buildPaperRows(PAPERS, SCHOLARLY);
         const groups = groupPapersByDecade(rows);
         expect(groups.map((g) => g.label)).toEqual(["2020s", "2010s", "2000s"]);
-        expect(groups[0].rows.map((r) => r.id)).toEqual(["vit"]);
-        expect(groups[2].rows.map((r) => r.id).sort()).toEqual(["fast", "sift"]);
+        expect(groups[0]?.rows.map((r) => r.id)).toEqual(["vit"]);
+        expect(groups[2]?.rows.map((r) => r.id).sort()).toEqual(["fast", "sift"]);
     });
 });

@@ -12,7 +12,7 @@ Step 3 triage may downgrade/upgrade with a stated reason.
 | MECH-05 | Reference list mismatch | a `[n]` citation in prose has no matching numbered entry in `# References`, or vice versa | Haiku | major | matching page skill |
 | MECH-06 | Unregistered source id | `sources.primary` / `sources.references[]` entry not in `docs/papers/index.yaml` | Haiku | blocker (build error if it ever reaches validator) | matching page skill |
 | MECH-07 | Empty relations | `relations:` absent or `[]` | Haiku | minor (informational — feeds Step 2 relations-completeness, not a defect on its own) | matching page skill |
-| MECH-08 | Quality-field mismatch | `quality: canonical` set but page has a `TODO`, missing sources, or thin sections (canonical gate per CLAUDE.md); or `quality: historical` page still carries `# Algorithm`/`# Implementation`/`# Remarks`, `editorAlgorithmId`, or `comparedWith:` | Haiku | blocker (validator-enforced for canonical; historical trim is a hard content rule) | matching page skill |
+| MECH-08 | Quality-field mismatch | `quality: canonical` set but page has a `TODO`, missing sources, or thin sections (canonical gate per CLAUDE.md); or `quality: historical` page still carries `# Algorithm`/`# Implementation`/`# Remarks`, `editorAlgorithmId`, or a `relations[type=compared_with]` entry | Haiku | blocker (validator-enforced for canonical; historical trim is a hard content rule) | matching page skill |
 | MECH-09 | Live validator warning | `bun run content:validate` warning output names this slug | Haiku | matches the validator's own class (usually minor/major, never silently dropped) | matching page skill |
 | FID-01 | Untraceable numeric constant | a number/equation on the page has no matching value in any cited note | Sonnet | blocker | matching page skill (extend note first if the number is real) |
 | FID-02 | Untraceable attributed claim | a claim attributed to a source ("X showed that…") has no matching note passage | Sonnet | blocker | matching page skill |
@@ -44,7 +44,7 @@ Step 3 triage may downgrade/upgrade with a stated reason.
   badge. `canonical` = flagship, stricter validation (sources, prerequisites,
   no TODO). `historical` = superseded; body trimmed to Goal + Historical
   context + References only; requires a `generalized_by`/`confidence: high`
-  relation; drops `editorAlgorithmId` and `comparedWith:`.
+  relation; drops `editorAlgorithmId` and any `relations[type=compared_with]` entry.
 - `relations[]` vocabulary, three categories: **Lineage**
   (`generalized_by`, `alternative_formulation_of`, `parallel_foundation_with`,
   `extended_by`), **Practice** (`compared_with`, `feeds_into`),

@@ -15,9 +15,9 @@ export default function KindBadge({ kind }: { kind: Kind }) {
         <span
             className="inline-flex h-[18px] items-center rounded-[3px] px-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.1em]"
             style={{
-                color: `hsl(var(--graph-icon-tint-${kind}))`,
-                background: `hsl(var(--graph-icon-bg-${kind}))`,
-                border: `1px solid hsl(var(--graph-icon-border-${kind}))`,
+                color: `var(--graph-icon-tint-${kind})`,
+                background: `var(--graph-icon-bg-${kind})`,
+                border: `1px solid var(--graph-icon-border-${kind})`,
             }}
         >
             {KIND_LABEL[kind]}
@@ -31,7 +31,7 @@ export function KindDot({ kind }: { kind: Kind }) {
         <span
             aria-hidden="true"
             className="h-[7px] w-[7px] shrink-0 rounded-[2px]"
-            style={{ background: `hsl(var(--graph-icon-tint-${kind}))` }}
+            style={{ background: `var(--graph-icon-tint-${kind})` }}
         />
     );
 }

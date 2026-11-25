@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 
 interface TagBadgeProps {
     tag: string;
@@ -8,11 +8,8 @@ interface TagBadgeProps {
 }
 
 export default function TagBadge({ tag, active, onClick, to }: TagBadgeProps) {
-    const base =
-        "inline-block text-xs font-medium px-2.5 py-0.5 rounded-full transition-colors";
-    const colors = active
-        ? "bg-foreground text-background"
-        : "bg-muted text-muted-foreground hover:bg-muted/80";
+    const base = "inline-block text-xs font-medium px-2.5 py-0.5 rounded-full transition-colors";
+    const colors = active ? "bg-fg text-ground" : "bg-raised text-fg-muted hover:bg-line/60";
 
     if (to) {
         return (

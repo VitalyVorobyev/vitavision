@@ -11,8 +11,9 @@ export function generateId(): string {
     }
     const bytes = new Uint8Array(16);
     crypto.getRandomValues(bytes);
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    // `bytes` is a fixed 16-byte buffer, so indices 6 and 8 are in bounds.
+    bytes[6] = (bytes[6]! & 0x0f) | 0x40;
+    bytes[8] = (bytes[8]! & 0x3f) | 0x80;
     const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
@@ -79,8 +80,48 @@ export function deepMerge(target: Record<string, unknown>, source: Record<string
     for (const key of Object.keys(source)) {
         const sv = source[key];
         const tv = target[key];
-        if (sv !== null && typeof sv === "object" && !Array.isArray(sv) && tv !== null && typeof tv === "object" && !Array.isArray(tv)) {
+        if (
+            sv !== null &&
+            typeof sv === "object" &&
+            !Array.isArray(sv) &&
+            tv !== null &&
+            typeof tv === "object" &&
+            !Array.isArray(tv)
+        ) {
             out[key] = deepMerge(tv as Record<string, unknown>, sv as Record<string, unknown>);
+        } else {
+            out[key] = sv;
+        }
+    }
+    return out;
+}
+
+/**
+ * `deepMerge` for config documents that contain serde externally-tagged enums
+ * (`{ "chess": {...} }` vs `{ "radon": {...} }`, `{ "pyramid": {...} }`
+ * vs `"single_scale"`): the WASM deserializer accepts exactly one variant key, so
+ * merging the default's variant key into an override that selects another variant
+ * produces a two-key object and a "invalid length 2, expected 1" error. When both
+ * sides are single-key objects with DIFFERENT keys the override replaces the
+ * default wholesale; everything else merges as in `deepMerge`.
+ */
+export function mergeConfig(target: Record<string, unknown>, source: Record<string, unknown>): Record<string, unknown> {
+    const out = { ...target };
+    for (const key of Object.keys(source)) {
+        const sv = source[key];
+        const tv = target[key];
+        if (
+            sv !== null &&
+            typeof sv === "object" &&
+            !Array.isArray(sv) &&
+            tv !== null &&
+            typeof tv === "object" &&
+            !Array.isArray(tv)
+        ) {
+            const sk = Object.keys(sv);
+            const tk = Object.keys(tv);
+            const swapsVariant = sk.length === 1 && tk.length === 1 && sk[0] !== tk[0];
+            out[key] = swapsVariant ? sv : mergeConfig(tv as Record<string, unknown>, sv as Record<string, unknown>);
         } else {
             out[key] = sv;
         }
@@ -107,13 +148,13 @@ export function deepMerge(target: Record<string, unknown>, source: Record<string
 export function unwrapMaps(value: unknown): unknown {
     if (value instanceof Map) {
         const out: Record<string, unknown> = {};
-        for (const [key, v] of value.entries()) out[key] = unwrapMaps(v);
+        for (const [key, v] of value.entries()) out[key as string] = unwrapMaps(v);
         return out;
     }
     if (Array.isArray(value)) return value.map(unwrapMaps);
     if (value !== null && typeof value === "object") {
         const out: Record<string, unknown> = {};
-        for (const key of Object.keys(value as Record<string, unknown>)) {
+        for (const key of Object.keys(value)) {
             out[key] = unwrapMaps((value as Record<string, unknown>)[key]);
         }
         return out;
@@ -147,4 +188,17 @@ export interface TargetBundle {
  * calib-targets' and ringgrid's render-bundle commands. */
 export function mapTargetBundle(bundle: RawTargetBundle): TargetBundle {
     return { svg: bundle.svg_text, dxf: bundle.dxf_text, json: bundle.json_text, png: bundle.png_bytes };
+}
+
+/** Result of a native-resolution screen render: the grayscale PNG plus the
+ * library's JSON sidecar (`json_text`). Both libraries return this shape;
+ * ringgrid additionally returns `metadata`. */
+export interface ScreenBundle {
+    png: Uint8Array;
+    json: string;
+}
+
+export interface RinggridScreenBundle extends ScreenBundle {
+    /** ringgrid's `ScreenTargetMetadata` — plain object, structured-clone safe. */
+    metadata: unknown;
 }

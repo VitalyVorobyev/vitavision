@@ -6,7 +6,7 @@ interface Props {
     className?: string;
 }
 
-const bg = "bg-[linear-gradient(135deg,hsl(var(--surface)),hsl(var(--muted)))]";
+const bg = "bg-[linear-gradient(135deg,var(--surface),var(--raised))]";
 
 function ChessResponseCover() {
     const cols = 4;
@@ -41,23 +41,23 @@ function ChessResponseCover() {
             fill="none"
             aria-hidden="true"
         >
-            {cells.map((c, i) => (
+            {cells.map((c) => (
                 <rect
-                    key={i}
+                    key={`${c.x}-${c.y}`}
                     x={c.x}
                     y={c.y}
                     width={cell}
                     height={cell}
-                    className={c.filled ? "text-foreground/55" : "text-foreground/8"}
+                    className={c.filled ? "text-fg/55" : "text-fg/8"}
                     fill="currentColor"
                 />
             ))}
-            {saddles.map((s, i) => (
-                <g key={i}>
-                    <circle cx={s.x} cy={s.y} r="20" className="text-brand" fill="currentColor" fillOpacity="0.12" />
-                    <circle cx={s.x} cy={s.y} r="12" className="text-brand" fill="currentColor" fillOpacity="0.28" />
-                    <circle cx={s.x} cy={s.y} r="6" className="text-brand" fill="currentColor" fillOpacity="0.85" />
-                    <circle cx={s.x} cy={s.y} r="2" className="text-background" fill="currentColor" />
+            {saddles.map((s) => (
+                <g key={`${s.x}-${s.y}`}>
+                    <circle cx={s.x} cy={s.y} r="20" className="text-signal" fill="currentColor" fillOpacity="0.12" />
+                    <circle cx={s.x} cy={s.y} r="12" className="text-signal" fill="currentColor" fillOpacity="0.28" />
+                    <circle cx={s.x} cy={s.y} r="6" className="text-signal" fill="currentColor" fillOpacity="0.85" />
+                    <circle cx={s.x} cy={s.y} r="2" className="text-ground" fill="currentColor" />
                 </g>
             ))}
         </svg>
@@ -67,24 +67,38 @@ function ChessResponseCover() {
 function DelaunayVoronoiCover() {
     // Slightly perspective-warped 3x3 grid of seed points.
     const pts: { x: number; y: number }[] = [
-        { x:  72, y:  44 }, { x: 162, y:  36 }, { x: 256, y:  44 },
-        { x:  78, y:  92 }, { x: 162, y:  90 }, { x: 250, y:  92 },
-        { x:  84, y: 138 }, { x: 162, y: 146 }, { x: 244, y: 138 },
+        { x: 72, y: 44 },
+        { x: 162, y: 36 },
+        { x: 256, y: 44 },
+        { x: 78, y: 92 },
+        { x: 162, y: 90 },
+        { x: 250, y: 92 },
+        { x: 84, y: 138 },
+        { x: 162, y: 146 },
+        { x: 244, y: 138 },
     ];
 
     // Delaunay triangle indices: two triangles per grid cell, four cells.
     const tris: [number, number, number][] = [
-        [0, 1, 4], [0, 4, 3], [1, 2, 5], [1, 5, 4],
-        [3, 4, 7], [3, 7, 6], [4, 5, 8], [4, 8, 7],
+        [0, 1, 4],
+        [0, 4, 3],
+        [1, 2, 5],
+        [1, 5, 4],
+        [3, 4, 7],
+        [3, 7, 6],
+        [4, 5, 8],
+        [4, 8, 7],
     ];
 
     // Voronoi-like tinted region around the centre seed (point 4).
-    const centerCell =
-        "M 116 60 L 209 60 L 235 115 L 209 165 L 116 165 L 92 115 Z";
+    const centerCell = "M 116 60 L 209 60 L 235 115 L 209 165 L 116 165 L 92 115 Z";
 
     // Highlighted Delaunay edges around the centre, hinting at the dual graph.
     const dualEdges: [number, number][] = [
-        [4, 1], [4, 3], [4, 5], [4, 7],
+        [4, 1],
+        [4, 3],
+        [4, 5],
+        [4, 7],
     ];
 
     return (
@@ -98,7 +112,7 @@ function DelaunayVoronoiCover() {
             {/* Voronoi cell tint (the dual region around the centre) */}
             <path
                 d={centerCell}
-                className="text-brand"
+                className="text-signal"
                 fill="currentColor"
                 fillOpacity="0.10"
                 stroke="currentColor"
@@ -107,13 +121,16 @@ function DelaunayVoronoiCover() {
             />
 
             {/* Delaunay triangulation outlines */}
-            {tris.map(([a, b, c], i) => {
-                const A = pts[a], B = pts[b], C = pts[c];
+            {tris.map(([a, b, c]) => {
+                const A = pts[a],
+                    B = pts[b],
+                    C = pts[c];
+                if (!A || !B || !C) return null;
                 return (
                     <polygon
-                        key={i}
+                        key={`${a}-${b}-${c}`}
                         points={`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}`}
-                        className="text-foreground"
+                        className="text-fg"
                         stroke="currentColor"
                         strokeOpacity="0.25"
                         strokeWidth="0.7"
@@ -123,13 +140,18 @@ function DelaunayVoronoiCover() {
             })}
 
             {/* Highlighted dual-graph spokes from the centre */}
-            {dualEdges.map(([a, b], i) => {
-                const A = pts[a], B = pts[b];
+            {dualEdges.map(([a, b]) => {
+                const A = pts[a],
+                    B = pts[b];
+                if (!A || !B) return null;
                 return (
                     <line
-                        key={i}
-                        x1={A.x} y1={A.y} x2={B.x} y2={B.y}
-                        className="text-brand"
+                        key={`${a}-${b}`}
+                        x1={A.x}
+                        y1={A.y}
+                        x2={B.x}
+                        y2={B.y}
+                        className="text-signal"
                         stroke="currentColor"
                         strokeOpacity="0.55"
                         strokeWidth="1.2"
@@ -139,16 +161,20 @@ function DelaunayVoronoiCover() {
 
             {/* Seed points */}
             {pts.map((p, i) => (
-                <g key={i}>
+                <g key={`${p.x}-${p.y}`}>
                     <circle
-                        cx={p.x} cy={p.y} r="6"
-                        className="text-brand"
+                        cx={p.x}
+                        cy={p.y}
+                        r="6"
+                        className="text-signal"
                         fill="currentColor"
                         fillOpacity={i === 4 ? 0.22 : 0.14}
                     />
                     <circle
-                        cx={p.x} cy={p.y} r={i === 4 ? 3.2 : 2.6}
-                        className={i === 4 ? "text-brand" : "text-foreground"}
+                        cx={p.x}
+                        cy={p.y}
+                        r={i === 4 ? 3.2 : 2.6}
+                        className={i === 4 ? "text-signal" : "text-fg"}
                         fill="currentColor"
                     />
                 </g>
@@ -158,7 +184,7 @@ function DelaunayVoronoiCover() {
 }
 
 const COVERS: Record<string, FC> = {
-    "chess-response":  ChessResponseCover,
+    "chess-response": ChessResponseCover,
     "delaunay-voronoi": DelaunayVoronoiCover,
 };
 

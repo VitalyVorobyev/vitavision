@@ -58,12 +58,40 @@ import type {
     CharucoConfig,
     MarkerBoardConfig,
     PuzzleboardConfig,
+    PuzzlepoleConfig,
 } from "../src/components/targetgen/types";
 import { toPrintableDocument } from "../src/components/targetgen/printableDocument";
+import {
+    puzzlepoleBoardSizeMm,
+    puzzlepoleConfigErrors,
+    type PuzzlepolePeriod,
+} from "../src/components/targetgen/puzzlepole/geometry";
+import { DEFAULT_PUZZLEPOLE } from "../src/components/targetgen/reducer";
+import { PUZZLEPOLE_PRESETS } from "../src/components/targetgen/presets";
 import { resolvePageDimensions } from "../src/components/targetgen/svg/paperConstants";
 import { toRinggridTarget } from "../src/components/targetgen/ringgridTarget";
 import { deepMerge, unwrapMaps } from "../src/lib/wasm/worker/util";
+import {
+    adaptMarkerBoardDiagnosis,
+    renderScreenTargetWith,
+    type MarkerBoardDiagnosis,
+} from "../src/lib/wasm/worker/calibTargets";
+import { renderRinggridScreenWith } from "../src/lib/wasm/worker/ringgrid";
+import {
+    buildRinggridSidecar,
+    geometryFromCalibSidecar,
+    geometryFromRinggridMetadata,
+    toRinggridScreenOptions,
+    toRinggridScreenTargetJson,
+    toScreenOptions,
+    toScreenTargetSpec,
+    type RinggridScreenMetadata,
+} from "../src/components/targetgen/screenTarget";
+import type { ScreenSettings } from "../src/components/targetgen/types";
 import { PNG } from "pngjs";
+import type { defaultCircles as DefaultCirclesFn } from "../src/components/targetgen/reducer";
+import type * as CalibTargetsModule from "@vitavision/calib-targets";
+import type * as RinggridModule from "@vitavision/ringgrid";
 
 /** Fixed rasterisation resolution for the round trip — real enough to feed a
  * real detector, low enough to keep the script fast. */
@@ -78,7 +106,8 @@ type Primitive =
 // Matches the exact attribute order emitted by the library's own renderer —
 // verified by generating a bundle and reading `svg_text` directly rather
 // than assumed from the Rust source.
-const RECT_ATTR_RE = /^<rect x="([-\d.eE]+)" y="([-\d.eE]+)" width="([-\d.eE]+)" height="([-\d.eE]+)" fill="([^"]+)"\/>$/;
+const RECT_ATTR_RE =
+    /^<rect x="([-\d.eE]+)" y="([-\d.eE]+)" width="([-\d.eE]+)" height="([-\d.eE]+)" fill="([^"]+)"\/>$/;
 const CIRCLE_ATTR_RE = /^<circle cx="([-\d.eE]+)" cy="([-\d.eE]+)" r="([-\d.eE]+)" fill="([^"]+)"\/>$/;
 const TAG_RE = /<(rect|circle)\b[^>]*\/>/g;
 
@@ -195,7 +224,10 @@ function dictionarySize(dictionaryName: string): number {
  * alignment matrix the round trip expects; the untransposed form is exactly
  * the axis bug Part C reintroduces on purpose.
  */
-function toDetectorCircle(c: CircleSpec, transpose: boolean): { cell: { i: number; j: number }; polarity: "white" | "black" } {
+function toDetectorCircle(
+    c: CircleSpec,
+    transpose: boolean,
+): { cell: { i: number; j: number }; polarity: "white" | "black" } {
     const cell = transpose ? { i: c.cell.j, j: c.cell.i } : { i: c.cell.i, j: c.cell.j };
     const polarity = (cell.i + cell.j) % 2 === 0 ? "white" : "black";
     return { cell, polarity };
@@ -219,7 +251,9 @@ interface Case {
      * defect in this repo. The case then behaves as an expected failure: a
      * failure is reported as XFAIL and does not fail the run, but a *pass*
      * does — because that means the underlying issue was fixed and this
-     * escape hatch must be removed rather than left to rot.
+     * escape hatch must be removed rather than left to rot. (Currently unused:
+     * the 0.14.1 marker-board inner-square case it was added for is fixed
+     * upstream as of 0.15. Only the marker-board branch of Part B honours it.)
      */
     knownIssue?: string;
 }
@@ -239,23 +273,38 @@ function page(overrides: Partial<PageConfig> = {}): PageConfig {
     };
 }
 
-function buildCases(defaultCircles: typeof import("../src/components/targetgen/reducer").defaultCircles): Case[] {
+function buildCases(defaultCircles: DefaultCirclesFn): Case[] {
     return [
         // ── chessboard ──────────────────────────────────────────────────────
         {
             name: "chessboard/basic-a4-portrait",
-            target: { targetType: "chessboard", config: { innerRows: 6, innerCols: 7, squareSizeMm: 20, innerSquareRel: 0 } },
+            target: {
+                targetType: "chessboard",
+                config: { innerRows: 6, innerCols: 7, squareSizeMm: 20, innerSquareRel: 0 },
+            },
             page: page(),
         },
         {
             name: "chessboard/inner-square-letter",
-            target: { targetType: "chessboard", config: { innerRows: 6, innerCols: 8, squareSizeMm: 18, innerSquareRel: 0.4 } },
+            target: {
+                targetType: "chessboard",
+                config: { innerRows: 6, innerCols: 8, squareSizeMm: 18, innerSquareRel: 0.4 },
+            },
             page: page({ sizeKind: "letter" }),
         },
         {
             name: "chessboard/landscape-custom-page-margin",
-            target: { targetType: "chessboard", config: { innerRows: 5, innerCols: 7, squareSizeMm: 25, innerSquareRel: 0 } },
-            page: page({ sizeKind: "custom", customWidthMm: 180, customHeightMm: 250, orientation: "landscape", marginMm: 15 }),
+            target: {
+                targetType: "chessboard",
+                config: { innerRows: 5, innerCols: 7, squareSizeMm: 25, innerSquareRel: 0 },
+            },
+            page: page({
+                sizeKind: "custom",
+                customWidthMm: 180,
+                customHeightMm: 250,
+                orientation: "landscape",
+                marginMm: 15,
+            }),
         },
 
         // ── charuco ─────────────────────────────────────────────────────────
@@ -263,7 +312,15 @@ function buildCases(defaultCircles: typeof import("../src/components/targetgen/r
             name: "charuco/dict4x4-basic",
             target: {
                 targetType: "charuco",
-                config: { rows: 5, cols: 7, squareSizeMm: 15, markerSizeRel: 0.75, dictionary: "DICT_4X4_50", borderBits: 1, innerSquareRel: 0 },
+                config: {
+                    rows: 5,
+                    cols: 7,
+                    squareSizeMm: 15,
+                    markerSizeRel: 0.75,
+                    dictionary: "DICT_4X4_50",
+                    borderBits: 1,
+                    innerSquareRel: 0,
+                },
             },
             page: page(),
         },
@@ -271,7 +328,15 @@ function buildCases(defaultCircles: typeof import("../src/components/targetgen/r
             name: "charuco/dict5x5-borderbits2-inner-square-letter",
             target: {
                 targetType: "charuco",
-                config: { rows: 5, cols: 7, squareSizeMm: 18, markerSizeRel: 0.7, dictionary: "DICT_5X5_100", borderBits: 2, innerSquareRel: 0.3 },
+                config: {
+                    rows: 5,
+                    cols: 7,
+                    squareSizeMm: 18,
+                    markerSizeRel: 0.7,
+                    dictionary: "DICT_5X5_100",
+                    borderBits: 2,
+                    innerSquareRel: 0.3,
+                },
             },
             page: page({ sizeKind: "letter" }),
         },
@@ -279,9 +344,23 @@ function buildCases(defaultCircles: typeof import("../src/components/targetgen/r
             name: "charuco/dict6x6-landscape-custom-margin",
             target: {
                 targetType: "charuco",
-                config: { rows: 6, cols: 8, squareSizeMm: 15, markerSizeRel: 0.8, dictionary: "DICT_6X6_50", borderBits: 1, innerSquareRel: 0 },
+                config: {
+                    rows: 6,
+                    cols: 8,
+                    squareSizeMm: 15,
+                    markerSizeRel: 0.8,
+                    dictionary: "DICT_6X6_50",
+                    borderBits: 1,
+                    innerSquareRel: 0,
+                },
             },
-            page: page({ sizeKind: "custom", customWidthMm: 170, customHeightMm: 230, orientation: "landscape", marginMm: 12 }),
+            page: page({
+                sizeKind: "custom",
+                customWidthMm: 170,
+                customHeightMm: 230,
+                orientation: "landscape",
+                marginMm: 12,
+            }),
         },
 
         // ── markerboard ─────────────────────────────────────────────────────
@@ -289,7 +368,14 @@ function buildCases(defaultCircles: typeof import("../src/components/targetgen/r
             name: "markerboard/basic-a4",
             target: {
                 targetType: "markerboard",
-                config: { innerRows: 6, innerCols: 7, squareSizeMm: 20, circleDiameterRel: 0.5, circles: defaultCircles(6, 7), innerSquareRel: 0 },
+                config: {
+                    innerRows: 6,
+                    innerCols: 7,
+                    squareSizeMm: 20,
+                    circleDiameterRel: 0.5,
+                    circles: defaultCircles(6, 7),
+                    innerSquareRel: 0,
+                },
             },
             page: page(),
         },
@@ -297,33 +383,61 @@ function buildCases(defaultCircles: typeof import("../src/components/targetgen/r
             name: "markerboard/inner-square-letter",
             target: {
                 targetType: "markerboard",
-                config: { innerRows: 6, innerCols: 8, squareSizeMm: 18, circleDiameterRel: 0.45, circles: defaultCircles(6, 8), innerSquareRel: 0.35 },
+                config: {
+                    innerRows: 6,
+                    innerCols: 8,
+                    squareSizeMm: 18,
+                    circleDiameterRel: 0.45,
+                    circles: defaultCircles(6, 8),
+                    innerSquareRel: 0.35,
+                },
             },
             page: page({ sizeKind: "letter" }),
-            knownIssue:
-                "calib-targets 0.14.1: on a marker board, an inner_square_rel inset of ~0.3 or more " +
-                "makes the white inset squares register as circle candidates (3 -> 7 on this board), " +
-                "and from 0.35 the alignment drops to 2 inliers and resolves a 180-degree-rotated " +
-                "board frame ([[-1,0],[0,-1]]) while still reporting a clean 3-of-3 circle match. " +
-                "Swept on a 6x8/18mm board at 300 DPI: 0/0.1/0.2 identity, 0.3 identity but 7 " +
-                "candidates, 0.35/0.4/0.6 rotated, 0.5 identity again — unstable rather than " +
-                "monotonic. Reproduces at 1x and 3x supersampling, so it is not a rasteriser " +
-                "artifact. The circles exist precisely to disambiguate orientation, so this defeats " +
-                "them. Generation is correct here — the board is drawn exactly as specified; this is " +
-                "a detector-side interaction to report upstream.",
+        },
+        {
+            // Exercises the board-level `circle_diameter_rel` (calib-targets
+            // 0.15) end to end: printed at 0.45 by the generator, scored at 0.45
+            // by the detector (Part B sets `board.circle_diameter_rel` from the
+            // same config), and Part A pins the printed disk radius.
+            name: "markerboard/circle-diameter-0.45",
+            target: {
+                targetType: "markerboard",
+                config: {
+                    innerRows: 6,
+                    innerCols: 7,
+                    squareSizeMm: 22,
+                    circleDiameterRel: 0.45,
+                    circles: defaultCircles(6, 7),
+                    innerSquareRel: 0,
+                },
+            },
+            page: page(),
         },
         {
             name: "markerboard/landscape-custom-margin",
             target: {
                 targetType: "markerboard",
-                config: { innerRows: 5, innerCols: 7, squareSizeMm: 22, circleDiameterRel: 0.5, circles: defaultCircles(5, 7), innerSquareRel: 0 },
+                config: {
+                    innerRows: 5,
+                    innerCols: 7,
+                    squareSizeMm: 22,
+                    circleDiameterRel: 0.5,
+                    circles: defaultCircles(5, 7),
+                    innerSquareRel: 0,
+                },
             },
             // NOTE: PageConfig.orientation "landscape" swaps width/height at
             // render time (both here and in the app's own
             // svg/paperConstants.ts::resolvePageDimensions), so a custom page
             // that is meant to render wide must be authored TALL
             // (customWidthMm < customHeightMm) — 160x200 swaps to 200x160.
-            page: page({ sizeKind: "custom", customWidthMm: 160, customHeightMm: 200, orientation: "landscape", marginMm: 8 }),
+            page: page({
+                sizeKind: "custom",
+                customWidthMm: 160,
+                customHeightMm: 200,
+                orientation: "landscape",
+                marginMm: 8,
+            }),
         },
 
         // ── puzzleboard ─────────────────────────────────────────────────────
@@ -342,6 +456,38 @@ function buildCases(defaultCircles: typeof import("../src/components/targetgen/r
             target: { targetType: "puzzleboard", config: { rows: 9, cols: 12, cellSizeMm: 14 } },
             page: page({ orientation: "landscape", marginMm: 14 }),
         },
+
+        // ── puzzlepole ──────────────────────────────────────────────────────
+        // Generator only: there is no editor detector for PuzzlePole, so Part B
+        // skips these and Part A asserts the strip geometry and the DXF/PNG/JSON
+        // channels instead. Periods (circumference, start_row) come from the
+        // real `puzzlepole_periods()` table.
+        {
+            name: "puzzlepole/default-12x10-a4-landscape",
+            target: { targetType: "puzzlepole", config: { ...DEFAULT_PUZZLEPOLE } },
+            page: page({ orientation: "landscape" }),
+        },
+        {
+            name: "puzzlepole/24x8-a4-portrait",
+            target: {
+                targetType: "puzzlepole",
+                config: { circumferenceSquares: 24, startRow: 242, axialSquares: 8, squareSizeMm: 10 },
+            },
+            page: page(),
+        },
+        {
+            name: "puzzlepole/36x20-custom-page-margin",
+            target: {
+                targetType: "puzzlepole",
+                config: { circumferenceSquares: 36, startRow: 327, axialSquares: 20, squareSizeMm: 5 },
+            },
+            page: page({ sizeKind: "custom", customWidthMm: 160, customHeightMm: 230, marginMm: 12 }),
+        },
+        ...PUZZLEPOLE_PRESETS.map((preset) => ({
+            name: `puzzlepole/preset-${preset.id}`,
+            target: preset.target,
+            page: preset.page,
+        })),
     ];
 }
 
@@ -354,10 +500,299 @@ interface GeneratedBundle {
     png_bytes: Uint8Array;
 }
 
-async function runHarness(
-    mod: typeof import("@vitavision/calib-targets"),
-    ringgridMod: typeof import("@vitavision/ringgrid"),
-): Promise<boolean> {
+/**
+ * Geometry and channel checks for a rendered PuzzlePole strip. Returns the list
+ * of problems (empty when fine).
+ *
+ * The strip is `axial_squares` columns by `circumference_squares + 2` rows —
+ * measured on calib-targets 0.15.1, NOT circumference x axial: the library
+ * prints two rows past the wrap. `puzzlepoleBoardSizeMm` encodes that, and
+ * this check pins it to the real renderer so a change upstream fails here.
+ */
+function checkPuzzlepoleBundle(cfg: PuzzlepoleConfig, bundle: GeneratedBundle): string[] {
+    const problems: string[] = [];
+    // Skip the first primitive: the white page background.
+    const prims = parsePrimitives(bundle.svg_text).slice(1);
+    const rects = prims.filter((p): p is Extract<Primitive, { kind: "rect" }> => p.kind === "rect");
+    const dots = prims.filter((p): p is Extract<Primitive, { kind: "circle" }> => p.kind === "circle");
+
+    const { widthMm, heightMm } = puzzlepoleBoardSizeMm(cfg);
+    const minX = Math.min(...rects.map((r) => r.x));
+    const maxX = Math.max(...rects.map((r) => r.x + r.w));
+    const minY = Math.min(...rects.map((r) => r.y));
+    const maxY = Math.max(...rects.map((r) => r.y + r.h));
+    const tol = 1e-3; // the renderer prints a few decimals
+    if (Math.abs(maxX - minX - widthMm) > tol) problems.push(`strip width ${maxX - minX}mm != ${widthMm}mm`);
+    if (Math.abs(maxY - minY - heightMm) > tol) problems.push(`strip height ${maxY - minY}mm != ${heightMm}mm`);
+    const expectedRects = cfg.axialSquares * (cfg.circumferenceSquares + 2);
+    if (rects.length !== expectedRects) problems.push(`${rects.length} squares != ${expectedRects}`);
+    if (rects.some((r) => Math.abs(r.w - cfg.squareSizeMm) > tol || Math.abs(r.h - cfg.squareSizeMm) > tol)) {
+        problems.push(`a square is not ${cfg.squareSizeMm}mm`);
+    }
+    if (dots.length === 0) problems.push("no edge dots drawn");
+    // Edge dots are 1/3 of the square side across (library default).
+    const dotR = cfg.squareSizeMm / 6;
+    if (dots.some((d) => Math.abs(d.r - dotR) > tol)) problems.push(`a dot radius != ${dotR}mm`);
+
+    if (!bundle.dxf_text.startsWith("  0\nSECTION\n  2\nHEADER\n")) problems.push("DXF header missing");
+    if (!bundle.dxf_text.endsWith("  0\nENDSEC\n  0\nEOF\n")) problems.push("DXF does not end with ENDSEC/EOF");
+    const png = bundle.png_bytes;
+    if (!(png?.length > 8 && png[0] === 0x89 && png[1] === 0x50 && png[2] === 0x4e && png[3] === 0x47))
+        problems.push("PNG magic missing");
+    try {
+        const json = JSON.parse(bundle.json_text) as {
+            target?: { kind?: string; start_row?: number; circumference_squares?: number };
+        };
+        if (
+            json.target?.kind !== "puzzlepole" ||
+            json.target.start_row !== cfg.startRow ||
+            json.target.circumference_squares !== cfg.circumferenceSquares
+        ) {
+            problems.push(`json_text target does not echo the config: ${JSON.stringify(json.target)}`);
+        }
+    } catch (e) {
+        problems.push(`json_text is not JSON: ${String(e)}`);
+    }
+    return problems;
+}
+
+// ── Part G — screen targets: render -> decode PNG -> detect ────────────────
+//
+// The Screen medium renders pixel-native, anti-aliased grayscale PNGs
+// (`render_screen_target` / `render_fitted_screen_target_json`). Unlike Parts
+// A-D there is no SVG to rasterise: the PNG the app saves is fed straight to the
+// detector. The render goes through `renderScreenTargetWith` /
+// `renderRinggridScreenWith` — the very functions the WASM worker calls — and
+// the detector is configured from the REALISED geometry in the sidecar (board
+// dimensions from `target`, the fitted ring-grid spec from `json_text`), not
+// from what was requested.
+async function runScreenRoundTrip(
+    mod: typeof CalibTargetsModule,
+    ringgridMod: typeof RinggridModule,
+    record: (line: string, ok: boolean) => void,
+): Promise<void> {
+    console.log("\n--- Part G: screen target generation -> detection round trip ---\n");
+
+    const screen: ScreenSettings = { widthPx: 1920, heightPx: 1080, pixelPitchMm: 0.2745, marginPx: null };
+    const chessCfg = mod.default_chess_config();
+
+    const decodeGray = (png: Uint8Array): Raster => {
+        const img = PNG.sync.read(Buffer.from(png));
+        const gray = new Uint8Array(img.width * img.height);
+        for (let i = 0; i < gray.length; i++) gray[i] = img.data[i * 4];
+        return { width: img.width, height: img.height, gray };
+    };
+
+    const calibCases: { name: string; target: TargetConfig }[] = [
+        {
+            name: "screen/chessboard-8x11-20mm",
+            target: {
+                targetType: "chessboard",
+                config: { innerRows: 8, innerCols: 11, squareSizeMm: 20, innerSquareRel: 0 },
+            },
+        },
+        {
+            name: "screen/charuco-8x11-dict4x4_250",
+            target: {
+                targetType: "charuco",
+                config: {
+                    rows: 8,
+                    cols: 11,
+                    squareSizeMm: 20,
+                    markerSizeRel: 0.75,
+                    dictionary: "DICT_4X4_250",
+                    borderBits: 1,
+                    innerSquareRel: 0,
+                },
+            },
+        },
+        {
+            // 9x12, not the app's 7x10 default: the detector's default decode
+            // `min_window` is 7 corners per side, which a 7-row board (6 inner
+            // corners) cannot supply — the same on paper (see the matrix above,
+            // which starts at 8x8).
+            name: "screen/puzzleboard-9x12-15mm",
+            target: { targetType: "puzzleboard", config: { rows: 9, cols: 12, cellSizeMm: 15 } },
+        },
+    ];
+
+    for (const c of calibCases) {
+        try {
+            const bundle = renderScreenTargetWith(mod, toScreenTargetSpec(c.target), toScreenOptions(screen));
+            const meta = JSON.parse(bundle.json) as { target: Record<string, number | string> };
+            const geom = geometryFromCalibSidecar(bundle.json);
+            if (geom.kind !== "grid") throw new Error("expected grid geometry");
+            const { width, height, gray } = decodeGray(bundle.png);
+            if (width !== screen.widthPx || height !== screen.heightPx) {
+                record(
+                    `FAIL ${c.name}: PNG is ${width}x${height}, expected ${screen.widthPx}x${screen.heightPx}`,
+                    false,
+                );
+                continue;
+            }
+            const head =
+                `square=${geom.squareSizePx}px=${geom.squareSizeMm.toFixed(4)}mm (requested ${geom.requestedSquareSizeMm}mm), ` +
+                `origin=[${geom.boardOriginPx.join(",")}]`;
+
+            if (c.target.targetType === "chessboard") {
+                const rows = meta.target.inner_rows as number;
+                const cols = meta.target.inner_cols as number;
+                const params = deepMerge(mod.default_chessboard_params(), { expected_rows: rows, expected_cols: cols });
+                const result = mod.detect_chessboard(width, height, gray, chessCfg, params) as {
+                    corners: unknown[];
+                } | null;
+                const got = result?.corners?.length ?? 0;
+                const expected = rows * cols;
+                record(
+                    `${got === expected ? "PASS" : "FAIL"} ${c.name}: ${head}, corners=${got}/${expected}`,
+                    got === expected,
+                );
+            } else if (c.target.targetType === "charuco") {
+                const rows = meta.target.rows as number;
+                const cols = meta.target.cols as number;
+                const dictionary = meta.target.dictionary as string;
+                const params = mod.default_charuco_params(
+                    rows,
+                    cols,
+                    meta.target.marker_size_rel as number,
+                    dictionary,
+                ) as {
+                    board: { border_bits: number };
+                };
+                params.board.border_bits = meta.target.border_bits as number;
+                const result = mod.detect_charuco(width, height, gray, chessCfg, params) as {
+                    corners: unknown[];
+                    markers: { id: number; rotation: number }[];
+                } | null;
+                const markers = result?.markers ?? [];
+                // OpenCV ChArUco layout: marker cells are those with (row + col)
+                // odd, ids running row-major from 0. The detector decodes a
+                // marker only when all four corners of its cell are detected
+                // inner corners, i.e. the cells off the board's outer ring —
+                // (rows-2)*(cols-2)/2 of the rows*cols/2 printed markers. The
+                // ids of exactly those cells are the ground truth.
+                const expectedIds: number[] = [];
+                let nextId = 0;
+                for (let r = 0; r < rows; r++) {
+                    for (let col = 0; col < cols; col++) {
+                        if ((r + col) % 2 !== 1) continue;
+                        if (r >= 1 && r <= rows - 2 && col >= 1 && col <= cols - 2) expectedIds.push(nextId);
+                        nextId++;
+                    }
+                }
+                const expectedMarkers = expectedIds.length;
+                const ids = markers.map((m) => m.id).sort((a, b) => a - b);
+                const idsMatch = ids.length === expectedIds.length && ids.every((id, i) => id === expectedIds[i]);
+                const badRotations = markers.filter((m) => m.rotation !== 0).length;
+                const gotCorners = result?.corners?.length ?? 0;
+                const expectedCorners = (rows - 1) * (cols - 1);
+                const ok = idsMatch && badRotations === 0 && gotCorners === expectedCorners;
+                record(
+                    `${ok ? "PASS" : "FAIL"} ${c.name}: ${head}, interior markers=${markers.length}/${expectedMarkers} (of ${Math.floor((rows * cols) / 2)} printed) idsMatch=${idsMatch} ` +
+                        `nonzeroRotations=${badRotations}, corners=${gotCorners}/${expectedCorners}`,
+                    ok,
+                );
+            } else {
+                const rows = meta.target.rows as number;
+                const cols = meta.target.cols as number;
+                const params = mod.default_puzzleboard_params(rows, cols);
+                const result = mod.detect_puzzleboard(width, height, gray, chessCfg, params) as {
+                    decode: { bit_error_rate: number; edges_matched: number; edges_observed: number };
+                } | null;
+                const d = result?.decode;
+                const ok =
+                    !!d && d.bit_error_rate === 0 && d.edges_matched === d.edges_observed && d.edges_observed > 0;
+                record(
+                    `${ok ? "PASS" : "FAIL"} ${c.name}: ${head}, bit_error_rate=${d?.bit_error_rate} edges=${d?.edges_matched}/${d?.edges_observed}`,
+                    ok,
+                );
+            }
+        } catch (e) {
+            record(`FAIL ${c.name}: threw: ${e instanceof Error ? e.message : String(e)}`, false);
+        }
+    }
+
+    // Library errors must be catchable strings (the app shows them as validation errors).
+    try {
+        const tooSmall: TargetConfig = {
+            targetType: "charuco",
+            config: {
+                rows: 12,
+                cols: 10,
+                squareSizeMm: 10,
+                markerSizeRel: 0.75,
+                dictionary: "DICT_4X4_50",
+                borderBits: 1,
+                innerSquareRel: 0,
+            },
+        };
+        renderScreenTargetWith(mod, toScreenTargetSpec(tooSmall), toScreenOptions(screen));
+        record(
+            "FAIL screen/charuco-dictionary-too-small: render accepted 60 markers from a 50-marker dictionary",
+            false,
+        );
+    } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        record(
+            `${/markers/.test(msg) ? "PASS" : "FAIL"} screen/charuco-dictionary-too-small: library error surfaced: ${msg}`,
+            /markers/.test(msg),
+        );
+    }
+
+    // Ring grid (ringgrid module) through the worker's own code path.
+    try {
+        const { DEFAULT_RINGGRID } = await import("../src/components/targetgen/reducer.ts");
+        const ringScreen: ScreenSettings = { ...screen, pixelPitchMm: 0.25 };
+        const bundle = renderRinggridScreenWith(
+            ringgridMod,
+            toRinggridScreenTargetJson(DEFAULT_RINGGRID),
+            JSON.stringify(toRinggridScreenOptions(DEFAULT_RINGGRID, ringScreen)),
+        );
+        const metadata = bundle.metadata as RinggridScreenMetadata;
+        const geom = geometryFromRinggridMetadata(metadata);
+        if (geom.kind !== "ringgrid") throw new Error("expected ringgrid geometry");
+        const sidecar = JSON.parse(buildRinggridSidecar(metadata, bundle.json)) as {
+            metadata: unknown;
+            target: unknown;
+        };
+        if (!sidecar.metadata || !sidecar.target) throw new Error("sidecar is missing metadata or target");
+
+        const img = PNG.sync.read(Buffer.from(bundle.png));
+        if (img.width !== ringScreen.widthPx || img.height !== ringScreen.heightPx) {
+            throw new Error(`PNG is ${img.width}x${img.height}`);
+        }
+        // Detector built from the FITTED spec (`json_text`), sized from the drawn diameter in the sidecar.
+        const detector = new ringgridMod.RinggridDetector(bundle.json);
+        try {
+            const d = geom.drawnMarkerDiameterPx;
+            detector.update_config(
+                JSON.stringify({
+                    marker_scale: { diameter_min_px: Math.floor(d * 0.7), diameter_max_px: Math.ceil(d * 1.3) },
+                }),
+            );
+            const result = JSON.parse(
+                detector.detect_adaptive_rgba(new Uint8Array(img.data), img.width, img.height),
+            ) as {
+                detected_markers?: { id: number }[];
+            };
+            const ids = (result.detected_markers ?? []).map((m) => m.id);
+            const unique = new Set(ids).size;
+            const ratio = unique / geom.markerCount;
+            const ok = ratio >= 0.95 && unique === ids.length;
+            record(
+                `${ok ? "PASS" : "FAIL"} screen/ringgrid-default-fitted: ${geom.rows}x${geom.columns} markers=${geom.markerCount}, ` +
+                    `drawn=${geom.drawnMarkerDiameterPx}px=${geom.drawnMarkerDiameterMm}mm, detected=${unique} (${(ratio * 100).toFixed(1)}%, need >=95%), duplicates=${ids.length - unique}`,
+                ok,
+            );
+        } finally {
+            detector.free();
+        }
+    } catch (e) {
+        record(`FAIL screen/ringgrid-default-fitted: threw: ${e instanceof Error ? e.message : String(e)}`, false);
+    }
+}
+
+async function runHarness(mod: typeof CalibTargetsModule, ringgridMod: typeof RinggridModule): Promise<boolean> {
     const { defaultCircles } = await import("../src/components/targetgen/reducer.ts");
     const cases = buildCases(defaultCircles);
 
@@ -410,12 +845,48 @@ async function runHarness(
                 insetOk = withInset > withoutInset;
                 insetNote = `, inset rects ${withInset} > ${withoutInset}: ${insetOk}`;
                 if (!insetOk) {
-                    record(`FAIL ${c.name}: inner_square_rel=${innerSquareRel} did not add <rect> elements (${withInset} vs ${withoutInset})`, false);
+                    record(
+                        `FAIL ${c.name}: inner_square_rel=${innerSquareRel} did not add <rect> elements (${withInset} vs ${withoutInset})`,
+                        false,
+                    );
                     continue;
                 }
             }
 
-            record(`PASS ${c.name}: renders at ${svgDims.widthMm}x${svgDims.heightMm}mm${insetNote}`, true);
+            let diameterNote = "";
+            if (c.target.targetType === "markerboard") {
+                const cfg = c.target.config;
+                const expectedR = (cfg.circleDiameterRel * cfg.squareSizeMm) / 2;
+                const radii = parsePrimitives(bundle.svg_text)
+                    .filter((p) => p.kind === "circle")
+                    .map((p) => p.r);
+                const radiiOk = radii.length === 3 && radii.every((r) => Math.abs(r - expectedR) < 1e-3);
+                if (!radiiOk) {
+                    record(
+                        `FAIL ${c.name}: printed disk radii [${radii.join(",")}] != circleDiameterRel*squareSizeMm/2 = ${expectedR}`,
+                        false,
+                    );
+                    continue;
+                }
+                diameterNote = `, disk r=${expectedR}mm`;
+            }
+
+            let poleNote = "";
+            if (c.target.targetType === "puzzlepole") {
+                const cfg: PuzzlepoleConfig = c.target.config;
+                const problems = checkPuzzlepoleBundle(cfg, bundle);
+                if (problems.length > 0) {
+                    record(`FAIL ${c.name}: ${problems.join("; ")}`, false);
+                    continue;
+                }
+                const { widthMm, heightMm } = puzzlepoleBoardSizeMm(cfg);
+                poleNote = `, strip ${widthMm}x${heightMm}mm = ${cfg.axialSquares} cols x (${cfg.circumferenceSquares}+2) rows x ${cfg.squareSizeMm}mm, DXF/PNG/JSON ok`;
+            }
+
+            record(
+                `PASS ${c.name}: renders at ${svgDims.widthMm}x${svgDims.heightMm}mm${insetNote}${diameterNote}${poleNote}`,
+                true,
+            );
         } catch (e) {
             record(`FAIL ${c.name}: render threw: ${e instanceof Error ? e.message : String(e)}`, false);
         }
@@ -425,6 +896,9 @@ async function runHarness(
     console.log(`\n--- Part B: generation -> detection round trip (${ROUNDTRIP_DPI} DPI) ---\n`);
 
     for (const c of cases) {
+        // No editor detector exists for PuzzlePole (generator only); its strip
+        // geometry and output channels are asserted in Part A and Part F.
+        if (c.target.targetType === "puzzlepole") continue;
         try {
             const doc = toPrintableDocument(c.target, c.page);
             const bundle = mod.render_target_bundle_json(doc) as GeneratedBundle;
@@ -437,18 +911,22 @@ async function runHarness(
                     expected_rows: cfg.innerRows,
                     expected_cols: cfg.innerCols,
                 });
-                const result = mod.detect_chessboard(width, height, gray, chessCfg, params) as { corners: unknown[] } | null;
+                const result = mod.detect_chessboard(width, height, gray, chessCfg, params) as {
+                    corners: unknown[];
+                } | null;
                 const expected = cfg.innerRows * cfg.innerCols;
                 const got = result?.corners?.length ?? 0;
-                record(`${got === expected ? "PASS" : "FAIL"} ${c.name}: corners=${got} expected=${expected}`, got === expected);
+                record(
+                    `${got === expected ? "PASS" : "FAIL"} ${c.name}: corners=${got} expected=${expected}`,
+                    got === expected,
+                );
             } else if (c.target.targetType === "charuco") {
                 const cfg: CharucoConfig = c.target.config;
                 const params = mod.default_charuco_params(cfg.rows, cfg.cols, cfg.markerSizeRel, cfg.dictionary) as {
                     board: { border_bits: number };
-                    scan: { border_bits: number };
                 };
+                // calib-targets 0.18 has no scan block: the detector reads the border ring from the board.
                 params.board.border_bits = cfg.borderBits;
-                params.scan.border_bits = cfg.borderBits;
                 const result = mod.detect_charuco(width, height, gray, chessCfg, params) as {
                     corners: unknown[];
                     markers: { id: number; rotation: number }[];
@@ -495,39 +973,61 @@ async function runHarness(
             } else if (c.target.targetType === "markerboard") {
                 const cfg: MarkerBoardConfig = c.target.config;
                 const params = mod.default_marker_board_params() as {
-                    board: { rows: number; cols: number; circles: unknown[] };
+                    board: { rows: number; cols: number; circles: unknown[]; circle_diameter_rel: number };
                 };
                 params.board = {
                     rows: cfg.innerRows,
                     cols: cfg.innerCols,
                     circles: cfg.circles.map((circ) => toDetectorCircle(circ, true)),
+                    // Since calib-targets 0.15 every circle-scorer radius is
+                    // relative to the board's printed disk diameter.
+                    circle_diameter_rel: cfg.circleDiameterRel,
                 };
                 const raw = mod.diagnose_marker_board(width, height, gray, chessCfg, params);
                 const diag = unwrapMaps(raw) as {
                     result?: { corners: unknown[]; alignment?: { matrix: number[][] } } | null;
-                    diagnostics: { circle_candidates: unknown[]; circle_matches: unknown[] };
+                    diagnostics: {
+                        circle_candidates: unknown[];
+                        circle_matches: unknown[];
+                        alignment_inliers: number;
+                        alignment_ambiguous: boolean;
+                    };
                 };
 
                 const expectedCorners = cfg.innerRows * cfg.innerCols;
                 const gotCorners = diag.result?.corners?.length ?? 0;
                 const matrix = diag.result?.alignment?.matrix;
-                const isIdentity = JSON.stringify(matrix) === JSON.stringify([[1, 0], [0, 1]]);
+                const isIdentity =
+                    JSON.stringify(matrix) ===
+                    JSON.stringify([
+                        [1, 0],
+                        [0, 1],
+                    ]);
                 const candidates = diag.diagnostics?.circle_candidates?.length ?? 0;
                 const matches = diag.diagnostics?.circle_matches?.length ?? 0;
 
-                const ok = diag.result != null && gotCorners === expectedCorners && candidates === 3 && matches === 3 && isIdentity;
+                const inliers = diag.diagnostics?.alignment_inliers;
+                const ambiguous = diag.diagnostics?.alignment_ambiguous;
+                const ok =
+                    diag.result != null &&
+                    gotCorners === expectedCorners &&
+                    candidates === 3 &&
+                    matches === 3 &&
+                    isIdentity &&
+                    inliers === 3 &&
+                    ambiguous === false;
                 const detail =
                     `corners=${gotCorners} expected=${expectedCorners}, ` +
-                    `circle_candidates=${candidates} circle_matches=${matches}, ` +
+                    `circle_candidates=${candidates} circle_matches=${matches} alignment_inliers=${inliers} ambiguous=${ambiguous}, ` +
                     `alignment=${JSON.stringify(matrix)} identity=${isIdentity}`;
 
                 if (c.knownIssue) {
                     if (ok) {
                         record(
                             `FAIL ${c.name}: ${detail}\n` +
-                            `     This case is marked as a known issue, but it now PASSES. The upstream ` +
-                            `behaviour changed — delete the knownIssue note and let the assertion stand.\n` +
-                            `     Known issue was: ${c.knownIssue}`,
+                                `     This case is marked as a known issue, but it now PASSES. The upstream ` +
+                                `behaviour changed — delete the knownIssue note and let the assertion stand.\n` +
+                                `     Known issue was: ${c.knownIssue}`,
                             false,
                         );
                     } else {
@@ -575,9 +1075,9 @@ async function runHarness(
     // Measured against the real module: the mutant still returns a clean
     // 3-of-3 circle match (corners=35, circle_candidates=3, circle_matches=3,
     // alignment_inliers=3) with nothing reporting an error, but
-    // `alignment.matrix` becomes [[0,1],[1,0]] — the reflection about the
-    // diagonal — instead of the identity the correctly-transposed circles
-    // produce. That is the only signal distinguishing the two, so this
+    // `alignment.matrix` becomes non-identity ([[-1,0],[0,-1]] on
+    // calib-targets 0.15.1; [[0,1],[1,0]] before) instead of the identity the
+    // correctly-transposed circles produce. That is the only signal distinguishing the two, so this
     // assertion is what actually validates Part B's markerboard checks.
     console.log("\n--- Part C: mutation self-check (marker-board circle axes) ---\n");
     try {
@@ -588,7 +1088,9 @@ async function runHarness(
         const { width, height, gray } = rasterizeGray(bundle.svg_text, ROUNDTRIP_DPI);
         const chessCfg = mod.default_chess_config();
 
-        const params = mod.default_marker_board_params() as { board: { rows: number; cols: number; circles: unknown[] } };
+        const params = mod.default_marker_board_params() as {
+            board: { rows: number; cols: number; circles: unknown[] };
+        };
         params.board = {
             rows: cfg.innerRows,
             cols: cfg.innerCols,
@@ -603,7 +1105,12 @@ async function runHarness(
 
         const gotCorners = diag.result?.corners?.length ?? 0;
         const matrix = diag.result?.alignment?.matrix;
-        const isIdentity = JSON.stringify(matrix) === JSON.stringify([[1, 0], [0, 1]]);
+        const isIdentity =
+            JSON.stringify(matrix) ===
+            JSON.stringify([
+                [1, 0],
+                [0, 1],
+            ]);
         const candidates = diag.diagnostics?.circle_candidates?.length ?? 0;
         const matches = diag.diagnostics?.circle_matches?.length ?? 0;
         const inliers = diag.diagnostics?.alignment_inliers ?? 0;
@@ -630,6 +1137,124 @@ async function runHarness(
         }
     } catch (e) {
         record(`FAIL mutation self-check: errored: ${e instanceof Error ? e.message : String(e)}`, false);
+    }
+
+    // ── Part E — ambiguous marker-board orientation ─────────────────────────
+    //
+    // calib-targets 0.15 resolves the board frame by hypothesis-and-verify over
+    // the four rotations. When a second frame explains the circles as well as
+    // the best one it returns NO result (`result` undefined, corners withheld)
+    // and sets `diagnostics.alignment_ambiguous`. Build that case for real (all
+    // three expected circles white, so no circle breaks the rotational
+    // symmetry), assert the library really behaves that way, and assert the
+    // worker's adapter turns it into a loud, readable error instead of the
+    // "nothing detected" empty result it would otherwise collapse into.
+    console.log("\n--- Part E: ambiguous marker-board orientation is surfaced ---\n");
+    try {
+        const c = cases.find((k) => k.name === "markerboard/basic-a4")!;
+        const cfg = c.target.config as MarkerBoardConfig;
+        const bundle = mod.render_target_bundle_json(toPrintableDocument(c.target, c.page)) as GeneratedBundle;
+        const { width, height, gray } = rasterizeGray(bundle.svg_text, ROUNDTRIP_DPI);
+        const params = mod.default_marker_board_params() as {
+            board: { rows: number; cols: number; circles: unknown[] };
+        };
+        params.board = {
+            rows: cfg.innerRows,
+            cols: cfg.innerCols,
+            circles: [
+                { cell: { i: 2, j: 2 }, polarity: "white" },
+                { cell: { i: 5, j: 3 }, polarity: "white" },
+                { cell: { i: 3, j: 2 }, polarity: "black" },
+            ],
+        };
+        const raw = unwrapMaps(
+            mod.diagnose_marker_board(width, height, gray, mod.default_chess_config(), params),
+        ) as MarkerBoardDiagnosis;
+        const ambiguous = raw.diagnostics?.alignment_ambiguous === true;
+        const noResult = raw.result == null;
+        let message = "";
+        try {
+            adaptMarkerBoardDiagnosis(raw);
+        } catch (e) {
+            message = e instanceof Error ? e.message : String(e);
+        }
+        const ok = ambiguous && noResult && /Marker board orientation is ambiguous/.test(message);
+        record(
+            `${ok ? "PASS" : "FAIL"} markerboard/ambiguous-orientation: alignment_ambiguous=${ambiguous} result==null:${noResult} ` +
+                `inliers=${raw.diagnostics?.alignment_inliers} runner_up=${raw.diagnostics?.alignment_runner_up_inliers}; worker error: "${message}"`,
+            ok,
+        );
+    } catch (e) {
+        record(`FAIL markerboard/ambiguous-orientation: errored: ${e instanceof Error ? e.message : String(e)}`, false);
+    }
+
+    // ── Part F — PuzzlePole periods and invalid configs ─────────────────────
+    //
+    // `puzzlepole_periods()` is the library's own table of strips that close
+    // seamlessly. Assert that every entry really renders, that the app's
+    // defaults and presets sit on the table, and that an unsupported period is
+    // rejected twice over: by the library (it throws) and by the app's own
+    // validation rules with a readable message.
+    console.log("\n--- Part F: PuzzlePole periods + invalid config ---\n");
+    try {
+        const periods = mod.puzzlepole_periods() as PuzzlepolePeriod[];
+        const shapeOk =
+            Array.isArray(periods) &&
+            periods.length > 0 &&
+            periods.every((p) => Array.isArray(p) && p.length === 2 && p.every(Number.isInteger));
+        let rendered = 0;
+        const failures: string[] = [];
+        for (const [circumferenceSquares, startRow] of periods) {
+            try {
+                const cfg: PuzzlepoleConfig = { circumferenceSquares, startRow, axialSquares: 6, squareSizeMm: 5 };
+                const doc = toPrintableDocument(
+                    { targetType: "puzzlepole", config: cfg },
+                    page({ sizeKind: "custom", customWidthMm: 200, customHeightMm: 300 }),
+                );
+                const bundle = mod.render_target_bundle_json(doc) as GeneratedBundle;
+                const problems = checkPuzzlepoleBundle(cfg, bundle);
+                if (problems.length) failures.push(`${circumferenceSquares}@${startRow}: ${problems.join(", ")}`);
+                else rendered++;
+            } catch (e) {
+                failures.push(`${circumferenceSquares}@${startRow}: ${e instanceof Error ? e.message : String(e)}`);
+            }
+        }
+        record(
+            `${shapeOk && failures.length === 0 ? "PASS" : "FAIL"} puzzlepole/all-periods-render: ${rendered}/${periods.length} ` +
+                `(circumferences ${[...new Set(periods.map((p) => p[0]))].join(",")})${failures.length ? `\n     ${failures.join("\n     ")}` : ""}`,
+            shapeOk && failures.length === 0,
+        );
+
+        const configs = [
+            DEFAULT_PUZZLEPOLE,
+            ...PUZZLEPOLE_PRESETS.map((p) => (p.target as { config: PuzzlepoleConfig }).config),
+        ];
+        const offTable = configs.flatMap((cfg) => puzzlepoleConfigErrors(cfg, periods));
+        record(
+            `${offTable.length === 0 ? "PASS" : "FAIL"} puzzlepole/defaults-on-table: default + ${PUZZLEPOLE_PRESETS.length} presets are supported periods` +
+                (offTable.length ? `: ${offTable.join(" | ")}` : ""),
+            offTable.length === 0,
+        );
+
+        const bad: PuzzlepoleConfig = { ...DEFAULT_PUZZLEPOLE, circumferenceSquares: 25 };
+        let libraryError = "";
+        try {
+            mod.render_target_bundle_json(toPrintableDocument({ targetType: "puzzlepole", config: bad }, page()));
+        } catch (e) {
+            libraryError = e instanceof Error ? e.message : String(e);
+        }
+        const appErrors = puzzlepoleConfigErrors(bad, periods);
+        const rejectedOk =
+            libraryError !== "" &&
+            appErrors.length === 1 &&
+            /25 squares around the circumference is not a PuzzlePole period/.test(appErrors[0]) &&
+            /Supported: 12, 18, 24/.test(appErrors[0]);
+        record(
+            `${rejectedOk ? "PASS" : "FAIL"} puzzlepole/invalid-period-rejected: library throws "${libraryError}"; app validation: "${appErrors[0]}"`,
+            rejectedOk,
+        );
+    } catch (e) {
+        record(`FAIL puzzlepole/periods: errored: ${e instanceof Error ? e.message : String(e)}`, false);
     }
 
     // ── inner_square_rel bounds check ───────────────────────────────────────
@@ -727,11 +1352,7 @@ async function runHarness(
             // further or dropping the exact-match assertion instead.
             detector.update_config(JSON.stringify({ marker_scale: { diameter_min_px: 60, diameter_max_px: 180 } }));
 
-            const resultJson = detector.detect_adaptive_rgba(
-                new Uint8Array(png.data),
-                png.width,
-                png.height,
-            );
+            const resultJson = detector.detect_adaptive_rgba(new Uint8Array(png.data), png.width, png.height);
             const result = JSON.parse(resultJson) as { detected_markers?: { id: number }[] };
             const detectedIds = (result.detected_markers ?? []).map((m) => m.id);
 
@@ -752,8 +1373,13 @@ async function runHarness(
             detector.free();
         }
     } catch (e) {
-        record(`FAIL ringgrid/default-15x14-hex: round trip threw: ${e instanceof Error ? e.message : String(e)}`, false);
+        record(
+            `FAIL ringgrid/default-15x14-hex: round trip threw: ${e instanceof Error ? e.message : String(e)}`,
+            false,
+        );
     }
+
+    await runScreenRoundTrip(mod, ringgridMod, record);
 
     console.log("\n=== Summary ===");
     for (const line of summary) console.log(line);
@@ -762,6 +1388,20 @@ async function runHarness(
 }
 
 async function main() {
+    // Keep the event loop alive while the WASM modules initialise. Under bun
+    // 1.4.2 the dynamic `import()` of the wasm-bindgen glue is not counted as a
+    // pending handle, so a bare run intermittently exits with status 0 and NO
+    // output before it gets past `mod.default()`. The timer is cleared in
+    // `finally`.
+    const keepAlive = setInterval(() => {}, 1 << 30);
+    try {
+        await runMain();
+    } finally {
+        clearInterval(keepAlive);
+    }
+}
+
+async function runMain() {
     const mod = await import("@vitavision/calib-targets");
     await mod.default();
 
@@ -779,7 +1419,9 @@ async function main() {
         process.exit(1);
     }
 
-    console.log("\nPASS: every case renders at the right page size and round-trips through the library's own detectors.");
+    console.log(
+        "\nPASS: every case renders at the right page size and round-trips through the library's own detectors.",
+    );
 }
 
 main().catch((e) => {

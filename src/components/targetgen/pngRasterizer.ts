@@ -1,17 +1,18 @@
+import { PRINT_COLORS } from "./printColors";
+
 /**
  * Rasterizes an SVG string (with mm units) to a PNG Blob via an offscreen canvas.
  */
-export async function rasterizeSvgToPng(
-    svg: string,
-    dpi = 300,
-): Promise<Blob> {
+export async function rasterizeSvgToPng(svg: string, dpi = 300): Promise<Blob> {
     // Extract mm dimensions from the SVG
     const wMatch = svg.match(/width="([\d.]+)mm"/);
     const hMatch = svg.match(/height="([\d.]+)mm"/);
-    if (!wMatch || !hMatch) throw new Error("Could not parse SVG dimensions");
+    const wText = wMatch?.[1];
+    const hText = hMatch?.[1];
+    if (wText === undefined || hText === undefined) throw new Error("Could not parse SVG dimensions");
 
-    const widthMm = parseFloat(wMatch[1]);
-    const heightMm = parseFloat(hMatch[1]);
+    const widthMm = parseFloat(wText);
+    const heightMm = parseFloat(hText);
     const widthPx = Math.round((widthMm * dpi) / 25.4);
     const heightPx = Math.round((heightMm * dpi) / 25.4);
 
@@ -30,15 +31,12 @@ export async function rasterizeSvgToPng(
         canvas.width = widthPx;
         canvas.height = heightPx;
         const ctx = canvas.getContext("2d")!;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = PRINT_COLORS.paper;
         ctx.fillRect(0, 0, widthPx, heightPx);
         ctx.drawImage(img, 0, 0, widthPx, heightPx);
 
         return await new Promise<Blob>((resolve, reject) => {
-            canvas.toBlob(
-                (b) => (b ? resolve(b) : reject(new Error("Canvas toBlob failed"))),
-                "image/png",
-            );
+            canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("Canvas toBlob failed"))), "image/png");
         });
     } finally {
         URL.revokeObjectURL(url);

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { X } from "lucide-react";
-
-import { classNames } from "../../utils/helpers";
+import { Button, cn } from "@vitavision/ui";
 
 interface CanvasControlsHintProps {
     lines: string[];
@@ -17,21 +16,21 @@ export default function CanvasControlsHint({ lines, className }: CanvasControlsH
 
     return (
         <div
-            className={classNames(
-                "absolute z-20 rounded-md border border-border bg-background/90 px-2.5 py-1.5 text-[11px] leading-relaxed text-muted-foreground shadow-xs backdrop-blur-sm",
+            className={cn(
+                "absolute z-20 rounded-control border border-line bg-surface/90 px-2.5 py-1.5 text-[11px] leading-relaxed text-fg-muted shadow-xs backdrop-blur-sm",
                 className,
             )}
         >
             <div className="mb-1 flex items-start justify-between gap-2">
-                <div className="text-foreground/80 font-medium">Controls</div>
-                <button
-                    type="button"
+                <div className="text-fg font-medium">Controls</div>
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className="-mt-0.5 -mr-1 size-5 px-0"
                     aria-label="Close controls"
                     onClick={() => setDismissed(true)}
-                    className="rounded-sm p-0.5 text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
-                >
-                    <X size={12} />
-                </button>
+                    icon={<X />}
+                />
             </div>
             {lines.map((line) => (
                 <div key={line}>{line}</div>

@@ -1,4 +1,4 @@
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { modelPages } from "../generated/content-index.ts";
@@ -20,6 +20,7 @@ import { useArticleIllustrations } from "../lib/content/useArticleIllustrations.
 import { useArticleImageZoom } from "../lib/content/useArticleImageZoom.tsx";
 import { useIsAdmin } from "../lib/auth/useIsAdmin.ts";
 import NotFound from "./NotFound.tsx";
+import LoadingIndicator from "../components/shared/LoadingIndicator.tsx";
 
 export default function ModelPost() {
     const { slug } = useParams<{ slug: string }>();
@@ -30,9 +31,7 @@ export default function ModelPost() {
 
     // Resolve content synchronously from SSR context (postbuild prerender).
     // On the client useStaticContent() returns null, so the async loader runs instead.
-    const syncHtml = slug
-        ? staticContent?.modelHtmlBySlug?.[slug] ?? null
-        : null;
+    const syncHtml = slug ? (staticContent?.modelHtmlBySlug?.[slug] ?? null) : null;
 
     // Async loading state — reset when slug changes (render-time state reset pattern).
     const [trackedSlug, setTrackedSlug] = useState(slug);
@@ -48,7 +47,7 @@ export default function ModelPost() {
     // download the draft HTML chunk even when the UI renders NotFound.
     const isDraftBlocked = Boolean(page?.frontmatter.draft || page?.frontmatter.dev) && !isAdmin;
 
-    const html = isDraftBlocked ? null : syncHtml ?? asyncHtml;
+    const html = isDraftBlocked ? null : (syncHtml ?? asyncHtml);
     const loadFailed = !isDraftBlocked && html === null && (!slug || !(slug in modelHtmlLoaders) || asyncFailed);
 
     useMermaid(articleRef, [html]);
@@ -64,24 +63,23 @@ export default function ModelPost() {
 
         let cancelled = false;
         loader()
-            .then((mod) => { if (!cancelled) setAsyncHtml(mod.html); })
-            .catch(() => { if (!cancelled) setAsyncFailed(true); });
-        return () => { cancelled = true; };
+            .then((mod) => {
+                if (!cancelled) setAsyncHtml(mod.html);
+            })
+            .catch(() => {
+                if (!cancelled) setAsyncFailed(true);
+            });
+        return () => {
+            cancelled = true;
+        };
     }, [slug, syncHtml, isDraftBlocked]);
 
     if (!page) {
         return (
             <div className="max-w-[800px] mx-auto py-16 px-4 text-center space-y-4">
-                <h1 className="text-4xl font-bold tracking-tight">
-                    Model not found
-                </h1>
-                <p className="text-muted-foreground">
-                    The model page you're looking for doesn't exist.
-                </p>
-                <Link
-                    to="/atlas?kind=model"
-                    className="inline-block text-primary underline hover:text-primary/80"
-                >
+                <h1 className="text-4xl font-bold tracking-tight">Model not found</h1>
+                <p className="text-fg-muted">The model page you're looking for doesn't exist.</p>
+                <Link to="/atlas?kind=model" className="inline-block text-signal underline hover:text-signal/80">
                     Back to atlas
                 </Link>
             </div>
@@ -98,31 +96,31 @@ export default function ModelPost() {
 
     const hasModelBadges = Boolean(
         frontmatter.quality ||
-            frontmatter.noPublicImpl ||
-            frontmatter.arch_family ||
-            frontmatter.params ||
-            frontmatter.flops,
+        frontmatter.noPublicImpl ||
+        frontmatter.arch_family ||
+        frontmatter.params ||
+        frontmatter.flops,
     );
     const modelBadges = hasModelBadges ? (
         <>
-            <QualityBadge quality={frontmatter.quality} />
+            <QualityBadge {...(frontmatter.quality !== undefined && { quality: frontmatter.quality })} />
             {frontmatter.noPublicImpl && (
-                <span className="inline-flex items-center rounded border border-amber-500/40 px-2 py-0.5 text-sm font-mono uppercase tracking-wider text-amber-500">
+                <span className="inline-flex items-center rounded border border-ink-amber/40 px-2 py-0.5 text-sm font-mono uppercase tracking-wider text-ink-amber">
                     no public impl
                 </span>
             )}
             {frontmatter.arch_family && (
-                <span className="inline-flex items-center rounded border border-border px-2 py-0.5 text-[10.5px] font-mono text-muted-foreground">
+                <span className="inline-flex items-center rounded border border-line px-2 py-0.5 text-[10.5px] font-mono text-fg-muted">
                     {frontmatter.arch_family}
                 </span>
             )}
             {frontmatter.params && (
-                <span className="inline-flex items-center rounded border border-border px-2 py-0.5 text-[10.5px] font-mono text-muted-foreground">
+                <span className="inline-flex items-center rounded border border-line px-2 py-0.5 text-[10.5px] font-mono text-fg-muted">
                     {frontmatter.params}
                 </span>
             )}
             {frontmatter.flops && (
-                <span className="inline-flex items-center rounded border border-border px-2 py-0.5 text-[10.5px] font-mono text-muted-foreground">
+                <span className="inline-flex items-center rounded border border-line px-2 py-0.5 text-[10.5px] font-mono text-fg-muted">
                     {frontmatter.flops}
                 </span>
             )}
@@ -139,9 +137,7 @@ export default function ModelPost() {
                 url={`/atlas/${slug}`}
             />
             <Helmet>
-                <script type="application/ld+json">
-                    {JSON.stringify(jsonLd)}
-                </script>
+                <script type="application/ld+json">{JSON.stringify(jsonLd)}</script>
             </Helmet>
             <div className="min-w-0">
                 <AtlasPageHeader
@@ -159,13 +155,9 @@ export default function ModelPost() {
 
                 {html === null ? (
                     loadFailed ? (
-                        <div className="py-10 text-sm text-muted-foreground">
-                            Model content failed to load.
-                        </div>
+                        <div className="py-10 text-sm text-fg-muted">Model content failed to load.</div>
                     ) : (
-                        <div className="flex items-center justify-center py-16">
-                            <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-                        </div>
+                        <LoadingIndicator />
                     )
                 ) : (
                     <ErrorBoundary>
@@ -174,6 +166,7 @@ export default function ModelPost() {
                             data-atlas-slug={resolvedSlug}
                             data-atlas-kind="model"
                             className={proseClasses}
+                            // oxlint-disable-next-line react/no-danger -- html is build-time rehype-sanitize/shiki/katex output from scripts/content-build.ts (static content/ markdown), never runtime user input
                             dangerouslySetInnerHTML={{ __html: html }}
                         />
                     </ErrorBoundary>
@@ -186,14 +179,14 @@ export default function ModelPost() {
                 </div>
 
                 {(frontmatter.repoLinks?.length || frontmatter.demoLinks?.length) && (
-                    <footer className="mt-12 pt-6 border-t border-border space-y-3">
+                    <footer className="mt-12 pt-6 border-t border-line space-y-3">
                         {frontmatter.demoLinks?.map((url) => (
                             <a
                                 key={url}
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block text-primary underline hover:text-primary/80 text-sm"
+                                className="block text-signal underline hover:text-signal/80 text-sm"
                             >
                                 Demo: {url}
                             </a>
@@ -204,7 +197,7 @@ export default function ModelPost() {
                                 href={url}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="block text-primary underline hover:text-primary/80 text-sm"
+                                className="block text-signal underline hover:text-signal/80 text-sm"
                             >
                                 Repository: {url}
                             </a>
@@ -217,8 +210,8 @@ export default function ModelPost() {
                 <div className="sticky top-6">
                     <RelationsSidebar
                         slug={resolvedSlug}
-                        relatedPosts={frontmatter.relatedPosts}
-                        relatedDemos={frontmatter.relatedDemos}
+                        {...(frontmatter.relatedPosts !== undefined && { relatedPosts: frontmatter.relatedPosts })}
+                        {...(frontmatter.relatedDemos !== undefined && { relatedDemos: frontmatter.relatedDemos })}
                     />
                     {frontmatter.sources?.primary && <AIDisclosure />}
                 </div>

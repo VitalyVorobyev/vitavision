@@ -1,6 +1,6 @@
 import { renderToString } from "react-dom/server";
-import { MemoryRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
+import { MemoryRouter, Routes, Route, Navigate } from "react-router";
+import { TooltipProvider } from "@vitavision/ui";
 import { ClerkProvider } from "@clerk/clerk-react";
 import Blog from "./pages/Blog.tsx";
 import BlogPost from "./pages/BlogPost.tsx";
@@ -13,7 +13,8 @@ import DemoIndex from "./pages/DemoIndex.tsx";
 import DemoPage from "./pages/DemoPage.tsx";
 import Navbar from "./components/layout/Navbar.tsx";
 import Footer from "./components/layout/Footer.tsx";
-import { StaticContentProvider, type StaticContentContextValue } from "./lib/content/ssr-content.tsx";
+import { type StaticContentContextValue } from "./lib/content/ssr-content.tsx";
+import { StaticContentProvider } from "./lib/content/StaticContentProvider.tsx";
 import { PapersProvider } from "./lib/atlas/papersIndex.tsx";
 import type { PapersById } from "./generated/papers-index.ts";
 import { AuthorsProvider } from "./lib/atlas/authorsIndex.tsx";
@@ -27,8 +28,7 @@ import type { ScholarlyIndex } from "./generated/scholarly-index.ts";
 // In SSR there is no active session, so <SignedOut> renders and <SignedIn> is empty — correct for static HTML.
 // The placeholder key must pass Clerk's format validation (third segment base64-decodes to
 // a `.`-containing hostname ending in `$`). `clerk.example.com$` encoded → pk_test_Y2xlcmsuZXhhbXBsZS5jb20k.
-const SSR_PUBLISHABLE_KEY =
-    process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_Y2xlcmsuZXhhbXBsZS5jb20k";
+const SSR_PUBLISHABLE_KEY = process.env.VITE_CLERK_PUBLISHABLE_KEY ?? "pk_test_Y2xlcmsuZXhhbXBsZS5jb20k";
 
 export function render(
     url: string,
@@ -39,45 +39,59 @@ export function render(
 ): string {
     return renderToString(
         <ClerkProvider publishableKey={SSR_PUBLISHABLE_KEY}>
-        <StaticContentProvider value={staticContent}>
-        <PapersProvider initial={papers}>
-        <AuthorsProvider initial={authors}>
-        <ScholarlyProvider initial={scholarly}>
-            <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-                <MemoryRouter initialEntries={[url]}>
-                    <div className="min-h-screen flex flex-col font-sans bg-background text-foreground">
-                        <Navbar />
-                        <main className="flex-1">
-                            <Routes>
-                                <Route path="/blog" element={<Blog />} />
-                                <Route path="/blog/:slug" element={<BlogPost />} />
-                                <Route path="/atlas" element={<AlgorithmIndex />} />
-                                {/* Static segment must be matched before the /atlas/:slug catch-all. */}
-                                <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
-                                <Route path="/atlas/:slug" element={<AtlasPost />} />
-                                <Route path="/authors" element={<Navigate to="/atlas?view=people" replace />} />
-                                <Route path="/authors/:id" element={<AuthorPage />} />
-                                <Route path="/papers/:id" element={<PaperPage />} />
-                                <Route path="/demos" element={<DemoIndex />} />
-                                <Route path="/demos/:slug" element={<DemoPage />} />
-                                <Route path="/tools/target-generator" element={
-                                    <div className="max-w-3xl mx-auto px-6 py-16 text-center">
-                                        <h1 className="text-3xl font-bold tracking-tight mb-4">Calibration Target Generator</h1>
-                                        <p className="text-muted-foreground">
-                                            Generate calibration targets — chessboard, ChArUco, marker board, ring grid — with SVG, PNG, DXF, and ZIP downloads.
-                                        </p>
+            <StaticContentProvider value={staticContent}>
+                <PapersProvider initial={papers}>
+                    <AuthorsProvider initial={authors}>
+                        <ScholarlyProvider {...(scholarly !== undefined && { initial: scholarly })}>
+                            {/* No theme provider: the theme is the `dark` class that the inline script in
+                index.html paints from the stored choice ("system" when there is none) before
+                the first paint, so the prerendered markup is the same for both themes.
+                TooltipProvider: ui's ThemeToggle (in Navbar) throws without it. */}
+                            <TooltipProvider>
+                                <MemoryRouter initialEntries={[url]}>
+                                    <div className="min-h-screen flex flex-col font-sans bg-ground text-fg">
+                                        <Navbar />
+                                        <main className="flex-1">
+                                            <Routes>
+                                                <Route path="/blog" element={<Blog />} />
+                                                <Route path="/blog/:slug" element={<BlogPost />} />
+                                                <Route path="/atlas" element={<AlgorithmIndex />} />
+                                                {/* Static segment must be matched before the /atlas/:slug catch-all. */}
+                                                <Route path="/atlas/narratives/:slug" element={<NarrativePage />} />
+                                                <Route path="/atlas/:slug" element={<AtlasPost />} />
+                                                <Route
+                                                    path="/authors"
+                                                    element={<Navigate to="/atlas?view=people" replace />}
+                                                />
+                                                <Route path="/authors/:id" element={<AuthorPage />} />
+                                                <Route path="/papers/:id" element={<PaperPage />} />
+                                                <Route path="/demos" element={<DemoIndex />} />
+                                                <Route path="/demos/:slug" element={<DemoPage />} />
+                                                <Route
+                                                    path="/tools/target-generator"
+                                                    element={
+                                                        <div className="max-w-3xl mx-auto px-6 py-16 text-center">
+                                                            <h1 className="text-3xl font-bold tracking-tight mb-4">
+                                                                Calibration Target Generator
+                                                            </h1>
+                                                            <p className="text-fg-muted">
+                                                                Generate calibration targets — chessboard, ChArUco,
+                                                                marker board, ring grid — with SVG, PNG, DXF, and ZIP
+                                                                downloads.
+                                                            </p>
+                                                        </div>
+                                                    }
+                                                />
+                                            </Routes>
+                                        </main>
+                                        <Footer />
                                     </div>
-                                } />
-                            </Routes>
-                        </main>
-                        <Footer />
-                    </div>
-                </MemoryRouter>
-            </ThemeProvider>
-        </ScholarlyProvider>
-        </AuthorsProvider>
-        </PapersProvider>
-        </StaticContentProvider>
+                                </MemoryRouter>
+                            </TooltipProvider>
+                        </ScholarlyProvider>
+                    </AuthorsProvider>
+                </PapersProvider>
+            </StaticContentProvider>
         </ClerkProvider>,
     );
 }

@@ -24,7 +24,7 @@ interface PapersListProps {
 function ColumnHeader() {
     return (
         <div
-            className={`${PAPER_ROW_COLUMNS} font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground`}
+            className={`${PAPER_ROW_COLUMNS} font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-fg-muted`}
         >
             <span>Year</span>
             <span>Paper</span>
@@ -37,7 +37,7 @@ function ColumnHeader() {
 /** Decade-grouped (default) or flat ranked (while searching) list of papers,
  *  each decade showing 5 rows then an in-place "All N →" expansion. */
 export default function PapersList({ rows, query, filter, sort }: PapersListProps) {
-    const [expanded, setExpanded] = useState<Set<number>>(new Set());
+    const [expanded, setExpanded] = useState<Set<number>>(() => new Set());
     const needle = normalizeSearchText(query.trim());
     const searching = needle.length > 0;
 
@@ -47,7 +47,10 @@ export default function PapersList({ rows, query, filter, sort }: PapersListProp
 
     const searchResults = useMemo(() => {
         if (!searching) return [];
-        return sortPaperRows(base.filter((r) => matchesPaperSearch(r, needle)), sort);
+        return sortPaperRows(
+            base.filter((r) => matchesPaperSearch(r, needle)),
+            sort,
+        );
     }, [base, needle, searching, sort]);
 
     const groups = useMemo(() => {
@@ -69,11 +72,9 @@ export default function PapersList({ rows, query, filter, sort }: PapersListProp
             <ColumnHeader />
 
             {searching && (
-                <div className="rounded-lg border border-border bg-surface">
+                <div className="rounded-panel border border-line bg-surface">
                     {searchResults.length === 0 ? (
-                        <p className="px-4 py-8 text-center text-[13px] text-muted-foreground">
-                            No paper matches “{query}”.
-                        </p>
+                        <p className="px-4 py-8 text-center text-[13px] text-fg-muted">No paper matches “{query}”.</p>
                     ) : (
                         searchResults.map((row, i) => (
                             <PaperListRow key={row.id} row={row} maxCitedBy={maxCitedBy} bordered={i > 0} />
@@ -83,7 +84,7 @@ export default function PapersList({ rows, query, filter, sort }: PapersListProp
             )}
 
             {!searching && groups.length === 0 && (
-                <p className="px-1 py-8 text-center text-[13px] text-muted-foreground">No papers match this filter.</p>
+                <p className="px-1 py-8 text-center text-[13px] text-fg-muted">No papers match this filter.</p>
             )}
 
             {!searching &&
@@ -93,9 +94,9 @@ export default function PapersList({ rows, query, filter, sort }: PapersListProp
                     return (
                         <section key={group.decade} className="flex flex-col gap-2">
                             <div className="flex items-baseline justify-between">
-                                <h2 className="text-[17px] font-bold text-foreground">
+                                <h2 className="text-[17px] font-bold text-fg">
                                     {group.label}{" "}
-                                    <span className="font-mono text-[13px] font-normal text-muted-foreground">
+                                    <span className="font-mono text-[13px] font-normal text-fg-muted">
                                         {group.rows.length}
                                     </span>
                                 </h2>
@@ -103,14 +104,14 @@ export default function PapersList({ rows, query, filter, sort }: PapersListProp
                                     <button
                                         type="button"
                                         onClick={() => toggleExpanded(group.decade)}
-                                        className="flex items-center gap-1.5 text-[13px] font-medium text-foreground hover:underline"
+                                        className="flex items-center gap-1.5 text-[13px] font-medium text-fg hover:underline"
                                     >
                                         All {group.rows.length}
                                         <ArrowRight size={14} />
                                     </button>
                                 )}
                             </div>
-                            <div className="rounded-lg border border-border bg-surface">
+                            <div className="rounded-panel border border-line bg-surface">
                                 {shown.map((row, i) => (
                                     <PaperListRow key={row.id} row={row} maxCitedBy={maxCitedBy} bordered={i > 0} />
                                 ))}

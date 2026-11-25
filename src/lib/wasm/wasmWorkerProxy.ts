@@ -149,51 +149,43 @@ export async function generatePuzzleboardPngWasm(
     cellSizeMm: number,
     pngDpi: number,
 ): Promise<{ png: Uint8Array; mimeType: string }> {
-    return postCommand(
-        "puzzleboard-gen-png",
-        new Uint8Array(0),
-        0,
-        0,
-        { rows, cols, cellSizeMm, pngDpi },
-    ) as Promise<{ png: Uint8Array; mimeType: string }>;
+    return postCommand("puzzleboard-gen-png", new Uint8Array(0), 0, 0, { rows, cols, cellSizeMm, pngDpi }) as Promise<{
+        png: Uint8Array;
+        mimeType: string;
+    }>;
 }
 
 export async function renderTargetBundleWasm(
     doc: unknown,
 ): Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }> {
-    return postCommand(
-        "render-target-bundle",
-        new Uint8Array(0),
-        0,
-        0,
-        doc,
-    ) as Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }>;
+    return postCommand("render-target-bundle", new Uint8Array(0), 0, 0, doc) as Promise<{
+        svg: string;
+        dxf: string;
+        json: string;
+        png: Uint8Array;
+    }>;
+}
+
+export async function puzzlepolePeriodsWasm(): Promise<Array<[number, number]>> {
+    return postCommand("puzzlepole-periods", new Uint8Array(0), 0, 0, {}) as Promise<Array<[number, number]>>;
 }
 
 export async function renderRinggridBundleWasm(
     targetJson: string,
     optionsJson: string,
 ): Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }> {
-    return postCommand(
-        "render-ringgrid-bundle",
-        new Uint8Array(0),
-        0,
-        0,
-        { targetJson, optionsJson },
-    ) as Promise<{ svg: string; dxf: string; json: string; png: Uint8Array }>;
+    return postCommand("render-ringgrid-bundle", new Uint8Array(0), 0, 0, { targetJson, optionsJson }) as Promise<{
+        svg: string;
+        dxf: string;
+        json: string;
+        png: Uint8Array;
+    }>;
 }
 
-export async function ringgridBoardSizeMmWasm(
-    targetJson: string,
-    optionsJson: string,
-): Promise<[number, number]> {
-    return postCommand(
-        "ringgrid-page-size",
-        new Uint8Array(0),
-        0,
-        0,
-        { targetJson, optionsJson },
-    ) as Promise<[number, number]>;
+export async function ringgridBoardSizeMmWasm(targetJson: string, optionsJson: string): Promise<[number, number]> {
+    return postCommand("ringgrid-page-size", new Uint8Array(0), 0, 0, { targetJson, optionsJson }) as Promise<
+        [number, number]
+    >;
 }
 
 export async function generateRadsymHeatmap(
@@ -207,4 +199,28 @@ export async function generateRadsymHeatmap(
         width: number;
         height: number;
     }>;
+}
+
+/** Render a chessboard / ChArUco / PuzzleBoard as a native-resolution screen PNG
+ * (`png` bytes are transferred, not copied) plus the library's JSON sidecar. */
+export async function renderScreenTargetWasm(
+    target: unknown,
+    screen: unknown,
+): Promise<{ png: Uint8Array; json: string }> {
+    return postCommand("render-screen-target", new Uint8Array(0), 0, 0, { target, screen }) as Promise<{
+        png: Uint8Array;
+        json: string;
+    }>;
+}
+
+/** Fit and render a ring grid as a native-resolution screen PNG. `json` is the
+ * fitted detector spec; `metadata` is the realised screen geometry. */
+export async function renderRinggridScreenTargetWasm(
+    targetJson: string,
+    optionsJson: string,
+): Promise<{ png: Uint8Array; json: string; metadata: unknown }> {
+    return postCommand("render-ringgrid-screen-target", new Uint8Array(0), 0, 0, {
+        targetJson,
+        optionsJson,
+    }) as Promise<{ png: Uint8Array; json: string; metadata: unknown }>;
 }

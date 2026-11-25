@@ -1,19 +1,16 @@
 import { generateId } from "./util";
 import { getChessModule } from "./modules";
 
-export function adaptChessCornersResult(
-    raw: Float32Array,
-    width: number,
-    height: number,
-    config: Record<string, unknown>,
-    runtimeMs: number,
-) {
+export function adaptChessCornersResult(raw: Float32Array, width: number, height: number, runtimeMs: number) {
     // chess-corners 1.x narrowed the per-corner stride from 9 to 7: `contrast`
     // and `fit_rms` were removed along with the response-fit prefilter that
     // produced them. Nothing in the type-checker sees this — the detector
     // returns a bare Float32Array — so a stale stride here would silently
     // reinterpret axis angles as contrast and shear every corner's geometry.
-    const stride = 7; // x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
+    // chess-corners 2.x renamed the two per-axis error slots `sigma` -> `fitStdError` (the
+    // residual-scaled standard error of the axis fit, a fit-quality score and not a calibrated
+    // 1-sigma bound) without changing the layout: the stride is still 7.
+    const stride = 7; // x, y, response, axis0_angle, axis0_fitStdError, axis1_angle, axis1_fitStdError
     if (raw.length % stride !== 0) {
         throw new Error(`chess-corners: unexpected output length ${raw.length} (expected multiple of ${stride})`);
     }
@@ -24,14 +21,16 @@ export function adaptChessCornersResult(
     let responseMax = -Infinity;
     let responseSum = 0;
 
+    // `raw.length % stride === 0` is checked above and `count = raw.length / stride`,
+    // so every `raw[i * stride + k]` (k < stride) below is in bounds.
     for (let i = 0; i < count; i++) {
-        const x = raw[i * stride];
-        const y = raw[i * stride + 1];
-        const response = raw[i * stride + 2];
-        const axis0_angle = raw[i * stride + 3];
-        const axis0_sigma = raw[i * stride + 4];
-        const axis1_angle = raw[i * stride + 5];
-        const axis1_sigma = raw[i * stride + 6];
+        const x = raw[i * stride]!;
+        const y = raw[i * stride + 1]!;
+        const response = raw[i * stride + 2]!;
+        const axis0_angle = raw[i * stride + 3]!;
+        const axis0_fit_std_error = raw[i * stride + 4]!;
+        const axis1_angle = raw[i * stride + 5]!;
+        const axis1_fit_std_error = raw[i * stride + 6]!;
 
         if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(response)) continue;
 
@@ -39,15 +38,20 @@ export function adaptChessCornersResult(
         responseMax = Math.max(responseMax, response);
         responseSum += response;
 
-        corners.push({ x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma });
+        corners.push({ x, y, response, axis0_angle, axis0_fit_std_error, axis1_angle, axis1_fit_std_error });
     }
 
-    type AxisOut = { angle_rad: number; angle_deg: number; sigma_rad: number; direction: { dx: number; dy: number } };
+    type AxisOut = {
+        angle_rad: number;
+        angle_deg: number;
+        fit_std_error_rad: number;
+        direction: { dx: number; dy: number };
+    };
 
-    const makeAxis = (angle: number, sigma: number): AxisOut => ({
+    const makeAxis = (angle: number, fitStdError: number): AxisOut => ({
         angle_rad: angle,
-        angle_deg: angle * 180 / Math.PI,
-        sigma_rad: sigma,
+        angle_deg: (angle * 180) / Math.PI,
+        fit_std_error_rad: fitStdError,
         direction: { dx: Math.cos(angle), dy: Math.sin(angle) },
     });
 
@@ -64,7 +68,10 @@ export function adaptChessCornersResult(
             x_norm: c.x / width,
             y_norm: c.y / height,
             response: c.response,
-            axes: [makeAxis(c.axis0_angle, c.axis0_sigma), makeAxis(c.axis1_angle, c.axis1_sigma)] as [AxisOut, AxisOut],
+            axes: [makeAxis(c.axis0_angle, c.axis0_fit_std_error), makeAxis(c.axis1_angle, c.axis1_fit_std_error)] as [
+                AxisOut,
+                AxisOut,
+            ],
             confidence,
             confidence_level: confidenceLevel,
             _index: idx,
@@ -73,6 +80,10 @@ export function adaptChessCornersResult(
 
     // Sort by confidence descending
     cornersOut.sort((a, b) => b.confidence - a.confidence);
+
+    // Sorted by confidence descending: first = most confident, last = least.
+    const mostConfident = cornersOut[0];
+    const leastConfident = cornersOut[cornersOut.length - 1];
 
     return {
         status: "success" as const,
@@ -87,48 +98,31 @@ export function adaptChessCornersResult(
             y_axis: "down" as const,
             units: "pixels" as const,
         },
-        config: {
-            threshold: (config.threshold as number) ?? 30,
-            nms_radius: (config.nmsRadius as number) ?? 2,
-            broad_mode: (config.broadMode as boolean) ?? false,
-            min_cluster_size: (config.minClusterSize as number) ?? 2,
-            pyramid_levels: (config.pyramidLevels as number) ?? 4,
-            pyramid_min_size: (config.pyramidMinSize as number) ?? 128,
-            upscale_factor: (config.upscaleFactor as number) ?? 0,
-            refiner: (config.refiner as string) ?? "center_of_mass",
-        },
         summary: {
             count: cornersOut.length,
             response_min: cornersOut.length > 0 ? responseMin : null,
             response_max: cornersOut.length > 0 ? responseMax : null,
             response_mean: cornersOut.length > 0 ? responseSum / cornersOut.length : null,
-            confidence_min: cornersOut.length > 0 ? cornersOut[cornersOut.length - 1].confidence : null,
-            confidence_max: cornersOut.length > 0 ? cornersOut[0].confidence : null,
+            confidence_min: leastConfident ? leastConfident.confidence : null,
+            confidence_max: mostConfident ? mostConfident.confidence : null,
             runtime_ms: runtimeMs,
         },
         corners: cornersOut.map(({ _index: _, ...rest }) => rest),
     };
 }
 
-type ChessModule = typeof import("@vitavision/chess-corners");
-
 /**
- * Map the UI's refiner string to a chess-corners 0.11 `ChessRefiner`.
- * Mirrors the old `detector.set_refiner(<string>)` switch.
+ * Run the ChESS detector with `config`: a `DetectorConfig` document, in the shape
+ * `schemas/detector_config.json` describes (the editor stores exactly that).
+ *
+ * `DetectorConfig.fromJson` takes a partial document and fills what is missing from the
+ * library defaults, and validates the rest (`ChessDetector.withConfig` rejects, with a
+ * descriptive Rust error, an upscale factor outside 2..=4, zero pyramid levels, ...).
+ *
+ * `withConfig` only *borrows* the config — it snapshots it into the detector without
+ * consuming the handle — so `cfg` must be freed explicitly afterwards, otherwise the
+ * WASM-side allocation leaks on every detection in the live editor/webcam path.
  */
-function makeChessRefiner(mod: ChessModule, refiner: string) {
-    switch (refiner) {
-        case "forstner":
-            return mod.ChessRefiner.withForstner(new mod.ForstnerConfig());
-        case "saddle_point":
-            return mod.ChessRefiner.withSaddlePoint(new mod.SaddlePointConfig());
-        case "center_of_mass":
-            return mod.ChessRefiner.withCenterOfMass(new mod.CenterOfMassConfig());
-        default:
-            throw new Error(`chess-corners config: unknown refiner "${refiner}"`);
-    }
-}
-
 export async function handleChessCorners(
     pixels: Uint8Array,
     width: number,
@@ -137,64 +131,19 @@ export async function handleChessCorners(
 ) {
     const mod = await getChessModule();
 
-    // chess-corners 0.11 replaced the flat per-field setters (set_threshold,
-    // set_nms_radius, set_refiner, …) with the typed `DetectorConfig` builder.
-    // Start from the multiscale ChESS preset (library defaults) and overlay only
-    // the user-provided fields onto the shared-cell config tree, preserving the
-    // old behaviour.
-    //
-    // 1.x then dropped the `Threshold` tagged enum: `cfg.threshold` is a plain
-    // f32, an ABSOLUTE floor on the raw ChESS response (preset default 30).
-    // There is no relative mode any more, so `config.threshold` is passed
-    // through unscaled. It also moved the NMS / clustering knobs off
-    // `ChessConfig` onto a shared `cfg.detection` honoured by both the ChESS
-    // and Radon strategies — assigning `cfg.strategy.chess.nmsRadius` now
-    // writes a plain JS property on the wrapper that reads back correctly and
-    // never reaches WASM.
-    //
-    // The field setters (threshold, upscale, refiner) move their
-    // wrapper into the tree, but `ChessDetector.withConfig` only *borrows* `cfg`
-    // — it snapshots the config into the detector without consuming the handle —
-    // so `cfg` must be freed explicitly after the detector is built, otherwise
-    // the WASM-side config allocation leaks on every detection in the live
-    // editor/webcam path.
-    const cfg = mod.DetectorConfig.chessMultiscale();
-
-    if (typeof config.threshold === "number") {
-        cfg.threshold = config.threshold;
+    const cfg = mod.DetectorConfig.fromJson(JSON.stringify(config));
+    let detector: InstanceType<typeof mod.ChessDetector>;
+    try {
+        detector = mod.ChessDetector.withConfig(cfg);
+    } finally {
+        cfg.free();
     }
-    if (typeof config.upscaleFactor === "number") {
-        cfg.upscale = config.upscaleFactor >= 2
-            ? mod.UpscaleConfig.fixed(config.upscaleFactor)
-            : mod.UpscaleConfig.disabled();
-    }
-    if (typeof config.pyramidLevels === "number") cfg.multiscale.levels = config.pyramidLevels;
-    if (typeof config.pyramidMinSize === "number") cfg.multiscale.minSize = config.pyramidMinSize;
-
-    if (typeof config.nmsRadius === "number") cfg.detection.nmsRadius = config.nmsRadius;
-    if (typeof config.minClusterSize === "number") cfg.detection.minClusterSize = config.minClusterSize;
-
-    const chess = cfg.strategy.chess;
-    if (typeof config.broadMode === "boolean") {
-        chess.ring = config.broadMode ? mod.ChessRing.Broad : mod.ChessRing.Canonical;
-    }
-    if (typeof config.refiner === "string") {
-        chess.refiner = makeChessRefiner(mod, config.refiner);
-    }
-
-    // `withConfig` validates the config (e.g. upscale factor must be 2/3/4,
-    // pyramid levels ≥ 1) and throws a descriptive Rust error on bad input.
-    const detector = mod.ChessDetector.withConfig(cfg);
-    // `withConfig` borrows the config rather than taking ownership, so release
-    // the cfg handle (and the sub-tree it owns) now that the detector has
-    // snapshotted it — verified safe: detection runs correctly post-free.
-    cfg.free();
     try {
         const t0 = performance.now();
         const result = detector.detect_rgba(pixels, width, height);
         const runtimeMs = performance.now() - t0;
 
-        return adaptChessCornersResult(result, width, height, config, runtimeMs);
+        return adaptChessCornersResult(result, width, height, runtimeMs);
     } finally {
         detector.free();
     }

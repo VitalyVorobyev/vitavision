@@ -45,9 +45,15 @@ export function implementationsRule(ctx: ValidationContext): Diagnostic[] {
             }
         }
         if (!hasLimitationsHeading) {
-            diagnostics.push({ level: "error", message: `[${e.file}] noPublicImpl: true requires a ## Limitations section` });
+            diagnostics.push({
+                level: "error",
+                message: `[${e.file}] noPublicImpl: true requires a ## Limitations section`,
+            });
         } else if (!hasLimitationsBody) {
-            diagnostics.push({ level: "error", message: `[${e.file}] noPublicImpl: true requires a non-empty ## Limitations section` });
+            diagnostics.push({
+                level: "error",
+                message: `[${e.file}] noPublicImpl: true requires a non-empty ## Limitations section`,
+            });
         }
     }
 

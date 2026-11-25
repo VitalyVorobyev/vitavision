@@ -1,12 +1,23 @@
-import type { TargetConfig, PageConfig, ValidationResult, CharucoConfig, RingGridConfig } from "./types";
+import type {
+    TargetConfig,
+    PageConfig,
+    ValidationResult,
+    CharucoConfig,
+    RingGridConfig,
+    ScreenGeometry,
+    ScreenSettings,
+} from "./types";
+import { isScreenSupported, screenUnsupportedMessage } from "./screenTarget";
 import { resolvePageDimensions } from "./svg/paperConstants";
 import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
 import { toRinggridTarget, toRinggridBoardSizeOptions } from "./ringgridTarget";
 import { ringgridBoardSizeMmWasm } from "../../lib/wasm/wasmWorkerProxy";
+import { puzzlepoleBoardSizeMm, puzzlepoleConfigErrors } from "./puzzlepole/geometry";
+import { loadPuzzlepolePeriods } from "./puzzlepole/periods";
 
 /** Number of markers a ChArUco board requires (one per white square). */
 function charucoMarkerCount(c: CharucoConfig): number {
-    return Math.floor(c.rows * c.cols / 2);
+    return Math.floor((c.rows * c.cols) / 2);
 }
 
 /** Extract pool size from dictionary name, e.g. "DICT_4X4_250" -> 250. */
@@ -18,10 +29,75 @@ function dictionaryPoolSize(name: string): number | null {
     return null;
 }
 
-export async function validateConfig(
-    target: TargetConfig,
-    page: PageConfig,
-): Promise<ValidationResult> {
+/** Config checks shared by the print and screen media (no page involved). */
+function charucoConfigErrors(c: CharucoConfig): string[] {
+    const errors: string[] = [];
+    if (c.markerSizeRel <= 0 || c.markerSizeRel >= 1) {
+        errors.push("Marker size ratio must be between 0 and 1.");
+    }
+    const needed = charucoMarkerCount(c);
+    const poolSize = dictionaryPoolSize(c.dictionary);
+    if (poolSize !== null && needed > poolSize) {
+        errors.push(
+            `Board requires ${needed} markers but dictionary ${c.dictionary} only has ${poolSize}. ` +
+                `Use a larger dictionary or reduce board dimensions.`,
+        );
+    }
+    return errors;
+}
+
+const MAX_SCREEN_PX = 16384;
+
+/**
+ * Screen-medium validation: the pure checks that need no rendering. Whatever
+ * only the library can judge (a ChArUco dictionary that is too small, a board
+ * that cannot fit the display, a ring grid that cannot fit at the marker
+ * diameter) comes back as a render error and is surfaced by the caller as a
+ * validation error with the library's own message.
+ */
+export function validateScreenConfig(target: TargetConfig, screen: ScreenSettings): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (!isScreenSupported(target.targetType)) {
+        errors.push(screenUnsupportedMessage(target.targetType));
+    }
+
+    for (const [label, v] of [
+        ["Width", screen.widthPx],
+        ["Height", screen.heightPx],
+    ] as const) {
+        if (!Number.isInteger(v) || v < 1 || v > MAX_SCREEN_PX) {
+            errors.push(`${label} must be a whole number of pixels between 1 and ${MAX_SCREEN_PX}.`);
+        }
+    }
+    if (!Number.isFinite(screen.pixelPitchMm) || screen.pixelPitchMm <= 0) {
+        errors.push("Pixel pitch must be a positive number of millimeters.");
+    }
+    if (screen.marginPx !== null && (!Number.isInteger(screen.marginPx) || screen.marginPx < 0)) {
+        errors.push("Margin must be a whole number of pixels, 0 or more (or blank for the library default).");
+    }
+
+    if (target.targetType === "charuco") {
+        errors.push(...charucoConfigErrors(target.config));
+    }
+    return { errors, warnings };
+}
+
+/** Warnings that depend on the realised geometry of a successful screen render. */
+export function screenGeometryWarnings(geometry: ScreenGeometry): string[] {
+    if (geometry.kind === "grid" && geometry.squareSizePx < 12) {
+        return [`Squares are only ${geometry.squareSizePx} px wide — corner detection may be unreliable at that size.`];
+    }
+    if (geometry.kind === "ringgrid" && geometry.drawnMarkerDiameterPx < 24) {
+        return [
+            `Markers are only ${geometry.drawnMarkerDiameterPx.toFixed(0)} px across — detection may be unreliable at that size.`,
+        ];
+    }
+    return [];
+}
+
+export async function validateConfig(target: TargetConfig, page: PageConfig): Promise<ValidationResult> {
     const errors: string[] = [];
     const warnings: string[] = [];
     const dims = resolvePageDimensions(page);
@@ -64,8 +140,8 @@ export async function validateConfig(
             // which bypasses the type checker at runtime.
             if (c.circles.length !== 3) {
                 errors.push(
-                    `Marker board requires exactly 3 circles, got ${c.circles.length}. ` +
-                    `The @vitavision/calib-targets library fixes this count (MarkerCircleSpec is a [T; 3] array).`,
+                    `Marker board requires exactly 3 circles, got ${String(c.circles.length)}. ` +
+                        `The @vitavision/calib-targets library fixes this count (MarkerCircleSpec is a [T; 3] array).`,
                 );
             }
             const seen = new Set<string>();
@@ -88,17 +164,7 @@ export async function validateConfig(
             boardH = c.rows * c.squareSizeMm;
             if (c.squareSizeMm < 5) smallFeatureWarning = true;
 
-            if (c.markerSizeRel <= 0 || c.markerSizeRel >= 1) {
-                errors.push("Marker size ratio must be between 0 and 1.");
-            }
-            const needed = charucoMarkerCount(c);
-            const poolSize = dictionaryPoolSize(c.dictionary);
-            if (poolSize !== null && needed > poolSize) {
-                errors.push(
-                    `Board requires ${needed} markers but dictionary ${c.dictionary} only has ${poolSize}. ` +
-                    `Use a larger dictionary or reduce board dimensions.`,
-                );
-            }
+            errors.push(...charucoConfigErrors(c));
             break;
         }
         case "ringgrid": {
@@ -112,6 +178,21 @@ export async function validateConfig(
             boardW = c.cols * c.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM;
             boardH = c.rows * c.cellSizeMm + 2 * PUZZLEBOARD_QUIET_ZONE_MM;
             if (c.cellSizeMm < 5) smallFeatureWarning = true;
+            break;
+        }
+        case "puzzlepole": {
+            const c = target.config;
+            // The supported periods belong to the library, so they are read
+            // from it (once, through the worker) rather than copied here.
+            try {
+                errors.push(...puzzlepoleConfigErrors(c, await loadPuzzlepolePeriods()));
+            } catch (e) {
+                errors.push(
+                    `Could not read the supported PuzzlePole periods: ${e instanceof Error ? e.message : String(e)}`,
+                );
+            }
+            ({ widthMm: boardW, heightMm: boardH } = puzzlepoleBoardSizeMm(c));
+            if (c.squareSizeMm < 5) smallFeatureWarning = true;
             break;
         }
     }
@@ -147,10 +228,7 @@ export async function validateConfig(
  * as a validation ERROR (with the library's own message) rather than this
  * file re-deriving marker counts and hard-coded pool sizes in TypeScript.
  */
-async function validateRingGrid(
-    c: RingGridConfig,
-    errors: string[],
-): Promise<[number, number]> {
+async function validateRingGrid(c: RingGridConfig, errors: string[]): Promise<[number, number]> {
     if (c.rows < 1) errors.push("Rows must be at least 1.");
     if (c.longRowCols < 1) errors.push("Long row columns must be at least 1.");
     if (c.rows > 1 && c.longRowCols < 2) {
@@ -186,9 +264,7 @@ async function validateRingGrid(
         const [boardW, boardH] = await ringgridBoardSizeMmWasm(targetJson, optionsJson);
         return [boardW, boardH];
     } catch (e) {
-        errors.push(
-            `Ring grid target is invalid: ${e instanceof Error ? e.message : String(e)}`,
-        );
+        errors.push(`Ring grid target is invalid: ${e instanceof Error ? e.message : String(e)}`);
         // No footprint to report — 0x0 keeps the "does it fit the page"
         // check below from also firing a redundant/misleading error.
         return [0, 0];

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { Link, useSearchParams } from "react-router";
+import { Button, ButtonLink, ToggleChip, Tooltip } from "@vitavision/ui";
 
 import CanvasWorkspace from "../components/editor/CanvasWorkspace";
 import ErrorBoundary from "../components/ui/ErrorBoundary";
@@ -8,12 +8,10 @@ import EditorGallery from "../components/editor/EditorGallery";
 import SeoHead from "../components/seo/SeoHead.tsx";
 import EditorRightPanel from "../components/editor/panels/EditorRightPanel";
 import TouchFeatureNav from "../components/editor/TouchFeatureNav";
-import Tooltip from "../components/ui/Tooltip";
 import { useEditorStore, type OverlayVisibilityKey, type ToolType } from "../store/editor/useEditorStore";
 import { useShallow } from "zustand/react/shallow";
 import { readDeepLink } from "../hooks/useEditorDeepLink";
 import useViewportMode from "../hooks/useViewportMode";
-import { FormControlModeProvider } from "../components/editor/algorithms/formFields";
 import {
     ArrowLeft,
     ChevronDown,
@@ -30,20 +28,21 @@ import {
     Pentagon,
     Square,
 } from "lucide-react";
-import ZoomControls from "../components/shared/ZoomControls";
 const OVERLAY_LAYERS: { key: OverlayVisibilityKey; label: string }[] = [
     { key: "features", label: "Features" },
     { key: "algorithmOverlay", label: "Grid overlay" },
 ];
 
-const TOOL_BUTTON =
-    "min-w-[44px] min-h-[44px] rounded-md flex items-center justify-center transition-colors";
+/** Toolbar buttons keep a 44 px target: the editor also runs on touch tablets. */
+const TOOL_BUTTON = "size-11 px-0";
 
 function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
-    const { overlayVisibility, setOverlayVisibility } = useEditorStore(useShallow((s) => ({
-        overlayVisibility: s.overlayVisibility,
-        setOverlayVisibility: s.setOverlayVisibility,
-    })));
+    const { overlayVisibility, setOverlayVisibility } = useEditorStore(
+        useShallow((s) => ({
+            overlayVisibility: s.overlayVisibility,
+            setOverlayVisibility: s.setOverlayVisibility,
+        })),
+    );
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLDivElement>(null);
 
@@ -66,40 +65,33 @@ function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
 
     return (
         <div ref={ref} className="relative">
-            <Tooltip content="Layer visibility" side={horizontal ? "top" : "right"}>
-                <button
-                    type="button"
+            <Tooltip content="Layer visibility">
+                <Button
+                    variant={open ? "secondary" : "ghost"}
+                    className={TOOL_BUTTON}
                     onClick={() => setOpen((value) => !value)}
-                    className={`${TOOL_BUTTON} ${
-                        open ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted"
-                    }`}
+                    aria-label="Layer visibility"
+                    aria-expanded={open}
                 >
                     {allVisible ? <Layers size={18} /> : <EyeOff size={18} />}
-                </button>
+                </Button>
             </Tooltip>
             {open && (
                 <div
-                    className={`absolute z-50 w-44 rounded-lg border border-border bg-surface py-1 shadow-lg ${
-                        horizontal
-                            ? "bottom-full right-0 mb-2"
-                            : "left-full top-0 ml-2"
+                    className={`absolute z-50 flex w-44 flex-col gap-1 rounded-panel border border-line bg-overlay p-1.5 shadow-lg ${
+                        horizontal ? "bottom-full right-0 mb-2" : "left-full top-0 ml-2"
                     }`}
                 >
                     {OVERLAY_LAYERS.map(({ key, label }) => (
-                        <button
+                        <ToggleChip
                             key={key}
-                            type="button"
-                            onClick={() => setOverlayVisibility(key, !overlayVisibility[key])}
-                            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs transition-colors hover:bg-muted/60"
+                            checked={overlayVisibility[key]}
+                            onCheckedChange={(checked) => setOverlayVisibility(key, checked)}
+                            className="w-full"
                         >
-                            {overlayVisibility[key]
-                                ? <Eye size={14} className="text-primary" />
-                                : <EyeOff size={14} className="text-muted-foreground/50" />
-                            }
-                            <span className={overlayVisibility[key] ? "text-foreground" : "text-muted-foreground"}>
-                                {label}
-                            </span>
-                        </button>
+                            {overlayVisibility[key] ? <Eye size={14} /> : <EyeOff size={14} />}
+                            {label}
+                        </ToggleChip>
                     ))}
                 </div>
             )}
@@ -109,28 +101,24 @@ function OverlayVisibilityPopover({ horizontal }: { horizontal: boolean }) {
 
 function EditorPhoneNotice() {
     return (
-        <div className="flex h-[calc(100vh-64px)] items-center justify-center bg-muted/10 px-4 animate-in fade-in">
+        <div className="flex h-[calc(100vh-64px)] items-center justify-center px-4 animate-in fade-in">
             <SeoHead
                 title="Editor"
                 description="Interactive image annotation editor with computer vision algorithm runner."
             />
-            <div className="w-full max-w-md rounded-2xl border border-border bg-surface p-6 shadow-sm">
-                <div className="inline-flex rounded-full border border-border bg-background p-3 text-primary">
+            <div className="w-full max-w-md rounded-2xl border border-line bg-surface p-6 shadow-sm">
+                <div className="inline-flex rounded-full border border-line bg-raised p-3 text-signal">
                     <Monitor size={22} />
                 </div>
                 <h1 className="mt-5 text-2xl font-semibold tracking-tight">Editor works best on a larger screen</h1>
-                <p className="mt-3 text-sm leading-6 text-muted-foreground">
-                    The editor stays desktop-first because image review, algorithm tuning, and manual annotation
-                    become cramped on phone-sized screens. Open it on a tablet or desktop for the full workflow.
+                <p className="mt-3 text-sm leading-6 text-fg-muted">
+                    The editor stays desktop-first because image review, algorithm tuning, and manual annotation become
+                    cramped on phone-sized screens. Open it on a tablet or desktop for the full workflow.
                 </p>
                 <div className="mt-6">
-                    <Link
-                        to="/"
-                        className="inline-flex items-center gap-2 rounded-md border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
-                    >
-                        <ArrowLeft size={16} />
-                        Back to Home
-                    </Link>
+                    <ButtonLink asChild icon={<ArrowLeft />}>
+                        <Link to="/">Back to Home</Link>
+                    </ButtonLink>
                 </div>
             </div>
         </div>
@@ -138,38 +126,22 @@ function EditorPhoneNotice() {
 }
 
 export default function Editor() {
-    const {
-        activeTool,
-        setActiveTool,
-        zoom,
-        setZoom,
-        setPan,
-        imageWidth,
-        imageHeight,
-        galleryMode,
-        setGalleryMode,
-        galleryImages,
-        setImage,
-        setFeatures,
-        imageSrc,
-    } = useEditorStore(useShallow((s) => ({
-        activeTool: s.activeTool,
-        setActiveTool: s.setActiveTool,
-        zoom: s.zoom,
-        setZoom: s.setZoom,
-        setPan: s.setPan,
-        imageWidth: s.imageWidth,
-        imageHeight: s.imageHeight,
-        galleryMode: s.galleryMode,
-        setGalleryMode: s.setGalleryMode,
-        galleryImages: s.galleryImages,
-        setImage: s.setImage,
-        setFeatures: s.setFeatures,
-        imageSrc: s.imageSrc,
-    })));
+    const { activeTool, setActiveTool, galleryMode, setGalleryMode, galleryImages, setImage, setFeatures, imageSrc } =
+        useEditorStore(
+            useShallow((s) => ({
+                activeTool: s.activeTool,
+                setActiveTool: s.setActiveTool,
+                galleryMode: s.galleryMode,
+                setGalleryMode: s.setGalleryMode,
+                galleryImages: s.galleryImages,
+                setImage: s.setImage,
+                setFeatures: s.setFeatures,
+                imageSrc: s.imageSrc,
+            })),
+        );
     const [annotationToolsOpen, setAnnotationToolsOpen] = useState(false);
     const [searchParams] = useSearchParams();
-    const deepLinkApplied = useRef(false);
+    const deepLinkAppliedRef = useRef(false);
     const { isPhone, isTouchTablet, isLandscape } = useViewportMode();
 
     // Revoke blob: URLs and scrub them from the store when the user leaves /editor.
@@ -188,14 +160,20 @@ export default function Editor() {
             useEditorStore.setState({
                 galleryImages: state.galleryImages.filter((img) => !img.src.startsWith("blob:")),
                 ...(state.imageSrc?.startsWith("blob:")
-                    ? { imageSrc: null, imageName: null, imageWidth: 0, imageHeight: 0, imageSampleId: "upload" as const }
+                    ? {
+                          imageSrc: null,
+                          imageName: null,
+                          imageWidth: 0,
+                          imageHeight: 0,
+                          imageSampleId: "upload" as const,
+                      }
                     : {}),
             });
         };
     }, []);
 
     useEffect(() => {
-        if (deepLinkApplied.current || imageSrc !== null) {
+        if (deepLinkAppliedRef.current || imageSrc !== null) {
             return;
         }
 
@@ -209,17 +187,15 @@ export default function Editor() {
             return;
         }
 
-        deepLinkApplied.current = true;
+        deepLinkAppliedRef.current = true;
         const image = new Image();
         image.src = sample.src;
         image.onload = () => {
             setImage(sample.src, image.width, image.height, sample.name, sample.sampleId);
             setFeatures([]);
-            setZoom(1);
-            setPan({ x: 0, y: 0 });
             setGalleryMode(false);
         };
-    }, [searchParams, galleryImages, imageSrc, setImage, setFeatures, setZoom, setPan, setGalleryMode]);
+    }, [searchParams, galleryImages, imageSrc, setImage, setFeatures, setGalleryMode]);
 
     const manualTools: { id: ToolType; icon: React.ReactNode; label: string }[] = [
         { id: "POINT", icon: <MapPin size={22} />, label: "Point" },
@@ -229,26 +205,6 @@ export default function Editor() {
         { id: "BBOX", icon: <Square size={22} />, label: "Bounding Box" },
         { id: "ELLIPSE", icon: <Circle size={22} />, label: "Ellipse" },
     ];
-
-    const handleZoomIn = () => setZoom(zoom * 1.2);
-    const handleZoomOut = () => setZoom(zoom / 1.2);
-    const handleZoomActual = () => {
-        setZoom(1);
-        setPan({ x: 0, y: 0 });
-    };
-
-    const handleZoomFit = () => {
-        if (!imageWidth || !imageHeight) {
-            return;
-        }
-
-        const scale = Math.min(800 / imageWidth, 600 / imageHeight);
-        setZoom(scale * 0.9);
-        setPan({
-            x: 400 - (imageWidth * scale * 0.9) / 2,
-            y: 300 - (imageHeight * scale * 0.9) / 2,
-        });
-    };
 
     const toggleAnnotationTools = () => {
         setAnnotationToolsOpen((open) => {
@@ -283,48 +239,53 @@ export default function Editor() {
 
     const toolbarContent = (
         <>
-            <Tooltip content="Back to Gallery" side={horizontalToolbar ? "top" : "right"}>
-                <button
-                    type="button"
+            <Tooltip content="Back to Gallery">
+                <Button
+                    variant="ghost"
+                    className={`${TOOL_BUTTON} text-signal hover:text-signal-strong`}
                     onClick={() => setGalleryMode(true)}
-                    className={`${TOOL_BUTTON} font-bold text-primary hover:bg-muted`}
+                    aria-label="Back to Gallery"
                 >
                     <ImageIcon size={20} />
-                </button>
+                </Button>
             </Tooltip>
 
-            <div className={horizontalToolbar ? "h-full border-l border-border" : "w-full border-t border-border"} />
+            <div className={horizontalToolbar ? "h-full border-l border-line" : "w-full border-t border-line"} />
 
-            <Tooltip content="Select" side={horizontalToolbar ? "top" : "right"}>
-                <button
-                    type="button"
+            <Tooltip content="Select">
+                <Button
+                    variant={activeTool === "SELECT" ? "primary" : "ghost"}
+                    className={TOOL_BUTTON}
                     onClick={() => setActiveTool("SELECT")}
-                    className={`${TOOL_BUTTON} ${
-                        activeTool === "SELECT"
-                            ? "bg-primary text-primary-foreground shadow-xs"
-                            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    }`}
+                    data-testid="tool-select"
+                    aria-label="Select"
+                    aria-pressed={activeTool === "SELECT"}
                 >
                     <MousePointer2 size={18} />
-                </button>
+                </Button>
             </Tooltip>
 
             <OverlayVisibilityPopover horizontal={horizontalToolbar} />
 
             <div className={horizontalToolbar ? "flex items-center" : "flex-1 overflow-y-auto px-2 py-4"}>
-                <div className={horizontalToolbar
-                    ? "flex items-center gap-1 px-1"
-                    : "w-full overflow-hidden rounded-xl border border-border/70 bg-background/70 shadow-xs"
-                }>
-                    <Tooltip content={annotationToolsOpen ? "Collapse tools" : "Annotation tools"} side={horizontalToolbar ? "top" : "right"}>
-                        <button
-                            type="button"
+                <div
+                    className={
+                        horizontalToolbar
+                            ? "flex items-center gap-1 px-1"
+                            : "w-full overflow-hidden rounded-panel border border-line bg-surface"
+                    }
+                >
+                    <Tooltip content={annotationToolsOpen ? "Collapse tools" : "Annotation tools"}>
+                        <Button
+                            variant="ghost"
                             onClick={toggleAnnotationTools}
+                            aria-label={annotationToolsOpen ? "Collapse tools" : "Annotation tools"}
                             aria-expanded={annotationToolsOpen}
                             aria-controls={annotationToolsPanelId}
-                            className={horizontalToolbar
-                                ? `${TOOL_BUTTON} text-muted-foreground hover:bg-muted/40 hover:text-foreground`
-                                : "flex min-h-[58px] w-full flex-col items-center justify-center gap-1 px-2 py-3 text-[10px] font-semibold uppercase tracking-[0.12em] text-muted-foreground transition-colors hover:bg-muted/40 hover:text-foreground"
+                            className={
+                                horizontalToolbar
+                                    ? TOOL_BUTTON
+                                    : "h-auto min-h-[58px] w-full flex-col rounded-none px-2 py-3"
                             }
                         >
                             {horizontalToolbar ? (
@@ -344,44 +305,49 @@ export default function Editor() {
                                     />
                                 </div>
                             )}
-                        </button>
+                        </Button>
                     </Tooltip>
                     <div
                         id={annotationToolsPanelId}
                         aria-hidden={!annotationToolsOpen}
-                        className={horizontalToolbar
-                            ? `overflow-hidden transition-[max-width,opacity] duration-200 ease-out motion-reduce:transition-none ${
-                                annotationToolsOpen ? "max-w-[24rem] opacity-100" : "pointer-events-none max-w-0 opacity-0"
-                            }`
-                            : `w-full overflow-hidden transition-[max-height,opacity] duration-200 ease-out motion-reduce:transition-none ${
-                                annotationToolsOpen ? "max-h-[24rem] opacity-100" : "pointer-events-none max-h-0 opacity-0"
-                            }`
+                        className={
+                            horizontalToolbar
+                                ? `overflow-hidden transition-[max-width,opacity] duration-200 ease-out motion-reduce:transition-none ${
+                                      annotationToolsOpen
+                                          ? "max-w-[24rem] opacity-100"
+                                          : "pointer-events-none max-w-0 opacity-0"
+                                  }`
+                                : `w-full overflow-hidden transition-[max-height,opacity] duration-200 ease-out motion-reduce:transition-none ${
+                                      annotationToolsOpen
+                                          ? "max-h-[24rem] opacity-100"
+                                          : "pointer-events-none max-h-0 opacity-0"
+                                  }`
                         }
                     >
                         <div
-                            className={horizontalToolbar
-                                ? `flex gap-1 pl-1 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
-                                    annotationToolsOpen ? "translate-x-0" : "-translate-x-2"
-                                }`
-                                : `flex flex-col items-center gap-2 px-2 pb-2 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
-                                    annotationToolsOpen ? "translate-y-0" : "-translate-y-2"
-                                }`
+                            className={
+                                horizontalToolbar
+                                    ? `flex gap-1 pl-1 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
+                                          annotationToolsOpen ? "translate-x-0" : "-translate-x-2"
+                                      }`
+                                    : `flex flex-col items-center gap-2 px-2 pb-2 transition-transform duration-200 ease-out motion-reduce:transform-none motion-reduce:transition-none ${
+                                          annotationToolsOpen ? "translate-y-0" : "-translate-y-2"
+                                      }`
                             }
                         >
                             {manualTools.map((tool) => (
-                                <Tooltip key={tool.id} content={tool.label} side={horizontalToolbar ? "top" : "right"}>
-                                    <button
-                                        type="button"
+                                <Tooltip key={tool.id} content={tool.label}>
+                                    <Button
+                                        variant={activeTool === tool.id ? "primary" : "ghost"}
+                                        className={TOOL_BUTTON}
                                         onClick={() => setActiveTool(tool.id)}
                                         tabIndex={annotationToolsOpen ? 0 : -1}
-                                        className={`${TOOL_BUTTON} ${
-                                            activeTool === tool.id
-                                                ? "bg-primary text-primary-foreground shadow-xs"
-                                                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                                        }`}
+                                        data-testid={`tool-${tool.id.toLowerCase()}`}
+                                        aria-label={tool.label}
+                                        aria-pressed={activeTool === tool.id}
                                     >
                                         {tool.icon}
-                                    </button>
+                                    </Button>
                                 </Tooltip>
                             ))}
                         </div>
@@ -397,17 +363,9 @@ export default function Editor() {
         // The previous base64 encoded invalid path data (underscores as spaces +
         // a stray non-printable byte), so the pattern never rendered. Fixed here.
         <div className="relative flex-1 overflow-hidden bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiNmZmYiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZTVlN2ViIi8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iI2U1ZTdlYiIvPjwvc3ZnPg==')] dark:bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjgiPjxyZWN0IHdpZHRoPSI4IiBoZWlnaHQ9IjgiIGZpbGw9IiMxODE4MTgiLz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjMjgyODI4Ii8+PHJlY3QgeD0iNCIgeT0iNCIgd2lkdGg9IjQiIGhlaWdodD0iNCIgZmlsbD0iIzI4MjgyOCIvPjwvc3ZnPg==')]">
-            <ErrorBoundary><CanvasWorkspace /></ErrorBoundary>
-            <div className="absolute top-3 right-3">
-                <ZoomControls
-                    onZoomIn={handleZoomIn}
-                    onZoomOut={handleZoomOut}
-                    onFit={handleZoomFit}
-                    onActual={handleZoomActual}
-                    zoomPercent={Math.round(zoom * 100)}
-                    touchFriendly={isTouchTablet}
-                />
-            </div>
+            <ErrorBoundary>
+                <CanvasWorkspace />
+            </ErrorBoundary>
             <TouchFeatureNav />
         </div>
     );
@@ -420,14 +378,12 @@ export default function Editor() {
                     description="Interactive image annotation editor with computer vision algorithm runner."
                 />
                 <div className="flex min-w-0 flex-1 flex-col">
-                    <div className="min-h-0 flex-1 flex flex-col">
-                        {canvasArea}
-                    </div>
-                    <div className="flex h-12 items-center gap-1 overflow-x-auto border-t border-border bg-muted/20 px-2">
+                    <div className="min-h-0 flex-1 flex flex-col">{canvasArea}</div>
+                    <div className="flex h-12 items-center gap-1 overflow-x-auto border-t border-line bg-surface px-2">
                         {toolbarContent}
                     </div>
                 </div>
-                <div className="w-80 shrink-0 overflow-y-auto border-l border-border bg-background/70">
+                <div className="w-80 shrink-0 overflow-y-auto border-l border-line bg-ground">
                     <EditorRightPanel variant="touch" />
                 </div>
             </div>
@@ -437,44 +393,32 @@ export default function Editor() {
                     title="Editor"
                     description="Interactive image annotation editor with computer vision algorithm runner."
                 />
-                <div className="min-h-0 flex-1 flex flex-col">
-                    {canvasArea}
-                </div>
+                <div className="min-h-0 flex-1 flex flex-col">{canvasArea}</div>
 
-                <div className="border-t border-border bg-muted/20">
-                    <div className="flex h-16 items-center gap-1 overflow-x-auto px-2">
-                        {toolbarContent}
-                    </div>
-                    <div className="h-[20rem] border-t border-border bg-background/70">
+                <div className="border-t border-line bg-surface">
+                    <div className="flex h-16 items-center gap-1 overflow-x-auto px-2">{toolbarContent}</div>
+                    <div className="h-[20rem] border-t border-line bg-ground">
                         <EditorRightPanel variant="touch" />
                     </div>
                 </div>
             </div>
         );
 
-        return (
-            <TooltipPrimitive.Provider delayDuration={200}>
-                <FormControlModeProvider mode="touch">
-                    {touchTabletContent}
-                </FormControlModeProvider>
-            </TooltipPrimitive.Provider>
-        );
+        return touchTabletContent;
     }
 
     return (
-        <TooltipPrimitive.Provider delayDuration={200}>
-            <div className="flex h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
-                <SeoHead
-                    title="Editor"
-                    description="Interactive image annotation editor with computer vision algorithm runner."
-                />
-                <div className="flex h-full w-16 shrink-0 flex-col items-center gap-3 border-r border-border bg-muted/20 px-2 pt-4">
-                    {toolbarContent}
-                </div>
-
-                {canvasArea}
-                <EditorRightPanel />
+        <div className="flex h-[calc(100vh-64px)] overflow-hidden animate-in fade-in">
+            <SeoHead
+                title="Editor"
+                description="Interactive image annotation editor with computer vision algorithm runner."
+            />
+            <div className="flex h-full w-16 shrink-0 flex-col items-center gap-3 border-r border-line bg-surface px-2 pt-4">
+                {toolbarContent}
             </div>
-        </TooltipPrimitive.Provider>
+
+            {canvasArea}
+            <EditorRightPanel />
+        </div>
     );
 }

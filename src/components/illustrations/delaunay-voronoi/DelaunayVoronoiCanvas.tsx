@@ -1,6 +1,7 @@
 import { useRef, useCallback, type PointerEvent, type KeyboardEvent, type ReactElement } from "react";
 import { triangleArea, triangleMinAngle } from "./geometry";
-import type { DelaunayVoronoiState } from "./useDelaunayVoronoi";
+import { triangleVertices, type DelaunayVoronoiState } from "./useDelaunayVoronoi";
+import type { HoverTarget } from "./types";
 
 const W = 800;
 const H = 600;
@@ -30,11 +31,11 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
     const { layers, selectedId, hover } = state;
     const activeTool = state.activeTool;
     const svgRef = useRef<SVGSVGElement>(null);
-    const dragging = useRef<{ id: string } | null>(null);
+    const draggingRef = useRef<{ id: string } | null>(null);
 
     // Shared hit-test used by both mouse-hover and touch-tap paths.
     const hitTest = useCallback(
-        (x: number, y: number): import("./types").HoverTarget | null => {
+        (x: number, y: number): HoverTarget | null => {
             if (layers.voronoi && voronoi && allPoints.length >= 3) {
                 const cellIdx = delaunay?.find(x, y);
                 if (cellIdx !== undefined && cellIdx >= 0) {
@@ -42,7 +43,10 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                     if (poly) {
                         let area = 0;
                         for (let i = 0; i < poly.length - 1; i++) {
-                            area += poly[i][0] * poly[i + 1][1] - poly[i + 1][0] * poly[i][1];
+                            // i and i + 1 are both < poly.length by the loop bound.
+                            const [x0, y0] = poly[i]!;
+                            const [x1, y1] = poly[i + 1]!;
+                            area += x0 * y1 - x1 * y0;
                         }
                         area = Math.abs(area) / 2;
                         return { kind: "cell", index: cellIdx, area: area / (W * H) };
@@ -50,9 +54,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 }
             }
             if (layers.delaunay && triangles.length > 0) {
-                for (let i = 0; i < triangles.length; i++) {
-                    const { ai, bi, ci } = triangles[i];
-                    const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
+                for (const [i, triangle] of triangles.entries()) {
+                    const [a, b, c] = triangleVertices(allPoints, triangle);
                     const minX = Math.min(a.x, b.x, c.x);
                     const maxX = Math.max(a.x, b.x, c.x);
                     const minY = Math.min(a.y, b.y, c.y);
@@ -117,8 +120,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             }
 
             if (activeTool === "move" || activeTool === "add" || activeTool === "grid") {
-                dragging.current = { id };
-                (e.currentTarget as SVGElement).setPointerCapture(e.pointerId);
+                draggingRef.current = { id };
+                e.currentTarget.setPointerCapture(e.pointerId);
                 demo.selectPoint(id);
             }
             void isCorner;
@@ -138,10 +141,10 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 y: Math.round(Math.max(0, Math.min(H, y))),
             });
 
-            if (dragging.current) {
+            if (draggingRef.current) {
                 const cx = Math.max(0, Math.min(W, x));
                 const cy = Math.max(0, Math.min(H, y));
-                demo.movePoint(dragging.current.id, cx, cy);
+                demo.movePoint(draggingRef.current.id, cx, cy);
                 return;
             }
 
@@ -169,8 +172,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
     }, [demo]);
 
     const onPointerUp = useCallback(() => {
-        if (dragging.current) {
-            dragging.current = null;
+        if (draggingRef.current) {
+            draggingRef.current = null;
             demo.endDrag();
         }
     }, [demo]);
@@ -180,7 +183,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             // Undo/redo (Cmd/Ctrl-Z, Shift-Cmd/Ctrl-Z).
             if ((e.metaKey || e.ctrlKey) && (e.key === "z" || e.key === "Z")) {
                 e.preventDefault();
-                if (e.shiftKey) demo.redo(); else demo.undo();
+                if (e.shiftKey) demo.redo();
+                else demo.undo();
                 return;
             }
             if ((e.metaKey || e.ctrlKey) && (e.key === "y" || e.key === "Y")) {
@@ -196,11 +200,26 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                 }
                 return;
             }
-            if (e.key === "a" || e.key === "A") { demo.setTool("add"); return; }
-            if (e.key === "v" || e.key === "V") { demo.setTool("move"); return; }
-            if (e.key === "g" || e.key === "G") { demo.setTool("grid"); return; }
-            if (e.key === "h" || e.key === "H") { demo.setTool("inspect"); return; }
-            if (e.key === "r" || e.key === "R") { demo.randomPoints(); return; }
+            if (e.key === "a" || e.key === "A") {
+                demo.setTool("add");
+                return;
+            }
+            if (e.key === "v" || e.key === "V") {
+                demo.setTool("move");
+                return;
+            }
+            if (e.key === "g" || e.key === "G") {
+                demo.setTool("grid");
+                return;
+            }
+            if (e.key === "h" || e.key === "H") {
+                demo.setTool("inspect");
+                return;
+            }
+            if (e.key === "r" || e.key === "R") {
+                demo.randomPoints();
+                return;
+            }
         },
         [demo, selectedId, state.points],
     );
@@ -208,9 +227,9 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
     // Build hover highlight polygon points string
     let hoverPolygonPoints: string | null = null;
     if (hover !== null && allPoints.length >= 3) {
-        if (hover.kind === "triangle" && hover.index < triangles.length) {
-            const { ai, bi, ci } = triangles[hover.index];
-            const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
+        const hoveredTriangle = hover.kind === "triangle" ? triangles[hover.index] : undefined;
+        if (hoveredTriangle !== undefined) {
+            const [a, b, c] = triangleVertices(allPoints, hoveredTriangle);
             hoverPolygonPoints = `${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y}`;
         } else if (hover.kind === "cell" && voronoi) {
             const poly = voronoi.cellPolygon(hover.index);
@@ -227,7 +246,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             ref={svgRef}
             viewBox={`0 0 ${W} ${H}`}
             preserveAspectRatio="xMidYMid meet"
-            className="block h-full w-full outline-none focus-visible:ring-1 focus-visible:ring-primary"
+            className="block h-full w-full outline-none focus-visible:ring-1 focus-visible:ring-signal"
             style={{ cursor, display: "block", touchAction: "none" }}
             tabIndex={0}
             onPointerMove={onPointerMove}
@@ -238,14 +257,7 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             role="img"
         >
             {/* Background hit target */}
-            <rect
-                x={0}
-                y={0}
-                width={W}
-                height={H}
-                fill="transparent"
-                onPointerDown={onBgPointerDown}
-            />
+            <rect x={0} y={0} width={W} height={H} fill="transparent" onPointerDown={onBgPointerDown} />
 
             {/* Layer 1: Voronoi cells */}
             {layers.voronoi && voronoi && allPoints.length >= 3 && (
@@ -255,10 +267,11 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                         if (!poly) return null;
                         return (
                             <polygon
+                                // oxlint-disable-next-line react/no-array-index-key -- cell i is the Voronoi cell of point i; the point index is its identity (points have no id)
                                 key={i}
                                 points={poly.map(([px, py]) => `${px},${py}`).join(" ")}
-                                fill="hsl(var(--brand) / 0.08)"
-                                stroke="hsl(var(--border))"
+                                fill="color-mix(in oklab, var(--signal) 8%, transparent)"
+                                stroke="var(--line)"
                                 strokeWidth="0.75"
                             />
                         );
@@ -270,8 +283,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             {hoverPolygonPoints && (
                 <polygon
                     points={hoverPolygonPoints}
-                    fill="hsl(var(--brand) / 0.22)"
-                    stroke="hsl(var(--brand))"
+                    fill="color-mix(in oklab, var(--signal) 22%, transparent)"
+                    stroke="var(--signal)"
                     strokeWidth="1.5"
                     strokeOpacity="0.7"
                     pointerEvents="none"
@@ -282,24 +295,28 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
             {/* Layer 3: Circumcircles */}
             {layers.circumcircles && allPoints.length >= 3 && (
                 <g aria-hidden="true" pointerEvents="none">
-                    {triangles.map(({ ai, bi, ci }, i) => {
-                        const a = allPoints[ai], b = allPoints[bi], c = allPoints[ci];
-                        const ax = b.x - a.x, ay = b.y - a.y;
-                        const bx = c.x - a.x, by = c.y - a.y;
+                    {triangles.map((triangle, i) => {
+                        const [a, b, c] = triangleVertices(allPoints, triangle);
+                        const ax = b.x - a.x,
+                            ay = b.y - a.y;
+                        const bx = c.x - a.x,
+                            by = c.y - a.y;
                         const D = 2 * (ax * by - ay * bx);
                         if (Math.abs(D) < 1e-10) return null;
                         const ux = (by * (ax * ax + ay * ay) - ay * (bx * bx + by * by)) / D;
                         const uy = (ax * (bx * bx + by * by) - bx * (ax * ax + ay * ay)) / D;
-                        const cx = a.x + ux, cy = a.y + uy;
+                        const cx = a.x + ux,
+                            cy = a.y + uy;
                         const r = Math.hypot(ux, uy);
                         return (
                             <circle
+                                // oxlint-disable-next-line react/no-array-index-key -- one circle per triangle, derived from the triangulation each render; the triangle index is its only identity
                                 key={i}
                                 cx={cx}
                                 cy={cy}
                                 r={r}
                                 fill="none"
-                                stroke="hsl(var(--border))"
+                                stroke="var(--line)"
                                 strokeWidth="0.75"
                                 strokeDasharray="4 5"
                                 strokeOpacity="0.6"
@@ -318,19 +335,25 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                         const rendered = new Set<string>();
                         for (const { ai, bi, ci } of triangles) {
                             const pairs: [number, number][] = [
-                                [ai, bi], [bi, ci], [ci, ai],
+                                [ai, bi],
+                                [bi, ci],
+                                [ci, ai],
                             ];
                             for (const [u, v] of pairs) {
                                 const key = u < v ? `${u}-${v}` : `${v}-${u}`;
                                 if (rendered.has(key)) continue;
                                 rendered.add(key);
-                                const a = allPoints[u], b = allPoints[v];
+                                // u and v are triangle vertex indices, valid for allPoints.
+                                const a = allPoints[u]!,
+                                    b = allPoints[v]!;
                                 lines.push(
                                     <line
                                         key={key}
-                                        x1={a.x} y1={a.y}
-                                        x2={b.x} y2={b.y}
-                                        stroke="hsl(var(--foreground))"
+                                        x1={a.x}
+                                        y1={a.y}
+                                        x2={b.x}
+                                        y2={b.y}
+                                        stroke="var(--fg)"
                                         strokeWidth="1"
                                         strokeOpacity="0.4"
                                     />,
@@ -358,8 +381,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                                 width={8}
                                 height={8}
                                 transform={`rotate(45, ${p.x}, ${p.y})`}
-                                fill="hsl(var(--foreground) / 0.7)"
-                                stroke={isSelected ? "hsl(var(--brand))" : "hsl(var(--background))"}
+                                fill="color-mix(in oklab, var(--fg) 70%, transparent)"
+                                stroke={isSelected ? "var(--signal)" : "var(--ground)"}
                                 strokeWidth={isSelected ? "2" : "1"}
                                 style={{ cursor: "grab" }}
                                 onPointerDown={(e) => onPointPointerDown(e, p.id)}
@@ -372,8 +395,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                             cx={p.x}
                             cy={p.y}
                             r={isSelected ? 6 : 4}
-                            fill="hsl(var(--foreground) / 0.85)"
-                            stroke={isSelected ? "hsl(var(--brand))" : "hsl(var(--background))"}
+                            fill="color-mix(in oklab, var(--fg) 85%, transparent)"
+                            stroke={isSelected ? "var(--signal)" : "var(--ground)"}
                             strokeWidth={isSelected ? "2.5" : "1.5"}
                             style={{ cursor: "grab" }}
                             onPointerDown={(e) => onPointPointerDown(e, p.id)}
@@ -393,8 +416,8 @@ export default function DelaunayVoronoiCanvas({ demo }: Props) {
                             width={14}
                             height={14}
                             rx={2}
-                            fill="hsl(var(--brand))"
-                            stroke="hsl(var(--background))"
+                            fill="var(--signal)"
+                            stroke="var(--ground)"
                             strokeWidth="1.5"
                             style={{ cursor: "grab" }}
                             onPointerDown={(e) => onPointPointerDown(e, c.id)}

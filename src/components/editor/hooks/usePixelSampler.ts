@@ -8,11 +8,7 @@ export interface PixelInfo {
     b: number;
 }
 
-export function usePixelSampler(
-    imageSrc: string | null,
-    imageWidth: number,
-    imageHeight: number,
-) {
+export function usePixelSampler(imageSrc: string | null, imageWidth: number, imageHeight: number) {
     const hiddenCanvasRef = useRef<HTMLCanvasElement | null>(null);
     const [hoverPixel, setHoverPixel] = useState<PixelInfo | null>(null);
 
@@ -40,14 +36,25 @@ export function usePixelSampler(
         img.src = imageSrc;
     }, [imageSrc, imageWidth, imageHeight]);
 
+    /**
+     * Sample the pixel under a stage position. Stage coordinates put the centre of pixel `i` at `i`,
+     * so the pixel under `x` is the nearest integer, and the image spans `[-0.5, width - 0.5)`.
+     */
     const sampleAt = (pos: { x: number; y: number }) => {
-        if (hiddenCanvasRef.current && pos.x >= 0 && pos.x < imageWidth && pos.y >= 0 && pos.y < imageHeight) {
+        if (
+            hiddenCanvasRef.current &&
+            pos.x >= -0.5 &&
+            pos.x < imageWidth - 0.5 &&
+            pos.y >= -0.5 &&
+            pos.y < imageHeight - 0.5
+        ) {
             const ctx = hiddenCanvasRef.current.getContext("2d");
             if (ctx) {
-                const px = Math.floor(pos.x);
-                const py = Math.floor(pos.y);
+                const px = Math.round(pos.x);
+                const py = Math.round(pos.y);
                 const pixel = ctx.getImageData(px, py, 1, 1).data;
-                setHoverPixel({ x: pos.x, y: pos.y, r: pixel[0], g: pixel[1], b: pixel[2] });
+                // A 1x1 ImageData always holds exactly four RGBA bytes.
+                setHoverPixel({ x: pos.x, y: pos.y, r: pixel[0]!, g: pixel[1]!, b: pixel[2]! });
                 return;
             }
         }

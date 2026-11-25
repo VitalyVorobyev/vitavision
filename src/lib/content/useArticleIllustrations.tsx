@@ -1,5 +1,6 @@
 import { useEffect, type RefObject } from "react";
 import { createRoot, type Root } from "react-dom/client";
+import { TooltipProvider } from "@vitavision/ui";
 import ChessResponseIllustration from "../../components/illustrations/ChessResponseIllustration.tsx";
 import DelaunayVoronoiInlineIllustration from "../../components/illustrations/DelaunayVoronoiInlineIllustration.tsx";
 import type { ChessResponsePattern, ChessResponsePreset } from "../../components/illustrations/chess-response/types";
@@ -27,10 +28,7 @@ function parseNumber(value: string | undefined, fallback: number): number {
     return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-export function useArticleIllustrations(
-    ref: RefObject<HTMLElement | null>,
-    deps: unknown[],
-): void {
+export function useArticleIllustrations(ref: RefObject<HTMLElement | null>, deps: unknown[]): void {
     useEffect(() => {
         const element = ref.current;
         if (!element) return;
@@ -38,35 +36,48 @@ export function useArticleIllustrations(
         const hosts = element.querySelectorAll<HTMLElement>("[data-vv-illustration]");
         if (hosts.length === 0) return;
 
+        // Each illustration is a React root of its own, outside the app tree, so it needs its
+        // own TooltipProvider: ui's Tooltip and InfoHint throw without one. It sits in the
+        // article's serif prose, but it is an instrument, not prose: its controls are set in
+        // ui's sans like every other control on the site.
         const roots: Root[] = [];
 
         hosts.forEach((host) => {
             const kind = host.dataset.vvIllustration;
             if (kind === "chess-response") {
+                const initialPattern = parsePattern(host.dataset.vvPattern);
                 const root = createRoot(host);
                 roots.push(root);
                 root.render(
-                    <ChessResponseIllustration
-                        preset={parsePreset(host.dataset.vvPreset)}
-                        initialPattern={parsePattern(host.dataset.vvPattern)}
-                        initialRotation={parseNumber(host.dataset.vvRotation, 22.5)}
-                        showControls={parseBoolean(host.dataset.vvControls, true)}
-                        initialAnimateRotation={parseBoolean(host.dataset.vvAnimateRotation, false)}
-                    />,
+                    <TooltipProvider>
+                        <div className="font-sans">
+                            <ChessResponseIllustration
+                                preset={parsePreset(host.dataset.vvPreset)}
+                                {...(initialPattern !== undefined && { initialPattern })}
+                                initialRotation={parseNumber(host.dataset.vvRotation, 22.5)}
+                                showControls={parseBoolean(host.dataset.vvControls, true)}
+                                initialAnimateRotation={parseBoolean(host.dataset.vvAnimateRotation, false)}
+                            />
+                        </div>
+                    </TooltipProvider>,
                 );
             } else if (kind === "delaunay-voronoi") {
                 const root = createRoot(host);
                 roots.push(root);
                 root.render(
-                    <DelaunayVoronoiInlineIllustration
-                        showLegend={parseBoolean(host.dataset.vvLegend, false)}
-                        initialLayers={{
-                            grid:          parseBoolean(host.dataset.vvGrid, true),
-                            delaunay:      parseBoolean(host.dataset.vvDelaunay, true),
-                            voronoi:       parseBoolean(host.dataset.vvVoronoi, false),
-                            circumcircles: parseBoolean(host.dataset.vvCircumcircles, false),
-                        }}
-                    />,
+                    <TooltipProvider>
+                        <div className="font-sans">
+                            <DelaunayVoronoiInlineIllustration
+                                showLegend={parseBoolean(host.dataset.vvLegend, false)}
+                                initialLayers={{
+                                    grid: parseBoolean(host.dataset.vvGrid, true),
+                                    delaunay: parseBoolean(host.dataset.vvDelaunay, true),
+                                    voronoi: parseBoolean(host.dataset.vvVoronoi, false),
+                                    circumcircles: parseBoolean(host.dataset.vvCircumcircles, false),
+                                }}
+                            />
+                        </div>
+                    </TooltipProvider>,
                 );
             }
         });
@@ -74,6 +85,6 @@ export function useArticleIllustrations(
         return () => {
             roots.forEach((root) => root.unmount());
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // oxlint-disable-next-line react/exhaustive-deps -- caller-supplied `deps` array is the intentional re-run trigger (article HTML changes)
     }, deps);
 }

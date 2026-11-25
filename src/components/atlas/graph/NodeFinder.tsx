@@ -8,24 +8,25 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import { Search } from "lucide-react";
+import { Input } from "@vitavision/ui";
 
 export interface NodeFinderItem {
-    id:        string;
-    title:     string;
+    id: string;
+    title: string;
     subtitle?: string;
-    icon?:     ReactNode;
+    icon?: ReactNode;
 }
 
 export interface NodeFinderProps {
     /** Given a non-empty query, return the (already filtered/capped) result list. */
-    search:       (query: string) => NodeFinderItem[];
-    onSelect:     (id: string) => void;
+    search: (query: string) => NodeFinderItem[];
+    onSelect: (id: string) => void;
     placeholder?: string;
 }
 
 export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }: NodeFinderProps) {
-    const [query,          setQuery]          = useState("");
-    const [open,           setOpen]           = useState(false);
+    const [query, setQuery] = useState("");
+    const [open, setOpen] = useState(false);
     const [highlightIndex, setHighlightIndex] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
@@ -61,7 +62,8 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
             e.preventDefault();
             setHighlightIndex((i) => Math.max(i - 1, 0));
         } else if (e.key === "Enter") {
-            if (results.length > 0) pick((results[highlightIndex] ?? results[0]).id);
+            const item = results[highlightIndex] ?? results[0];
+            if (item) pick(item.id);
         } else if (e.key === "Escape") {
             setQuery("");
             setOpen(false);
@@ -74,40 +76,52 @@ export function NodeFinder({ search, onSelect, placeholder = "Find a node…" }:
     return (
         <div className="absolute top-3 left-3 z-20 w-64">
             {/* Input */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-border bg-surface/90 backdrop-blur shadow-sm">
-                <Search size={13} className="shrink-0 text-muted-foreground" />
-                <input
+            <div className="relative">
+                <Search
+                    size={13}
+                    className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted"
+                    aria-hidden="true"
+                />
+                <Input
                     ref={inputRef}
                     type="search"
+                    aria-label={placeholder}
                     placeholder={placeholder}
                     value={query}
-                    onChange={(e) => { setQuery(e.target.value); setOpen(true); setHighlightIndex(0); }}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                        setOpen(true);
+                        setHighlightIndex(0);
+                    }}
                     onFocus={() => setOpen(true)}
                     onBlur={() => setTimeout(() => setOpen(false), 120)}
                     onKeyDown={handleKeyDown}
-                    className="flex-1 bg-transparent outline-none text-xs placeholder:text-muted-foreground text-foreground min-w-0"
+                    className="bg-surface/90 pl-8 text-xs shadow-sm backdrop-blur"
                 />
             </div>
 
             {/* Dropdown */}
             {showDropdown && (
-                <div className="mt-1 rounded-lg border border-border bg-surface/90 backdrop-blur shadow-sm overflow-y-auto max-h-[280px]">
+                <div className="mt-1 rounded-panel border border-line bg-surface/90 backdrop-blur shadow-sm overflow-y-auto max-h-[280px]">
                     {results.map((item, idx) => {
                         const isHighlighted = idx === highlightIndex;
                         return (
                             <button
                                 key={item.id}
                                 type="button"
-                                onMouseDown={(e) => { e.preventDefault(); pick(item.id); }}
+                                onMouseDown={(e) => {
+                                    e.preventDefault();
+                                    pick(item.id);
+                                }}
                                 onMouseEnter={() => setHighlightIndex(idx)}
                                 className={`w-full flex items-center gap-2 px-2.5 py-1.5 text-left transition-colors ${
-                                    isHighlighted ? "bg-muted" : "hover:bg-muted/60"
+                                    isHighlighted ? "bg-line/60" : "hover:bg-line/60"
                                 }`}
                             >
                                 {item.icon}
-                                <span className="flex-1 min-w-0 text-xs text-foreground truncate">{item.title}</span>
+                                <span className="flex-1 min-w-0 text-xs text-fg truncate">{item.title}</span>
                                 {item.subtitle && (
-                                    <span className="shrink-0 text-[10px] text-muted-foreground">{item.subtitle}</span>
+                                    <span className="shrink-0 text-[10px] text-fg-muted">{item.subtitle}</span>
                                 )}
                             </button>
                         );

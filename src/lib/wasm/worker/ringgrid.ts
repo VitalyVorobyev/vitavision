@@ -1,14 +1,9 @@
-import { deepMerge, mapTargetBundle, type TargetBundle, type RawTargetBundle } from "./util";
+import { mapTargetBundle, mergeConfig, type TargetBundle, type RinggridScreenBundle } from "./util";
 import { getRinggridModule } from "./modules";
 
-export function adaptRinggridResult(
-    jsonStr: string,
-    width: number,
-    height: number,
-    runtimeMs: number,
-) {
-    const raw = JSON.parse(jsonStr);
-    const detectedMarkers = raw.detected_markers as Array<Record<string, unknown>> ?? [];
+export function adaptRinggridResult(jsonStr: string, width: number, height: number, runtimeMs: number) {
+    const raw = JSON.parse(jsonStr) as Record<string, unknown>;
+    const detectedMarkers = (raw.detected_markers as Array<Record<string, unknown>> | undefined) ?? [];
 
     const markers = detectedMarkers.map((m) => {
         const center = m.center as number[];
@@ -19,7 +14,10 @@ export function adaptRinggridResult(
         const boardXy = m.board_xy_mm as number[] | null;
 
         return {
-            id: decode ? (decode.best_id as number) : 0,
+            // ringgrid reports the identified codeword as top-level `id` (null when the
+            // marker is not identified); it has never emitted a `decode` block, which
+            // is kept only as a fallback for older payloads.
+            id: typeof m.id === "number" ? m.id : decode ? (decode.best_id as number) : null,
             confidence: (m.confidence as number) ?? 0,
             center: { x: center[0], y: center[1] },
             ellipse_outer: {
@@ -29,26 +27,32 @@ export function adaptRinggridResult(
                 b: ellipseOuter.b,
                 angle: ellipseOuter.angle,
             },
-            ellipse_inner: ellipseInner ? {
-                cx: ellipseInner.cx,
-                cy: ellipseInner.cy,
-                a: ellipseInner.a,
-                b: ellipseInner.b,
-                angle: ellipseInner.angle,
-            } : { cx: center[0], cy: center[1], a: 0, b: 0, angle: 0 },
-            decode: decode ? {
-                best_id: decode.best_id as number,
-                best_rotation: decode.best_rotation as number,
-                best_dist: decode.best_dist as number,
-                margin: decode.margin as number,
-                decode_confidence: decode.confidence as number,
-            } : null,
-            fit: fit ? {
-                rms_residual_outer: (fit.rms_residual_outer as number) ?? null,
-                rms_residual_inner: (fit.rms_residual_inner as number) ?? null,
-                ransac_inlier_ratio_outer: (fit.ransac_inlier_ratio_outer as number) ?? null,
-                ransac_inlier_ratio_inner: (fit.ransac_inlier_ratio_inner as number) ?? null,
-            } : null,
+            ellipse_inner: ellipseInner
+                ? {
+                      cx: ellipseInner.cx,
+                      cy: ellipseInner.cy,
+                      a: ellipseInner.a,
+                      b: ellipseInner.b,
+                      angle: ellipseInner.angle,
+                  }
+                : { cx: center[0], cy: center[1], a: 0, b: 0, angle: 0 },
+            decode: decode
+                ? {
+                      best_id: decode.best_id as number,
+                      best_rotation: decode.best_rotation as number,
+                      best_dist: decode.best_dist as number,
+                      margin: decode.margin as number,
+                      decode_confidence: decode.confidence as number,
+                  }
+                : null,
+            fit: fit
+                ? {
+                      rms_residual_outer: (fit.rms_residual_outer as number) ?? null,
+                      rms_residual_inner: (fit.rms_residual_inner as number) ?? null,
+                      ransac_inlier_ratio_outer: (fit.ransac_inlier_ratio_outer as number) ?? null,
+                      ransac_inlier_ratio_inner: (fit.ransac_inlier_ratio_inner as number) ?? null,
+                  }
+                : null,
             board_xy_mm: boardXy ? { x: boardXy[0], y: boardXy[1] } : null,
         };
     });
@@ -67,6 +71,16 @@ export function adaptRinggridResult(
     };
 }
 
+/**
+ * Run the ring-grid detector. `config` is `{ board, config }`: a target spec
+ * (`schemas/target_spec.json`) and a detection config (`schemas/detect_config.json`).
+ *
+ * The board goes in whole (it is a complete document; merging a default `hex` lattice into
+ * a `rect` one would keep fields the variant does not have). The detection config is merged
+ * over `default_config_json(board)` — a complete snapshot is what `with_config` takes, and
+ * the fields the library derives from the board (the schema's `readOnly` ones) come from
+ * there too.
+ */
 export async function handleRinggrid(
     pixels: Uint8Array,
     width: number,
@@ -75,24 +89,15 @@ export async function handleRinggrid(
 ) {
     const mod = await getRinggridModule();
 
-    // Start from WASM defaults, override with user-provided fields.
-    // ringgrid.target.v6 nests layout under lattice/marker/coding, so a
-    // shallow merge would wipe sibling keys (e.g. lattice.kind) whenever the
-    // user overrides only part of a nested block — use the nested-aware
-    // deepMerge (see worker/util.ts) instead.
-    const defaults = JSON.parse(mod.default_board_json()) as Record<string, unknown>;
-    const userBoard = config.boardJson
-        ? JSON.parse(config.boardJson as string) as Record<string, unknown>
-        : {};
-    const merged = deepMerge(defaults, userBoard);
-    const boardJson = JSON.stringify(merged);
+    const board =
+        (config.board as Record<string, unknown> | undefined) ??
+        (JSON.parse(mod.default_board_json()) as Record<string, unknown>);
+    const boardJson = JSON.stringify(board);
+    const defaults = JSON.parse(mod.default_config_json(boardJson)) as Record<string, unknown>;
+    const detectConfig = mergeConfig(defaults, (config.config as Record<string, unknown> | undefined) ?? {});
 
-    const detector = new mod.RinggridDetector(boardJson);
+    const detector = mod.RinggridDetector.with_config(boardJson, JSON.stringify(detectConfig));
     try {
-        if (config.configOverlay) {
-            detector.update_config(config.configOverlay as string);
-        }
-
         const t0 = performance.now();
         const resultJson = detector.detect_adaptive_rgba(pixels, width, height);
         const runtimeMs = performance.now() - t0;
@@ -115,7 +120,7 @@ export async function handleRinggrid(
  */
 export async function handleRenderRinggridBundle(targetJson: string, optionsJson: string): Promise<TargetBundle> {
     const mod = await getRinggridModule();
-    const bundle = mod.render_target_bundle_json(targetJson, optionsJson) as RawTargetBundle;
+    const bundle = mod.render_target_bundle_json(targetJson, optionsJson);
     return mapTargetBundle(bundle);
 }
 
@@ -129,4 +134,30 @@ export async function handleRinggridPageSize(targetJson: string, optionsJson: st
     const mod = await getRinggridModule();
     const sizeJson = mod.target_page_size_mm(targetJson, optionsJson);
     return JSON.parse(sizeJson) as [number, number];
+}
+
+/** The slice of the ringgrid module the screen renderer needs (see `CalibScreenModule`). */
+export interface RinggridScreenModule {
+    render_fitted_screen_target_json(
+        targetJson: string,
+        optionsJson: string,
+    ): { png_bytes: Uint8Array; json_text: string; metadata: unknown };
+}
+
+/** Fit and render a ring grid for 1:1 display. `json` is the fitted detector spec. */
+export function renderRinggridScreenWith(
+    mod: RinggridScreenModule,
+    targetJson: string,
+    optionsJson: string,
+): RinggridScreenBundle {
+    const bundle = mod.render_fitted_screen_target_json(targetJson, optionsJson);
+    return { png: bundle.png_bytes, json: bundle.json_text, metadata: bundle.metadata };
+}
+
+export async function handleRenderRinggridScreenTarget(
+    targetJson: string,
+    optionsJson: string,
+): Promise<RinggridScreenBundle> {
+    const mod = await getRinggridModule();
+    return renderRinggridScreenWith(mod, targetJson, optionsJson);
 }

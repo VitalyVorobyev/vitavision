@@ -9,10 +9,7 @@ export default function Blog() {
     const [selectedTag, setSelectedTag] = useState<string | null>(null);
     const isAdmin = useIsAdmin();
 
-    const visiblePosts = useMemo(
-        () => blogPosts.filter((p) => isAdmin || !p.frontmatter.draft),
-        [isAdmin],
-    );
+    const visiblePosts = useMemo(() => blogPosts.filter((p) => isAdmin || !p.frontmatter.draft), [isAdmin]);
 
     const allTags = useMemo(() => {
         const tagSet = new Set<string>();
@@ -22,9 +19,7 @@ export default function Blog() {
         return [...tagSet].sort();
     }, [visiblePosts]);
 
-    const filtered = selectedTag
-        ? visiblePosts.filter((p) => p.frontmatter.tags.includes(selectedTag))
-        : visiblePosts;
+    const filtered = selectedTag ? visiblePosts.filter((p) => p.frontmatter.tags.includes(selectedTag)) : visiblePosts;
 
     return (
         <div className="max-w-[800px] mx-auto py-16 space-y-8 animate-in fade-in px-4">
@@ -34,31 +29,20 @@ export default function Blog() {
             />
             <div className="space-y-4">
                 <h1 className="text-4xl font-bold tracking-tight">Blog</h1>
-                <p className="text-muted-foreground text-lg">
-                    Thoughts on algorithms, computer vision, and building
-                    intelligent systems.
+                <p className="text-fg-muted text-lg">
+                    Thoughts on algorithms, computer vision, and building intelligent systems.
                 </p>
             </div>
 
-            <TagFilter
-                tags={allTags}
-                selected={selectedTag}
-                onSelect={setSelectedTag}
-            />
+            <TagFilter tags={allTags} selected={selectedTag} onSelect={setSelectedTag} />
 
             <div className="space-y-6">
                 {filtered.length > 0 ? (
-                    filtered.map((post) => (
-                        <PostCard key={post.slug} post={post} />
-                    ))
+                    filtered.map((post) => <PostCard key={post.slug} post={post} />)
                 ) : visiblePosts.length === 0 ? (
-                    <p className="text-muted-foreground">
-                        No posts yet. Stay tuned!
-                    </p>
+                    <p className="text-fg-muted">No posts yet. Stay tuned!</p>
                 ) : (
-                    <p className="text-muted-foreground">
-                        No posts match the selected tag.
-                    </p>
+                    <p className="text-fg-muted">No posts match the selected tag.</p>
                 )}
             </div>
         </div>

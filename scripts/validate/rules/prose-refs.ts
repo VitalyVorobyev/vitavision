@@ -79,9 +79,7 @@ export function proseRefsRule(ctx: ValidationContext): Diagnostic[] {
 
     function checkProseReferences(e: ParsedEntry, kind: "algorithm" | "model" | "concept"): void {
         for (const ref of scanProseReferences(e.content)) {
-            const known = ref.kind === "arxiv"
-                ? knownArxivIds.has(ref.normalized)
-                : knownDois.has(ref.normalized);
+            const known = ref.kind === "arxiv" ? knownArxivIds.has(ref.normalized) : knownDois.has(ref.normalized);
             if (!known) {
                 diagnostics.push({
                     level: "warning",

@@ -3,26 +3,12 @@ import type { Feature, RingMarkerFeature } from "../../../../store/editor/useEdi
 import type { RinggridDetectResult } from "../../../../lib/types";
 import { detectRinggridWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 
-import RinggridConfigForm, { type RinggridConfig } from "./RinggridConfigForm";
+import { createConfigForm } from "../createConfigForm";
+import { initialConfig } from "./config";
+import { schema } from "./schema";
+import { ui } from "./ui";
 
 const RAD_TO_DEG = 180 / Math.PI;
-
-const initialConfig: RinggridConfig = {
-    rows: 15,
-    longRowCols: 14,
-    pitchMm: 8.0,
-    markerOuterRadiusMm: 4.8,
-    markerInnerRadiusMm: 3.2,
-    markerRingWidthMm: 1.152,
-    profile: "baseline",
-    diameterMinPx: 14,
-    diameterMaxPx: 66,
-    gradThreshold: 0.05,
-    maxDecodeDist: 3,
-    minDecodeConfidence: 0.3,
-    enableCompletion: true,
-    enableSelfUndistort: false,
-};
 
 const toSummary = (result: RinggridDetectResult): AlgorithmSummaryEntry[] => [
     { label: "Markers", value: `${result.summary.marker_count}` },
@@ -31,7 +17,13 @@ const toSummary = (result: RinggridDetectResult): AlgorithmSummaryEntry[] => [
 
 const toDiagnostics = (result: RinggridDetectResult): DiagnosticEntry[] => {
     if (result.summary.marker_count === 0) {
-        return [{ level: "warning", message: "No markers detected", detail: "Check that the board parameters match the target in the image." }];
+        return [
+            {
+                level: "warning",
+                message: "No markers detected",
+                detail: "Check that the board parameters match the target in the image.",
+            },
+        ];
     }
     return [];
 };
@@ -44,8 +36,8 @@ const toFeatures = (result: RinggridDetectResult, runId: string): Feature[] => {
         algorithmId: "ringgrid",
         runId,
         readonly: true,
-        x: marker.center.x + 0.5,
-        y: marker.center.y + 0.5,
+        x: marker.center.x,
+        y: marker.center.y,
         outerEllipse: {
             cx: marker.ellipse_outer.cx,
             cy: marker.ellipse_outer.cy,
@@ -61,14 +53,12 @@ const toFeatures = (result: RinggridDetectResult, runId: string): Feature[] => {
             angleDeg: marker.ellipse_inner.angle * RAD_TO_DEG,
         },
         meta: {
-            kind: marker.decode ? "ringgrid_decoded" : "ringgrid_proposal",
+            kind: marker.id !== null ? "ringgrid_decoded" : "ringgrid_proposal",
             markerId: marker.id,
             score: marker.confidence,
             rotation: marker.decode?.best_rotation,
             hamming: marker.decode ? marker.decode.best_dist : undefined,
-            targetPosition: marker.board_xy_mm
-                ? { x: marker.board_xy_mm.x, y: marker.board_xy_mm.y }
-                : undefined,
+            targetPosition: marker.board_xy_mm ? { x: marker.board_xy_mm.x, y: marker.board_xy_mm.y } : undefined,
         },
     }));
 };
@@ -82,52 +72,9 @@ export const ringgridAlgorithm: AlgorithmDefinition = {
         ringgrid: { ...initialConfig },
     },
     executionModes: ["wasm"],
-    ConfigComponent: RinggridConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("Ring Grid detection is only available via client-side WASM.");
-    },
-    runWasm: async ({ pixels, width, height, config }) => {
-        const c = config as RinggridConfig;
-        // ringgrid.target.v6 nests layout fields under lattice/marker/coding.
-        // This is a partial override merged (nested-aware) onto the WASM
-        // module's default board in src/lib/wasm/worker/ringgrid.ts — do not
-        // add `kind` here, it must come from the module defaults.
-        const boardJson = JSON.stringify({
-            lattice: {
-                rows: c.rows,
-                long_row_cols: c.longRowCols,
-                pitch_mm: c.pitchMm,
-            },
-            marker: {
-                outer_radius_mm: c.markerOuterRadiusMm,
-                inner_radius_mm: c.markerInnerRadiusMm,
-            },
-            coding: {
-                ring_width_mm: c.markerRingWidthMm,
-            },
-        });
-        // Detection config: proposal/decode/completion moved under `advanced`
-        // in the v5 config schema; marker_scale and self_undistort stay top-level.
-        const configOverlay = JSON.stringify({
-            marker_scale: {
-                diameter_min_px: c.diameterMinPx,
-                diameter_max_px: c.diameterMaxPx,
-            },
-            self_undistort: { enable: c.enableSelfUndistort },
-            advanced: {
-                proposal: {
-                    grad_threshold: c.gradThreshold,
-                },
-                decode: {
-                    codebook_profile: c.profile === "extended" ? "extended" : "base",
-                    max_decode_dist: c.maxDecodeDist,
-                    min_decode_confidence: c.minDecodeConfidence,
-                },
-                completion: { enable: c.enableCompletion },
-            },
-        });
-        return detectRinggridWasm(pixels, width, height, { boardJson, configOverlay });
-    },
+    ConfigComponent: createConfigForm({ schema, ui }),
+    run: () => Promise.reject(new Error("Ring Grid detection is only available via client-side WASM.")),
+    runWasm: ({ pixels, width, height, config }) => detectRinggridWasm(pixels, width, height, config),
     toFeatures: (result, runId) => toFeatures(result as RinggridDetectResult, runId),
     summary: (result) => toSummary(result as RinggridDetectResult),
     diagnostics: (result) => toDiagnostics(result as RinggridDetectResult),

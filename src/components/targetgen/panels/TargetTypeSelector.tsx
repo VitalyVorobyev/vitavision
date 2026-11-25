@@ -1,8 +1,17 @@
 import { useRef } from "react";
-import { toast } from "sonner";
-import { Grid3X3, QrCode, CircleDot, Target, Puzzle, Upload } from "lucide-react";
-import type { TargetType, TargetGeneratorAction } from "../types";
+import { Grid3X3, QrCode, CircleDot, Target, Puzzle, Cylinder, Upload } from "lucide-react";
+import type { TargetType, TargetGeneratorAction, TargetConfig, PageConfig, Medium } from "../types";
+import { isScreenSupported } from "../screenTarget";
 import { presetsForType } from "../presets";
+import { Button, cn, Select, toast } from "@vitavision/ui";
+
+/** Shape of a config file previously exported via `exportFeaturesAsJson`-style
+ *  JSON download. `page` may be missing the fields added after older exports
+ *  were written (`pngDpi`, `showScaleLine`), which are defaulted below. */
+interface ImportedTargetConfig {
+    target?: TargetConfig;
+    page?: Partial<PageConfig>;
+}
 
 const TARGET_TYPES: {
     id: TargetType;
@@ -40,6 +49,12 @@ const TARGET_TYPES: {
         description: "Self-identifying checkerboard with embedded edge-bit position code.",
         icon: <Puzzle size={24} />,
     },
+    {
+        id: "puzzlepole",
+        label: "PuzzlePole",
+        description: "PuzzleBoard wrapped around a cylinder — identifiable through 360°; wrap strip to print and roll",
+        icon: <Cylinder size={24} />,
+    },
 ];
 
 interface Props {
@@ -47,6 +62,13 @@ interface Props {
     dispatch: React.Dispatch<TargetGeneratorAction>;
     showPresets?: boolean;
     layout?: "stack" | "grid";
+    /**
+     * With `"screen"`, the kinds the screen renderers do not support (marker
+     * board, PuzzlePole) are disabled and annotated rather than hidden, so the
+     * reason is visible. A kind that is already selected stays selected; the
+     * validation step then explains the problem.
+     */
+    medium?: Medium;
 }
 
 export default function TargetTypeSelector({
@@ -54,6 +76,7 @@ export default function TargetTypeSelector({
     dispatch,
     showPresets = true,
     layout = "stack",
+    medium = "print",
 }: Props) {
     const fileRef = useRef<HTMLInputElement>(null);
     const presets = presetsForType(selected);
@@ -64,20 +87,20 @@ export default function TargetTypeSelector({
         const reader = new FileReader();
         reader.onload = (ev) => {
             try {
-                const data = JSON.parse(ev.target?.result as string);
-                if (data?.target?.targetType && data?.target?.config && data?.page) {
+                const data = JSON.parse(ev.target?.result as string) as ImportedTargetConfig;
+                if (data.target?.targetType && data.target.config && data.page) {
                     // Ensure new fields exist for configs from older versions
-                    const page = { pngDpi: 300, showScaleLine: true, ...data.page };
+                    const page = { pngDpi: 300, showScaleLine: true, ...data.page } as PageConfig;
                     dispatch({
                         type: "LOAD_PRESET",
                         target: data.target,
                         page,
                     });
                 } else {
-                    toast.error("Invalid config file: missing target or page fields.");
+                    toast({ title: "Invalid config file: missing target or page fields.", tone: "error" });
                 }
             } catch {
-                toast.error("Failed to parse JSON config file.");
+                toast({ title: "Failed to parse JSON config file.", tone: "error" });
             }
         };
         reader.readAsText(file);
@@ -87,48 +110,45 @@ export default function TargetTypeSelector({
 
     return (
         <div className="flex flex-col gap-2 p-3">
-            <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70 px-1">
-                Target Type
-            </h2>
+            <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted px-1">Target Type</h2>
             <div className={layout === "grid" ? "grid grid-cols-2 gap-2" : "flex flex-col gap-2"}>
-                {TARGET_TYPES.map((t) => (
-                    <button
-                        key={t.id}
-                        onClick={() =>
-                            dispatch({ type: "SET_TARGET_TYPE", targetType: t.id })
-                        }
-                        className={`flex min-h-[7.25rem] flex-col items-center justify-center gap-1.5 rounded-lg border p-3 text-center transition-colors ${
-                            selected === t.id
-                                ? "border-primary bg-primary/5 text-foreground"
-                                : "border-border bg-background hover:border-muted-foreground/40 text-muted-foreground"
-                        }`}
-                    >
-                        <span
-                            className={
-                                selected === t.id
-                                    ? "text-primary"
-                                    : "text-muted-foreground"
-                            }
+                {TARGET_TYPES.map((t) => {
+                    const unavailable = medium === "screen" && !isScreenSupported(t.id);
+                    return (
+                        <Button
+                            key={t.id}
+                            variant="secondary"
+                            aria-pressed={selected === t.id}
+                            disabled={unavailable}
+                            onClick={() => dispatch({ type: "SET_TARGET_TYPE", targetType: t.id })}
+                            className={cn(
+                                "h-auto min-h-[7.25rem] flex-col gap-1.5 whitespace-normal p-3 text-center",
+                                selected === t.id ? "bg-signal/5 ring-signal" : "text-fg-muted",
+                            )}
                         >
-                            {t.icon}
-                        </span>
-                        <span className="text-xs font-medium">{t.label}</span>
-                        <span className="text-[10px] leading-tight text-muted-foreground">
-                            {t.description}
-                        </span>
-                    </button>
-                ))}
+                            <span className={selected === t.id ? "text-signal" : "text-fg-muted"}>{t.icon}</span>
+                            <span className="text-xs font-medium">{t.label}</span>
+                            <span className="text-[10px] leading-tight text-fg-muted">
+                                {unavailable ? "Print only — not available as a screen target" : t.description}
+                            </span>
+                        </Button>
+                    );
+                })}
             </div>
 
             {showPresets && (
                 <div className="mt-2">
-                    <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground/70 px-1 mb-1.5">
+                    <h2 className="text-[10px] font-semibold uppercase tracking-[0.16em] text-fg-muted px-1 mb-1.5">
                         Presets
                     </h2>
-                    <select
+                    {/* Always unset: choosing a preset loads it, and the picker is ready for the next. */}
+                    <Select
+                        aria-label="Presets"
                         value=""
-                        onChange={(e) => {
-                            const preset = presets.find((p) => p.id === e.target.value);
+                        placeholder="Choose a preset…"
+                        options={presets.map((p) => ({ value: p.id, label: p.label }))}
+                        onValueChange={(id) => {
+                            const preset = presets.find((p) => p.id === id);
                             if (preset) {
                                 dispatch({
                                     type: "LOAD_PRESET",
@@ -137,31 +157,15 @@ export default function TargetTypeSelector({
                                 });
                             }
                         }}
-                        className="w-full rounded-md border border-border bg-background px-3 py-1.5 text-sm transition-colors hover:border-muted-foreground/40 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50"
-                    >
-                        <option value="" disabled>
-                            Choose a preset...
-                        </option>
-                        {presets.map((p) => (
-                            <option key={p.id} value={p.id}>
-                                {p.label}
-                            </option>
-                        ))}
-                    </select>
-                    <p className="text-[10px] text-muted-foreground/60 mt-1 px-1">
-                        Select a preset to auto-fill config
-                    </p>
+                    />
+                    <p className="text-[10px] text-fg-muted mt-1 px-1">Select a preset to auto-fill config</p>
                 </div>
             )}
 
             {/* Import config */}
-            <button
-                onClick={() => fileRef.current?.click()}
-                className="flex items-center justify-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium transition-colors hover:border-muted-foreground/40 hover:bg-muted mt-1"
-            >
-                <Upload size={14} />
+            <Button size="sm" className="mt-1" onClick={() => fileRef.current?.click()} icon={<Upload />}>
                 Import Config
-            </button>
+            </Button>
             <input
                 ref={fileRef}
                 type="file"

@@ -1,25 +1,20 @@
 import type { ReactNode } from "react";
 import type { ModelFrontmatterSerialized } from "../../lib/content/schema.ts";
 
-type Implementation = NonNullable<
-    ModelFrontmatterSerialized["implementations"]
->[number];
+type Implementation = NonNullable<ModelFrontmatterSerialized["implementations"]>[number];
 
-const roleStyles: Record<
-    Implementation["role"],
-    { label: string; chip: string }
-> = {
+const roleStyles: Record<Implementation["role"], { label: string; chip: string }> = {
     official: {
         label: "Official",
-        chip: "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+        chip: "border-ink-green/40 bg-ink-green/10 text-ink-green",
     },
     community: {
         label: "Community",
-        chip: "border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400",
+        chip: "border-ink-amber/40 bg-ink-amber/10 text-ink-amber",
     },
     port: {
         label: "Port",
-        chip: "border-violet-500/40 bg-violet-500/10 text-violet-600 dark:text-violet-400",
+        chip: "border-ink-violet/40 bg-ink-violet/10 text-ink-violet",
     },
 };
 
@@ -38,12 +33,8 @@ function parseRepoLabel(repoUrl: string): string {
 function Field({ label, children }: { label: string; children: ReactNode }) {
     return (
         <div className="flex items-baseline gap-1.5 min-w-0">
-            <dt className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-muted-foreground/70">
-                {label}
-            </dt>
-            <dd className="text-[12.5px] text-foreground/90 truncate">
-                {children}
-            </dd>
+            <dt className="font-mono text-[9.5px] uppercase tracking-[0.14em] text-fg-muted/70">{label}</dt>
+            <dd className="text-[12.5px] text-fg/90 truncate">{children}</dd>
         </div>
     );
 }
@@ -54,7 +45,7 @@ function ImplementationCard({ impl }: { impl: Implementation }) {
     const repoLabel = parseRepoLabel(impl.repo);
 
     return (
-        <article className="group rounded-lg border border-border bg-surface/40 transition-colors hover:border-foreground/20 hover:bg-surface/70">
+        <article className="group rounded-panel border border-line bg-surface/40 transition-colors hover:border-fg/20 hover:bg-surface/70">
             <header className="flex items-baseline gap-3 px-4 pt-3 pb-2">
                 <span
                     className={`shrink-0 inline-flex items-center rounded border px-1.5 py-0.5 font-mono text-[9.5px] font-semibold uppercase tracking-[0.14em] ${role.chip}`}
@@ -65,14 +56,11 @@ function ImplementationCard({ impl }: { impl: Implementation }) {
                     href={impl.repo}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="min-w-0 truncate font-mono text-[13.5px] font-medium text-foreground transition-colors hover:text-primary"
+                    className="min-w-0 truncate font-mono text-[13.5px] font-medium text-fg transition-colors hover:text-signal"
                     title={impl.repo}
                 >
                     {repoLabel}
-                    <span
-                        aria-hidden
-                        className="ml-1 text-muted-foreground/60 transition-colors group-hover:text-primary/70"
-                    >
+                    <span aria-hidden className="ml-1 text-fg-muted/60 transition-colors group-hover:text-signal/70">
                         ↗
                     </span>
                 </a>
@@ -80,13 +68,13 @@ function ImplementationCard({ impl }: { impl: Implementation }) {
                     href={`${impl.repo}/commit/${impl.commit}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="ml-auto shrink-0 font-mono text-[11px] text-muted-foreground transition-colors hover:text-primary"
+                    className="ml-auto shrink-0 font-mono text-[11px] text-fg-muted transition-colors hover:text-signal"
                     title={`Commit ${impl.commit}`}
                 >
                     @ {shortSha}
                 </a>
             </header>
-            <dl className="flex flex-wrap items-baseline gap-x-5 gap-y-1.5 border-t border-border/60 px-4 py-2.5">
+            <dl className="flex flex-wrap items-baseline gap-x-5 gap-y-1.5 border-t border-line/60 px-4 py-2.5">
                 <Field label="Framework">
                     <span className="font-mono">{impl.framework}</span>
                 </Field>
@@ -97,13 +85,13 @@ function ImplementationCard({ impl }: { impl: Implementation }) {
                             href={impl.weights_url}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-primary underline-offset-2 transition-colors hover:text-primary/80 hover:underline"
+                            className="text-signal underline-offset-2 transition-colors hover:text-signal/80 hover:underline"
                             title={impl.weights_url}
                         >
                             {impl.weights_license ?? "available"} ↗
                         </a>
                     ) : (
-                        <span className="text-muted-foreground">&mdash;</span>
+                        <span className="text-fg-muted">&mdash;</span>
                     )}
                 </Field>
             </dl>
@@ -115,16 +103,13 @@ interface ImplementationsListProps {
     implementations: NonNullable<ModelFrontmatterSerialized["implementations"]>;
 }
 
-export default function ImplementationsList({
-    implementations,
-}: ImplementationsListProps) {
+export default function ImplementationsList({ implementations }: ImplementationsListProps) {
     return (
         <section aria-label="Implementations" className="mb-10">
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
-                Implementations
-            </h2>
+            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-fg-muted">Implementations</h2>
             <div className="space-y-2.5">
                 {implementations.map((impl, i) => (
+                    // oxlint-disable-next-line react/no-array-index-key -- implementations carry no unique id (a repo can be listed twice); the list is static per page
                     <ImplementationCard key={`${impl.repo}-${i}`} impl={impl} />
                 ))}
             </div>

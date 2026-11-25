@@ -116,8 +116,20 @@ are the essay-register rules above, not a license for hedges or hype).
 
 ## Step 4 — Verify and assemble
 
-Run the AUDIT grep recipe from `.claude/skills/_shared/subagent-prompts.md`
-("Verification recipe") against the cited pages and notes — zero MISS lines.
+Grep-verify every AUDIT entry's `quote` against its `source` — zero MISS lines.
+The shared recipe in `_shared/subagent-prompts.md` reads `name`/`value`/`source_note`
+and searches notes only, so use this variant for the narrative shape:
+
+```bash
+jq -r '.[] | "\(.source)\t\(.quote)"' "$AUDIT" | while IFS=$'\t' read -r src quote; do
+  case "$src" in
+    page:*) f=$(ls content/{algorithms,models,concepts}/"${src#page:}".md 2>/dev/null | head -1) ;;
+    note:*) f="docs/research/notes/${src#note:}" ;;
+  esac
+  grep -qF -- "$quote" "$f" || echo "MISS: $src :: $quote"
+done
+```
+
 Any MISS means either the source is incomplete (extend it, re-delegate) or
 Sonnet invented the claim (reject, re-delegate with a stricter prompt).
 
@@ -142,9 +154,8 @@ link.
 
 ## Step 6 — Record
 
-Update the narrative's row in `docs/atlas/roadmap.md` under "Narratives
-program": status, node count, debt count, PR. Paste any new rows `bun run
-narratives:debt` prints into the same document's page-debt table.
+Paste any new rows `bun run narratives:debt` prints into `docs/atlas/roadmap.md`
+→ "Page-debt from narratives".
 
 ## Updating an existing narrative
 
@@ -212,7 +223,6 @@ renaming an id breaks every link anyone has shared.
 - [ ] `bun run narratives:debt` output pasted into the roadmap if it changed.
 - [ ] `bun run build` succeeds.
 - [ ] Desktop step-through + Chrome device-toolbar touch pass done.
-- [ ] `docs/atlas/roadmap.md` narrative-program row updated.
 
 ## Resources
 
@@ -231,6 +241,6 @@ renaming an id breaks every link anyone has shared.
   draft contracts, and the AUDIT verification recipe.
 - `.claude/skills/_shared/voice-rules.md` — banned reference-page patterns;
   read alongside the essay-register rules in Step 3 above.
-- `docs/atlas/roadmap.md` — "Narratives program" table and Decisions log
+- `docs/atlas/roadmap.md` — "Page-debt from narratives" table and Decisions log
   (narrative design rationale: loosely-chronological layout, edge vocabulary
   divergence from Atlas relations, chapter-length steps).

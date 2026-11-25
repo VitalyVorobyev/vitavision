@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import PeopleNetwork from "./PeopleNetwork.tsx";
 import { AuthorsProvider } from "../../../lib/atlas/authorsIndex.tsx";

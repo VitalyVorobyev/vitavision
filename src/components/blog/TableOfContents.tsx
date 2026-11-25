@@ -20,13 +20,14 @@ export default function TableOfContents({ articleRef, deps }: TableOfContentsPro
     const [activeId, setActiveId] = useState<string>("");
 
     useEffect(() => {
-        if (headings.length === 0) return;
+        const firstHeading = headings[0];
+        if (!firstHeading) return;
 
         const update = () => {
             const article = articleRef.current;
             if (!article) return;
             const threshold = window.innerHeight * 0.2;
-            let nextActive = headings[0].id;
+            let nextActive = firstHeading.id;
             for (const { id } of headings) {
                 const el = article.querySelector<HTMLElement>(`#${CSS.escape(id)}`);
                 if (!el) continue;
@@ -71,23 +72,15 @@ export default function TableOfContents({ articleRef, deps }: TableOfContentsPro
 
     return (
         <nav aria-label="Table of contents">
-            <p className="text-xs uppercase tracking-wider text-muted-foreground font-sans font-medium mb-3">
-                Contents
-            </p>
+            <p className="text-xs uppercase tracking-wider text-fg-muted font-sans font-medium mb-3">Contents</p>
             <ol className="space-y-0.5">
                 {headings.map(({ id, text, level }) => {
                     const isActive = id === activeId;
-                    const baseClasses =
-                        "block font-sans leading-snug py-1 border-l-2 transition-colors";
-                    const levelClasses =
-                        level === 1
-                            ? "text-sm pl-3"
-                            : level === 2
-                                ? "text-sm pl-6"
-                                : "text-xs pl-9";
+                    const baseClasses = "block font-sans leading-snug py-1 border-l-2 transition-colors";
+                    const levelClasses = level === 1 ? "text-sm pl-3" : level === 2 ? "text-sm pl-6" : "text-xs pl-9";
                     const stateClasses = isActive
-                        ? "text-[hsl(var(--article-heading))] font-medium border-[hsl(var(--accent))]"
-                        : "text-muted-foreground border-transparent hover:text-foreground";
+                        ? "text-article-heading font-medium border-signal"
+                        : "text-fg-muted border-transparent hover:text-fg";
 
                     return (
                         <li key={id}>

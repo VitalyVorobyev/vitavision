@@ -30,9 +30,11 @@ function serializeFrontmatterDates(frontmatter: Record<string, unknown>): Record
  * Callers pin `TOut` via an explicit type argument — the runtime shape is
  * identical across every content kind that uses this serializer.
  */
-export function serializeContentEntry<TOut extends { slug: string; frontmatter: unknown; html: string }>(
-    entry: { slug: string; frontmatter: Record<string, unknown>; html: string },
-): TOut {
+export function serializeContentEntry<TOut extends { slug: string; frontmatter: unknown; html: string }>(entry: {
+    slug: string;
+    frontmatter: Record<string, unknown>;
+    html: string;
+}): TOut {
     return {
         slug: entry.slug,
         frontmatter: serializeFrontmatterDates(entry.frontmatter),

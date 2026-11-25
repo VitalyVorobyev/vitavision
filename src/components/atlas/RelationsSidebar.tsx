@@ -2,9 +2,9 @@ import RelationshipPanel from "./RelationshipPanel.tsx";
 
 interface RelationsSidebarProps {
     slug: string;
-    relatedPosts?: string[];
-    relatedDemos?: string[];
-    supersededBy?: string;
+    relatedPosts?: string[] | undefined;
+    relatedDemos?: string[] | undefined;
+    supersededBy?: string | undefined;
 }
 
 /**

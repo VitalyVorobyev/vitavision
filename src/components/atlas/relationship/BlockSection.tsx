@@ -11,17 +11,13 @@ interface BlockSectionProps {
 }
 
 export default function BlockSection({ heading, slugs }: BlockSectionProps) {
-    const nodes = slugs
-        .map((s) => contentGraph.nodes[s])
-        .filter((n): n is GraphNode => n !== undefined);
+    const nodes = slugs.map((s) => contentGraph.nodes[s]).filter((n): n is GraphNode => n !== undefined);
 
     if (nodes.length === 0) return null;
 
     return (
         <div>
-            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
-                {heading}
-            </h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-fg-muted mb-2">{heading}</h3>
             <div className="flex flex-wrap gap-2">
                 {nodes.map((node) => (
                     <RelationBadge key={node.slug} node={node} />

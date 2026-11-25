@@ -23,7 +23,7 @@ export const FORWARD_LABEL: Record<RelationType, string> = {
 };
 
 /** Reverse-direction label for asymmetric types (when target's panel renders the entry). */
-export const REVERSE_LABEL: Partial<Record<RelationType, string>> = {
+const REVERSE_LABEL: Partial<Record<RelationType, string>> = {
     generalized_by: "Generalises",
     extended_by: "Extends",
     feeds_into: "Fed by",
@@ -48,12 +48,12 @@ export interface DisplayRelation {
     label: string;
     target: string;
     confidence: TypedRelation["confidence"];
-    caution?: string;
+    caution?: string | undefined;
 }
 
 export interface RelationDisplayOptions {
     /** When set, suppresses the forward `generalized_by`/high-confidence entry that drives the "Superseded by" section. */
-    supersededBy?: string;
+    supersededBy?: string | undefined;
     /** Whether draft-page targets should be included (admin-only view). */
     showDrafts: boolean;
     /** Content graph to read from; defaults to the build-generated graph. Overridable for tests. */
@@ -112,7 +112,8 @@ export function buildRelationDisplay(slug: string, options: RelationDisplayOptio
             rel.target === supersededBy &&
             rel.type === "generalized_by" &&
             rel.confidence === "high"
-        ) continue;
+        )
+            continue;
         display.push({
             label: FORWARD_LABEL[rel.type],
             target: rel.target,

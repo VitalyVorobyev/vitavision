@@ -86,9 +86,7 @@ describe("loadAllAlgorithms", () => {
 
     it("WASM-enabled algorithms have runWasm and executionModes", async () => {
         const registry = await loadAllAlgorithms();
-        const wasmAlgorithms = registry.filter(
-            (a) => a.executionModes?.includes("wasm"),
-        );
+        const wasmAlgorithms = registry.filter((a) => a.executionModes?.includes("wasm"));
         expect(wasmAlgorithms.length).toBeGreaterThanOrEqual(4);
 
         for (const algo of wasmAlgorithms) {

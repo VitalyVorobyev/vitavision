@@ -15,11 +15,11 @@ interface RelationshipPanelProps {
     /** Layout variant — "block" is the default bottom-of-page card; "sidebar" is the sticky right-rail design. */
     variant?: "block" | "sidebar";
     /** Sidebar-only: blog post slugs surfaced under "Also see". */
-    relatedPosts?: string[];
+    relatedPosts?: string[] | undefined;
     /** Sidebar-only: demo slugs surfaced under "Also see". */
-    relatedDemos?: string[];
+    relatedDemos?: string[] | undefined;
     /** When set, render a prominent "Superseded by" section linking this slug. The caller decides — typically only set when `quality: "historical"`. */
-    supersededBy?: string;
+    supersededBy?: string | undefined;
 }
 
 export default function RelationshipPanel({
@@ -34,7 +34,7 @@ export default function RelationshipPanel({
     const [sectionsOpen] = useState<boolean>(() =>
         typeof window !== "undefined" && typeof window.matchMedia === "function"
             ? window.matchMedia("(min-width: 1024px)").matches
-            : true
+            : true,
     );
 
     // Narratives that feature this page (drafts already excluded by the build).
@@ -49,23 +49,27 @@ export default function RelationshipPanel({
     const result = buildRelationDisplay(slug, { supersededBy, showDrafts: isAdmin });
 
     // ── Resolve blog post + demo links ───────────────────────────────────────
-    const resolvedPosts = (relatedPosts ?? []).map((s) => {
-        const entry = blogPosts.find((p) => p.slug === s);
-        if (!entry) {
-            console.warn(`[RelationshipPanel] blog post slug "${s}" not found in content-index`);
-            return null;
-        }
-        return { slug: s, title: entry.frontmatter.title, href: `/blog/${s}` };
-    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
+    const resolvedPosts = (relatedPosts ?? [])
+        .map((s) => {
+            const entry = blogPosts.find((p) => p.slug === s);
+            if (!entry) {
+                console.warn(`[RelationshipPanel] blog post slug "${s}" not found in content-index`);
+                return null;
+            }
+            return { slug: s, title: entry.frontmatter.title, href: `/blog/${s}` };
+        })
+        .filter((x): x is { slug: string; title: string; href: string } => x !== null);
 
-    const resolvedDemos = (relatedDemos ?? []).map((s) => {
-        const entry = demoPages.find((p) => p.slug === s);
-        if (!entry) {
-            console.warn(`[RelationshipPanel] demo slug "${s}" not found in content-index`);
-            return null;
-        }
-        return { slug: s, title: entry.frontmatter.title, href: `/demos/${s}` };
-    }).filter((x): x is { slug: string; title: string; href: string } => x !== null);
+    const resolvedDemos = (relatedDemos ?? [])
+        .map((s) => {
+            const entry = demoPages.find((p) => p.slug === s);
+            if (!entry) {
+                console.warn(`[RelationshipPanel] demo slug "${s}" not found in content-index`);
+                return null;
+            }
+            return { slug: s, title: entry.frontmatter.title, href: `/demos/${s}` };
+        })
+        .filter((x): x is { slug: string; title: string; href: string } => x !== null);
 
     if (variant === "sidebar") {
         return (

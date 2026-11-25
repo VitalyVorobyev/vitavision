@@ -1,9 +1,12 @@
 import { CHESS_RESPONSE_GRID_SIZE, CHESS_RESPONSE_RING_RADIUS } from "./types";
 import type { ChessResponseComputation } from "./types";
 
-const PHASE_COLORS = ["#0f766e", "#2563eb", "#9333ea", "#c2410c"];
-const DR_COLOR = "#b91c1c";
-const MR_COLOR = "#d97706";
+import {
+    CHESS_DR_COLOR as DR_COLOR,
+    CHESS_MR_COLOR as MR_COLOR,
+    CHESS_PHASE_COLORS as PHASE_COLORS,
+} from "../_shared/dataColors";
+
 const VIEW_BOX_SIZE = 420;
 const GRID_ORIGIN = 23;
 const CELL_SIZE = 22;
@@ -25,12 +28,12 @@ export interface ChessResponseSvgFonts {
 }
 
 const DEFAULT_PALETTE: ChessResponseSvgPalette = {
-    surface: "hsl(var(--surface))",
-    background: "hsl(var(--background))",
-    border: "hsl(var(--border))",
-    foreground: "hsl(var(--foreground))",
-    muted: "hsl(var(--muted-foreground))",
-    pixelStroke: "rgb(148 163 184 / 0.22)",
+    surface: "var(--surface)",
+    background: "var(--ground)",
+    border: "var(--line)",
+    foreground: "var(--fg)",
+    muted: "var(--fg-muted)",
+    pixelStroke: "color-mix(in oklab, var(--fg-subtle) 22%, transparent)",
 };
 
 const DEFAULT_FONTS: ChessResponseSvgFonts = {
@@ -61,6 +64,13 @@ function toSvg(x: number, y: number): { x: number; y: number } {
     };
 }
 
+// Term pair indices come from computeChessResponse and always address the
+// CHESS_RESPONSE_SAMPLE_COUNT (16) ring samples.
+function sampleToSvg(computation: ChessResponseComputation, index: number): { x: number; y: number } {
+    const sample = computation.samples[index]!;
+    return toSvg(sample.x, sample.y);
+}
+
 function grayscale(intensity: number): string {
     const shade = Math.round(Math.max(0, Math.min(255, intensity)));
     return `rgb(${shade} ${shade} ${shade})`;
@@ -76,7 +86,7 @@ export default function ChessResponseSvg({
     showMrRegions,
     palette = DEFAULT_PALETTE,
     fonts = DEFAULT_FONTS,
-    svgClassName = "h-auto w-full text-foreground",
+    svgClassName = "h-auto w-full text-fg",
     width,
     height,
 }: ChessResponseSvgProps) {
@@ -152,22 +162,10 @@ export default function ChessResponseSvg({
             {showSrPairs && (
                 <g aria-hidden="true">
                     {computation.srTerms.map((term) => {
-                        const a0 = toSvg(
-                            computation.samples[term.pairA[0]].x,
-                            computation.samples[term.pairA[0]].y,
-                        );
-                        const a1 = toSvg(
-                            computation.samples[term.pairA[1]].x,
-                            computation.samples[term.pairA[1]].y,
-                        );
-                        const b0 = toSvg(
-                            computation.samples[term.pairB[0]].x,
-                            computation.samples[term.pairB[0]].y,
-                        );
-                        const b1 = toSvg(
-                            computation.samples[term.pairB[1]].x,
-                            computation.samples[term.pairB[1]].y,
-                        );
+                        const a0 = sampleToSvg(computation, term.pairA[0]);
+                        const a1 = sampleToSvg(computation, term.pairA[1]);
+                        const b0 = sampleToSvg(computation, term.pairB[0]);
+                        const b1 = sampleToSvg(computation, term.pairB[1]);
                         const color = PHASE_COLORS[term.phase];
 
                         return (
@@ -201,14 +199,8 @@ export default function ChessResponseSvg({
             {showDrPairs && (
                 <g aria-hidden="true">
                     {computation.drTerms.map((term) => {
-                        const from = toSvg(
-                            computation.samples[term.pair[0]].x,
-                            computation.samples[term.pair[0]].y,
-                        );
-                        const to = toSvg(
-                            computation.samples[term.pair[1]].x,
-                            computation.samples[term.pair[1]].y,
-                        );
+                        const from = sampleToSvg(computation, term.pair[0]);
+                        const to = sampleToSvg(computation, term.pair[1]);
 
                         return (
                             <line

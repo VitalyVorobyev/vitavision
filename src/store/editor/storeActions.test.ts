@@ -22,7 +22,7 @@ function makeAlgoPoint(id: string, algorithmId: string, runId: string): Feature 
         readonly: true,
         x: 10,
         y: 20,
-    } as Feature;
+    };
 }
 
 describe("replaceAlgorithmFeatures", () => {
@@ -83,8 +83,8 @@ describe("normalizeImportedFeatures", () => {
         ];
         const result = normalizeImportedFeatures(input);
         expect(result).toHaveLength(2);
-        expect(result[0].type).toBe("point");
-        expect(result[1].type).toBe("bbox");
+        expect(result[0]!.type).toBe("point");
+        expect(result[1]!.type).toBe("bbox");
     });
 
     it("filters out invalid features", () => {
@@ -95,40 +95,42 @@ describe("normalizeImportedFeatures", () => {
         ];
         const result = normalizeImportedFeatures(input);
         expect(result).toHaveLength(1);
-        expect(result[0].type).toBe("point");
+        expect(result[0]!.type).toBe("point");
     });
 
     it("normalizes source and readonly for algorithm features", () => {
-        const input = [
-            { type: "point", x: 1, y: 2, source: "algorithm", algorithmId: "test", runId: "r1" },
-        ];
+        const input = [{ type: "point", x: 1, y: 2, source: "algorithm", algorithmId: "test", runId: "r1" }];
         const result = normalizeImportedFeatures(input);
-        expect(result[0].source).toBe("algorithm");
-        expect(result[0].readonly).toBe(true);
+        expect(result[0]!.source).toBe("algorithm");
+        expect(result[0]!.readonly).toBe(true);
     });
 
     it("parses ring_marker features", () => {
-        const input = [{
-            type: "ring_marker",
-            x: 100,
-            y: 200,
-            outerEllipse: { cx: 100, cy: 200, a: 30, b: 20, angleDeg: 0 },
-            innerEllipse: { cx: 100, cy: 200, a: 15, b: 10, angleDeg: 0 },
-        }];
+        const input = [
+            {
+                type: "ring_marker",
+                x: 100,
+                y: 200,
+                outerEllipse: { cx: 100, cy: 200, a: 30, b: 20, angleDeg: 0 },
+                innerEllipse: { cx: 100, cy: 200, a: 15, b: 10, angleDeg: 0 },
+            },
+        ];
         const result = normalizeImportedFeatures(input);
         expect(result).toHaveLength(1);
-        expect(result[0].type).toBe("ring_marker");
+        expect(result[0]!.type).toBe("ring_marker");
     });
 
     it("parses aruco_marker features", () => {
-        const input = [{
-            type: "aruco_marker",
-            x: 50,
-            y: 60,
-            corners: [0, 0, 10, 0, 10, 10, 0, 10],
-        }];
+        const input = [
+            {
+                type: "aruco_marker",
+                x: 50,
+                y: 60,
+                corners: [0, 0, 10, 0, 10, 10, 0, 10],
+            },
+        ];
         const result = normalizeImportedFeatures(input);
         expect(result).toHaveLength(1);
-        expect(result[0].type).toBe("aruco_marker");
+        expect(result[0]!.type).toBe("aruco_marker");
     });
 });

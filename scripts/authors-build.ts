@@ -213,6 +213,6 @@ if (import.meta.main) {
     const index = emitAuthorsIndex(pages);
     console.log(
         `authors:build — wrote public/authors-index.json ` +
-        `(${Object.keys(index.authors).length} author(s), ${Object.keys(index.pagesByPaper).length} paper(s) linked to pages)`,
+            `(${Object.keys(index.authors).length} author(s), ${Object.keys(index.pagesByPaper).length} paper(s) linked to pages)`,
     );
 }

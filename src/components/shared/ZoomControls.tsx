@@ -1,12 +1,20 @@
 import { ZoomIn, ZoomOut, Maximize } from "lucide-react";
+import { Button, cn } from "@vitavision/ui";
 
 interface ZoomControlsProps {
     onZoomIn: () => void;
     onZoomOut: () => void;
     onFit: () => void;
-    onActual: () => void;
+    /** Omit to hide the 1:1 button (canvases that have no pixel scale). */
+    onActual?: () => void;
     zoomPercent?: number;
     touchFriendly?: boolean;
+    /** `column` stacks the buttons, for a canvas corner overlay. Defaults to `row`. */
+    orientation?: "row" | "column";
+    /** Placement and spacing of the group, merged into its own classes (e.g. `absolute bottom-3 right-3`). */
+    className?: string;
+    /** Merged into every button, e.g. `size-11` for a 44px touch target. */
+    buttonClassName?: string;
 }
 
 export default function ZoomControls({
@@ -16,38 +24,59 @@ export default function ZoomControls({
     onActual,
     zoomPercent,
     touchFriendly = false,
+    orientation = "row",
+    className,
+    buttonClassName,
 }: ZoomControlsProps) {
-    const btn =
-        `rounded-md border border-border bg-background/80 text-muted-foreground backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground ${
-            touchFriendly ? "p-2.5" : "p-1.5"
-        }`;
-    const iconSize = touchFriendly ? 18 : 14;
+    // Floating over the image: ui's secondary buttons, one size up for touch.
+    const size = touchFriendly ? "md" : "sm";
+    const iconOnly = cn(touchFriendly ? "px-2" : "px-1.5", buttonClassName);
 
     return (
-        <div className="flex items-center gap-1">
-            <button type="button" onClick={onZoomIn} className={btn} title="Zoom In">
-                <ZoomIn size={iconSize} />
-            </button>
-            <button type="button" onClick={onZoomOut} className={btn} title="Zoom Out">
-                <ZoomOut size={iconSize} />
-            </button>
-            <button type="button" onClick={onFit} className={btn} title="Fit to Screen">
-                <Maximize size={iconSize} />
-            </button>
-            <button
-                type="button"
-                onClick={onActual}
-                className={`rounded-md border border-border bg-background/80 font-medium text-muted-foreground backdrop-blur-sm transition-colors hover:bg-background hover:text-foreground ${
-                    touchFriendly ? "px-2.5 py-2 text-xs" : "px-1.5 py-1 text-[11px]"
-                }`}
-                title="Zoom to 100%"
-            >
-                1:1
-            </button>
+        <div className={cn("flex gap-1", orientation === "column" ? "flex-col" : "items-center", className)}>
+            <Button
+                size={size}
+                className={iconOnly}
+                onClick={onZoomIn}
+                aria-label="Zoom in"
+                title="Zoom in"
+                icon={<ZoomIn />}
+            />
+            <Button
+                size={size}
+                className={iconOnly}
+                onClick={onZoomOut}
+                aria-label="Zoom out"
+                title="Zoom out"
+                icon={<ZoomOut />}
+            />
+            <Button
+                size={size}
+                className={iconOnly}
+                onClick={onFit}
+                aria-label="Fit to screen"
+                title="Fit to screen"
+                icon={<Maximize />}
+            />
+            {onActual && (
+                <Button
+                    size={size}
+                    className={cn("px-2 font-mono", buttonClassName)}
+                    onClick={onActual}
+                    aria-label="Zoom to 100%"
+                    title="Zoom to 100%"
+                >
+                    1:1
+                </Button>
+            )}
             {zoomPercent !== undefined && (
-                <div className={`min-w-[3.5rem] rounded-md border border-border bg-background/80 text-center text-muted-foreground backdrop-blur-sm ${
-                    touchFriendly ? "px-3 py-2 text-xs" : "px-2 py-1 text-[11px]"
-                }`}>
+                <div
+                    data-testid="zoom-readout"
+                    className={cn(
+                        "flex min-w-[3.5rem] items-center justify-center rounded-control border border-line bg-surface font-mono text-fg-muted tabular-nums",
+                        touchFriendly ? "h-8 px-3 text-xs" : "h-7 px-2 text-[11px]",
+                    )}
+                >
                     {zoomPercent}%
                 </div>
             )}

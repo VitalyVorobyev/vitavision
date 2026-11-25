@@ -2,7 +2,13 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
 import { parse as parseYaml } from "yaml";
-import { algorithmFrontmatterSchema, blogFrontmatterSchema, modelFrontmatterSchema, tagValues, taskValues } from "./schema.ts";
+import {
+    algorithmFrontmatterSchema,
+    blogFrontmatterSchema,
+    modelFrontmatterSchema,
+    tagValues,
+    taskValues,
+} from "./schema.ts";
 import { taskLabels } from "./taskLabels.ts";
 
 describe("blogFrontmatterSchema", () => {
@@ -66,22 +72,26 @@ describe("algorithmFrontmatterSchema", () => {
     });
 
     it("requires the same publication metadata as blog posts", () => {
-        expect(() => algorithmFrontmatterSchema.parse({
-            title: "Incomplete Algorithm",
-            summary: "Missing date and author.",
-            tags: ["classical"],
-        })).toThrow();
+        expect(() =>
+            algorithmFrontmatterSchema.parse({
+                title: "Incomplete Algorithm",
+                summary: "Missing date and author.",
+                tags: ["classical"],
+            }),
+        ).toThrow();
     });
 
     it("rejects malformed demoLinks", () => {
-        expect(() => algorithmFrontmatterSchema.parse({
-            title: "Broken Demo Links",
-            date: "2026-03-29",
-            summary: "Testing invalid demo URLs.",
-            tags: ["classical"],
-            author: "Vitaly Vorobyev",
-            demoLinks: ["not-a-url"],
-        })).toThrow();
+        expect(() =>
+            algorithmFrontmatterSchema.parse({
+                title: "Broken Demo Links",
+                date: "2026-03-29",
+                summary: "Testing invalid demo URLs.",
+                tags: ["classical"],
+                author: "Vitaly Vorobyev",
+                demoLinks: ["not-a-url"],
+            }),
+        ).toThrow();
     });
 
     it("accepts quality: historical with a typed relations entry", () => {
@@ -92,15 +102,11 @@ describe("algorithmFrontmatterSchema", () => {
             tags: ["classical"],
             author: "Vitaly Vorobyev",
             quality: "historical",
-            relations: [
-                { type: "generalized_by", target: "modern-method", confidence: "high" },
-            ],
+            relations: [{ type: "generalized_by", target: "modern-method", confidence: "high" }],
         });
 
         expect(parsed.quality).toBe("historical");
-        expect(parsed.relations).toEqual([
-            { type: "generalized_by", target: "modern-method", confidence: "high" },
-        ]);
+        expect(parsed.relations).toEqual([{ type: "generalized_by", target: "modern-method", confidence: "high" }]);
     });
 
     it("accepts a relation with a caution string", () => {
@@ -124,40 +130,42 @@ describe("algorithmFrontmatterSchema", () => {
     });
 
     it("rejects unknown quality values", () => {
-        expect(() => algorithmFrontmatterSchema.parse({
-            title: "Bad Quality",
-            date: "2026-05-03",
-            summary: "Testing rejection of unknown quality.",
-            tags: ["classical"],
-            author: "Vitaly Vorobyev",
-            quality: "deprecated",
-        })).toThrow();
+        expect(() =>
+            algorithmFrontmatterSchema.parse({
+                title: "Bad Quality",
+                date: "2026-05-03",
+                summary: "Testing rejection of unknown quality.",
+                tags: ["classical"],
+                author: "Vitaly Vorobyev",
+                quality: "deprecated",
+            }),
+        ).toThrow();
     });
 
     it("rejects unknown relation types", () => {
-        expect(() => algorithmFrontmatterSchema.parse({
-            title: "Bad Relation",
-            date: "2026-05-03",
-            summary: "Testing rejection of unknown relation types.",
-            tags: ["classical"],
-            author: "Vitaly Vorobyev",
-            relations: [
-                { type: "supersedes", target: "x", confidence: "high" },
-            ],
-        })).toThrow();
+        expect(() =>
+            algorithmFrontmatterSchema.parse({
+                title: "Bad Relation",
+                date: "2026-05-03",
+                summary: "Testing rejection of unknown relation types.",
+                tags: ["classical"],
+                author: "Vitaly Vorobyev",
+                relations: [{ type: "supersedes", target: "x", confidence: "high" }],
+            }),
+        ).toThrow();
     });
 
     it("rejects relations missing confidence", () => {
-        expect(() => algorithmFrontmatterSchema.parse({
-            title: "Missing Confidence",
-            date: "2026-05-03",
-            summary: "Testing required confidence field.",
-            tags: ["classical"],
-            author: "Vitaly Vorobyev",
-            relations: [
-                { type: "generalized_by", target: "x" },
-            ],
-        })).toThrow();
+        expect(() =>
+            algorithmFrontmatterSchema.parse({
+                title: "Missing Confidence",
+                date: "2026-05-03",
+                summary: "Testing required confidence field.",
+                tags: ["classical"],
+                author: "Vitaly Vorobyev",
+                relations: [{ type: "generalized_by", target: "x" }],
+            }),
+        ).toThrow();
     });
 
     it("treats relations as optional", () => {
@@ -183,14 +191,16 @@ describe("algorithmFrontmatterSchema", () => {
         });
         expect(ok.tasks).toEqual(["camera-calibration"]);
 
-        expect(() => algorithmFrontmatterSchema.parse({
-            title: "Bad Task",
-            date: "2026-05-03",
-            summary: "Unknown task slug.",
-            tags: ["classical"],
-            author: "Vitaly Vorobyev",
-            tasks: ["video-segmentation"],
-        })).toThrow();
+        expect(() =>
+            algorithmFrontmatterSchema.parse({
+                title: "Bad Task",
+                date: "2026-05-03",
+                summary: "Unknown task slug.",
+                tags: ["classical"],
+                author: "Vitaly Vorobyev",
+                tasks: ["video-segmentation"],
+            }),
+        ).toThrow();
     });
 });
 
@@ -234,13 +244,15 @@ describe("tags vocabulary", () => {
     });
 
     it("rejects an unknown tag on algorithmFrontmatterSchema", () => {
-        expect(() => algorithmFrontmatterSchema.parse({
-            title: "Bad Tags",
-            date: "2026-05-16",
-            summary: "Testing rejection of unknown tags.",
-            tags: ["not-a-real-tag"],
-            author: "Vitaly Vorobyev",
-        })).toThrow();
+        expect(() =>
+            algorithmFrontmatterSchema.parse({
+                title: "Bad Tags",
+                date: "2026-05-16",
+                summary: "Testing rejection of unknown tags.",
+                tags: ["not-a-real-tag"],
+                author: "Vitaly Vorobyev",
+            }),
+        ).toThrow();
     });
 
     it("accepts a known tag on algorithmFrontmatterSchema", () => {

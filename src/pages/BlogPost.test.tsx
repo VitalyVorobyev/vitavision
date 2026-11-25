@@ -1,13 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import BlogPost from "./BlogPost";
 
 vi.mock("@clerk/clerk-react", () => ({
     useAuth: () => ({ isLoaded: true, isSignedIn: true }),
     useUser: () => ({ isLoaded: true, user: { publicMetadata: { role: "admin" } } }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line typescript/no-explicit-any
     SignInButton: ({ children }: { children: any }) => <>{children}</>,
 }));
 
@@ -23,15 +23,9 @@ describe("BlogPost", () => {
             </HelmetProvider>,
         );
 
-        expect(
-            screen.getByRole("heading", { name: "Introducing Vitavision" }),
-        ).toBeInTheDocument();
+        expect(screen.getByRole("heading", { name: "Introducing Vitavision" })).toBeInTheDocument();
 
-        expect(
-            await screen.findByText(/Vitavision is a place for practical computer vision/i),
-        ).toBeInTheDocument();
-        expect(
-            screen.queryByText("Post content failed to load."),
-        ).not.toBeInTheDocument();
+        expect(await screen.findByText(/Vitavision is a place for practical computer vision/i)).toBeInTheDocument();
+        expect(screen.queryByText("Post content failed to load.")).not.toBeInTheDocument();
     });
 });

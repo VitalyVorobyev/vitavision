@@ -29,7 +29,7 @@ describe("useDelaunayVoronoi reducer", () => {
         const { result } = renderHook(() => useDelaunayVoronoi());
 
         act(() => result.current.addPoint(100, 100));
-        const id = result.current.state.points[0].id;
+        const id = result.current.state.points[0]!.id;
         const pastAfterAdd = result.current.state.history.past.length;
 
         // simulate 30 pointermove dispatches without an endDrag in between
@@ -40,7 +40,7 @@ describe("useDelaunayVoronoi reducer", () => {
 
         // a single undo restores to the position before the drag started
         act(() => result.current.undo());
-        const p = result.current.state.points[0];
+        const p = result.current.state.points[0]!;
         expect(p.x).toBe(100);
         expect(p.y).toBe(100);
     });
@@ -48,7 +48,7 @@ describe("useDelaunayVoronoi reducer", () => {
     it("ending a drag and starting a new one creates two history entries", () => {
         const { result } = renderHook(() => useDelaunayVoronoi());
         act(() => result.current.addPoint(100, 100));
-        const id = result.current.state.points[0].id;
+        const id = result.current.state.points[0]!.id;
         const start = result.current.state.history.past.length;
 
         act(() => result.current.movePoint(id, 110, 110));
@@ -88,8 +88,8 @@ describe("useDelaunayVoronoi reducer", () => {
         const pts = result.current.allPoints;
         for (let i = 0; i < pts.length; i++) {
             for (let j = i + 1; j < pts.length; j++) {
-                const dx = pts[i].x - pts[j].x;
-                const dy = pts[i].y - pts[j].y;
+                const dx = pts[i]!.x - pts[j]!.x;
+                const dy = pts[i]!.y - pts[j]!.y;
                 expect(dx * dx + dy * dy).toBeGreaterThan(1e-6);
             }
         }

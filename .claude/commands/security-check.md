@@ -18,9 +18,9 @@ Frontend-only security review. No backend exists — all processing is client-si
 - CSP allows `wasm-unsafe-eval` for WASM execution
 - CSP allows `worker-src 'self' blob:` for Web Workers
 
-**1.2 Dev CSP (`vite.config.ts`)**
-- Dev-only CSP plugin relaxes only what's needed for WASM/workers
-- No external origins in connect-src
+**1.2 Dev CSP (`<meta>` in `index.html`)**
+- Relaxes only what's needed for WASM/workers (`wasm-unsafe-eval`, `worker-src 'self' blob:`)
+- `connect-src` lists only `'self'`, `blob:`, and the Clerk origins
 
 ---
 

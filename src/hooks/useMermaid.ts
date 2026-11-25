@@ -1,28 +1,5 @@
-import { useEffect, useState, type RefObject } from "react";
-
-/**
- * Observes the `dark` class on `<html>` and returns the current theme.
- */
-function useResolvedTheme(): "dark" | "light" {
-    const [dark, setDark] = useState(() =>
-        typeof document !== "undefined"
-            ? document.documentElement.classList.contains("dark")
-            : true,
-    );
-
-    useEffect(() => {
-        const observer = new MutationObserver(() => {
-            setDark(document.documentElement.classList.contains("dark"));
-        });
-        observer.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ["class"],
-        });
-        return () => observer.disconnect();
-    }, []);
-
-    return dark ? "dark" : "light";
-}
+import { useEffect, type RefObject } from "react";
+import { useIsDark } from "../lib/theme.ts";
 
 /**
  * Finds `<pre><code class="language-mermaid">` blocks inside the referenced
@@ -31,11 +8,8 @@ function useResolvedTheme(): "dark" | "light" {
  * Re-renders when the dark/light theme changes.
  * Mermaid is dynamically imported so it never runs during SSR.
  */
-export function useMermaid(
-    ref: RefObject<HTMLElement | null>,
-    deps: unknown[],
-): void {
-    const theme = useResolvedTheme();
+export function useMermaid(ref: RefObject<HTMLElement | null>, deps: unknown[]): void {
+    const theme = useIsDark() ? "dark" : "light";
 
     useEffect(() => {
         const el = ref.current;
@@ -60,7 +34,7 @@ export function useMermaid(
 
         let cancelled = false;
 
-        (async () => {
+        void (async () => {
             // Mermaid is the heaviest lazy chunk in the app (~470 kB shared deps
             // + ~430 kB cytoscape + ~256 kB katex for math-in-diagrams + per-
             // diagram modules). Everything is loaded only on pages that actually
@@ -74,11 +48,19 @@ export function useMermaid(
             mermaid.initialize({
                 startOnLoad: false,
                 theme: theme === "dark" ? "dark" : "default",
+                // mermaid 12 defaults to ELK, a separate 1.46 MB (456 kB gzip)
+                // lazy chunk fetched by every page with a flowchart. On this
+                // site's diagrams ELK's layouts were no better than dagre's, so
+                // keep dagre and take only the new default look (neo). A single
+                // diagram can still opt in with `config: { layout: elk }`.
+                layout: "dagre",
             });
 
             for (let i = 0; i < sources.length; i++) {
                 if (cancelled) return;
-                const { node, text } = sources[i];
+                const source = sources[i];
+                if (!source) continue;
+                const { node, text } = source;
                 const id = `mermaid-${Date.now()}-${i}`;
                 try {
                     const { svg } = await mermaid.render(id, text);
@@ -96,6 +78,6 @@ export function useMermaid(
         return () => {
             cancelled = true;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // oxlint-disable-next-line react/exhaustive-deps -- caller-supplied `deps` array (spread) is the intentional re-run trigger, plus theme
     }, [...deps, theme]);
 }

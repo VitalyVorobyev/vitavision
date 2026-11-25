@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../../context.ts";
+import { createTestContext } from "../../context.ts";
 import { checkNodes } from "./nodes.ts";
 import type { NarrativeFrontmatterShape } from "./shared.ts";
 import type { MarkdownDirEntry } from "../../../lib/content-kinds.ts";
@@ -15,7 +15,7 @@ function algo(file: string, overrides: Record<string, unknown> = {}): MarkdownDi
 
 describe("checkNodes", () => {
     it("resolves page/paper/question nodes cleanly", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             algorithms: [algo("a.md", { sources: { primary: "paper-a" } })],
             indexEntries: [
                 { id: "paper-a", year: 1999 },
@@ -44,7 +44,7 @@ describe("checkNodes", () => {
     });
 
     it("flags an area mismatch, an unresolved page, a year-derivation warning, and a duplicate id", () => {
-        const ctx = createContext({});
+        const ctx = createTestContext({});
         const fm: NarrativeFrontmatterShape = {
             areas: [{ id: "area1", label: "Area 1" }],
             nodes: [

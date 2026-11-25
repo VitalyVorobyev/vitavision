@@ -1,5 +1,5 @@
-import { useEffect, useRef } from 'react';
-import { ReadingProgress } from 'vitcv';
+import { useEffect, useRef } from "react";
+import { ReadingProgress } from "vitcv";
 
 // ReadingProgress computes its bar width from a real scroll event: it reads
 // articleRef.current.getBoundingClientRect() and window.scrollY, and only
@@ -37,9 +37,9 @@ function useArticleReadAt(fraction: number) {
 }
 
 const ArticleTeaser = ({ heading, body }: { heading: string; body: string }) => (
-    <div className="rounded-lg border border-border bg-background p-4" style={{ width: 320 }}>
-        <p className="text-sm font-semibold text-foreground">{heading}</p>
-        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{body}</p>
+    <div className="rounded-panel border border-line bg-ground p-4" style={{ width: 320 }}>
+        <p className="text-sm font-semibold text-fg">{heading}</p>
+        <p className="mt-2 text-sm leading-relaxed text-fg-muted">{body}</p>
     </div>
 );
 

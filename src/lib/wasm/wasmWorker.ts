@@ -12,9 +12,19 @@
 
 import type { CommandRequest, DetectionRequest, WorkerCommand, WorkerRequest, WorkerResponse } from "./worker/protocol";
 import { handleChessCorners } from "./worker/chessCorners";
-import { handleCalibTarget, handleRenderTargetBundle } from "./worker/calibTargets";
+import {
+    handleCalibTarget,
+    handleRenderTargetBundle,
+    handlePuzzlepolePeriods,
+    handleRenderScreenTarget,
+} from "./worker/calibTargets";
 import { handlePuzzleboard, handlePuzzleboardGenPng } from "./worker/puzzleboard";
-import { handleRinggrid, handleRenderRinggridBundle, handleRinggridPageSize } from "./worker/ringgrid";
+import {
+    handleRinggrid,
+    handleRenderRinggridBundle,
+    handleRinggridPageSize,
+    handleRenderRinggridScreenTarget,
+} from "./worker/ringgrid";
 import { handleRadsym, handleRadsymHeatmap } from "./worker/radsym";
 
 export type { AlgorithmType, WorkerCommand, WorkerRequest, WorkerResponse } from "./worker/protocol";
@@ -27,7 +37,7 @@ async function runDetection(req: DetectionRequest): Promise<unknown> {
     if (algorithm === "ringgrid") return handleRinggrid(pixels, width, height, config);
     if (algorithm === "radsym") return handleRadsym(pixels, width, height, config);
     if (algorithm === "puzzleboard") return handlePuzzleboard(pixels, width, height, config);
-    return handleCalibTarget(algorithm as "chessboard" | "charuco" | "markerboard", pixels, width, height, config);
+    return handleCalibTarget(algorithm, pixels, width, height, config);
 }
 
 interface Dispatched {
@@ -37,7 +47,12 @@ interface Dispatched {
 
 const commandTable: Record<WorkerCommand, (req: CommandRequest) => Promise<Dispatched>> = {
     "radsym-heatmap": async (req) => {
-        const heatmap = await handleRadsymHeatmap(req.pixels, req.width, req.height, req.config as Record<string, unknown>);
+        const heatmap = await handleRadsymHeatmap(
+            req.pixels,
+            req.width,
+            req.height,
+            req.config as Record<string, unknown>,
+        );
         return { result: heatmap, transfer: [heatmap.rgba.buffer] };
     },
     "puzzleboard-gen-png": async (req) => {
@@ -53,6 +68,7 @@ const commandTable: Record<WorkerCommand, (req: CommandRequest) => Promise<Dispa
         const bundleResult = await handleRenderTargetBundle(req.config);
         return { result: bundleResult, transfer: [bundleResult.png.buffer] };
     },
+    "puzzlepole-periods": async () => ({ result: await handlePuzzlepolePeriods() }),
     "render-ringgrid-bundle": async (req) => {
         const { targetJson, optionsJson } = req.config as { targetJson: string; optionsJson: string };
         const bundleResult = await handleRenderRinggridBundle(targetJson, optionsJson);
@@ -62,6 +78,16 @@ const commandTable: Record<WorkerCommand, (req: CommandRequest) => Promise<Dispa
         const { targetJson, optionsJson } = req.config as { targetJson: string; optionsJson: string };
         const sizeResult = await handleRinggridPageSize(targetJson, optionsJson);
         return { result: sizeResult };
+    },
+    "render-screen-target": async (req) => {
+        const { target, screen } = req.config as { target: unknown; screen: unknown };
+        const bundle = await handleRenderScreenTarget(target, screen);
+        return { result: bundle, transfer: [bundle.png.buffer] };
+    },
+    "render-ringgrid-screen-target": async (req) => {
+        const { targetJson, optionsJson } = req.config as { targetJson: string; optionsJson: string };
+        const bundle = await handleRenderRinggridScreenTarget(targetJson, optionsJson);
+        return { result: bundle, transfer: [bundle.png.buffer] };
     },
 };
 
@@ -73,9 +99,10 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
         // A request carries `algorithm` iff it is a detection request; a
         // missing `command` on that shape is equivalent to "detect". Commands
         // never carry `algorithm` (see worker/protocol.ts).
-        const { result, transfer } = "algorithm" in req
-            ? { result: await runDetection(req), transfer: undefined }
-            : await commandTable[req.command](req);
+        const { result, transfer } =
+            "algorithm" in req
+                ? { result: await runDetection(req), transfer: undefined }
+                : await commandTable[req.command](req);
         (self as unknown as Worker).postMessage({ id, result } satisfies WorkerResponse, transfer ?? []);
     } catch (err) {
         const message = err instanceof Error ? err.message : String(err);

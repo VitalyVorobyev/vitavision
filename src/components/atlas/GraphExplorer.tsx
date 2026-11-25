@@ -19,7 +19,7 @@ import {
 } from "../../lib/atlas/graphLayout.ts";
 import { useGraphTrail } from "../../lib/atlas/graphTrail.ts";
 import { FocusedEntryPanel } from "./FocusedEntryPanel.tsx";
-import { ZoomControls } from "./graph/ZoomControls.tsx";
+import ZoomControls from "../shared/ZoomControls.tsx";
 import { NodeFinder } from "./graph/NodeFinder.tsx";
 import { nodeFinderSearch } from "./graph/nodeFinderSearch.tsx";
 import { PannableViewport } from "./graph/PannableViewport.tsx";
@@ -44,8 +44,8 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
 
     // ── Graph data ─────────────────────────────────────────────────────────────
 
-    const cat    = useMemo(() => (current ? categorize(current) : null), [current]);
-    const layout = useMemo(() => (cat ? computeLayout(cat) : null),      [cat]);
+    const cat = useMemo(() => (current ? categorize(current) : null), [current]);
+    const layout = useMemo(() => (cat ? computeLayout(cat) : null), [cat]);
 
     // ── Active rels (for legend filtering) ────────────────────────────────────
 
@@ -71,9 +71,9 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
         animate,
         fitView,
         zoomAroundCenter,
-        onPointerDown:   handleViewportPointerDown,
-        onPointerMove:   handleViewportPointerMove,
-        onPointerUp:     handleViewportPointerUp,
+        onPointerDown: handleViewportPointerDown,
+        onPointerMove: handleViewportPointerMove,
+        onPointerUp: handleViewportPointerUp,
         onPointerCancel: handleViewportPointerCancel,
     } = useViewport({ bounds, refitKey: current, onPanStart });
 
@@ -81,7 +81,7 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
 
     if (!initialSlug || !current) {
         return (
-            <div className="flex items-center justify-center py-20 text-[13px] text-muted-foreground">
+            <div className="flex items-center justify-center py-20 text-[13px] text-fg-muted">
                 No graph data available.
             </div>
         );
@@ -90,21 +90,14 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
     // ── Mobile branch — focused-entry hero + grouped neighbor lists ────────────
 
     if (!isDesktop) {
-        return (
-            <MobileGraphView
-                history={history}
-                current={current}
-                onBack={back}
-                onNavigate={navigate}
-            />
-        );
+        return <MobileGraphView history={history} current={current} onBack={back} onNavigate={navigate} />;
     }
 
     // ── Desktop — visual graph canvas ──────────────────────────────────────────
 
     if (!layout) {
         return (
-            <div className="flex items-center justify-center py-20 text-[13px] text-muted-foreground">
+            <div className="flex items-center justify-center py-20 text-[13px] text-fg-muted">
                 No graph data available.
             </div>
         );
@@ -142,6 +135,8 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
                             <NodeFinder search={nodeFinderSearch} onSelect={navigate} />
                             <RelationLegend activeRels={activeRels} />
                             <ZoomControls
+                                orientation="column"
+                                className="absolute bottom-3 right-3"
                                 onZoomIn={() => zoomAroundCenter(1.25)}
                                 onZoomOut={() => zoomAroundCenter(1 / 1.25)}
                                 onFit={() => fitView(true)}
@@ -150,9 +145,9 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
                     }
                 >
                     {/* Lane labels */}
-                    <LaneLabel side="W" top={layout.cy + 70}              left={-30} />
-                    <LaneLabel side="E" top={layout.cy - 70}              left={layout.canvasW - 30} />
-                    <LaneLabel side="N" top={GG.pad + GG.nodeH + 12}     left={layout.cx - 50} />
+                    <LaneLabel side="W" top={layout.cy + 70} left={-30} />
+                    <LaneLabel side="E" top={layout.cy - 70} left={layout.canvasW - 30} />
+                    <LaneLabel side="N" top={GG.pad + GG.nodeH + 12} left={layout.cx - 50} />
                     <LaneLabel side="S" top={layout.canvasH - GG.pad - GG.nodeH - 22} left={layout.cx - 70} />
 
                     <EdgesLayer positions={layout.positions} layout={layout} hoverSlug={hover} />
@@ -171,11 +166,8 @@ export default function GraphExplorer({ focusSlug }: GraphExplorerProps) {
                 </PannableViewport>
 
                 {/* Right rail — focused entry details; previews hovered neighbour */}
-                <aside className="w-[300px] shrink-0 border-l border-border overflow-y-auto p-5 bg-surface">
-                    <FocusedEntryPanel
-                        slug={hover ?? current}
-                        isPreview={hover != null && hover !== current}
-                    />
+                <aside className="w-[300px] shrink-0 border-l border-line overflow-y-auto p-5 bg-surface">
+                    <FocusedEntryPanel slug={hover ?? current} isPreview={hover != null && hover !== current} />
                 </aside>
             </div>
         </div>

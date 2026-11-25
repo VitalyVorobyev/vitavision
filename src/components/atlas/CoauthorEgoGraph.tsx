@@ -1,5 +1,5 @@
 import type { KeyboardEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import type { CoAuthor } from "../../lib/atlas/authorStats.ts";
 import { graphKindAccent } from "../../lib/graph/graphTheme.ts";
 
@@ -26,7 +26,7 @@ const MAX_STROKE = 5;
 /** Surname (or the whole name for a single-token name), truncated. */
 function shortLabel(name: string, max = 16): string {
     const parts = name.trim().split(/\s+/);
-    const surname = parts.length > 1 ? parts[parts.length - 1] : (parts[0] ?? name);
+    const surname = (parts.length > 1 ? parts[parts.length - 1] : parts[0]) ?? name;
     return surname.length > max ? `${surname.slice(0, max - 1)}…` : surname;
 }
 
@@ -54,7 +54,7 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
     const onKeyDown = (event: KeyboardEvent<SVGGElement>, id: string) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            goTo(id);
+            void goTo(id);
         }
     };
 
@@ -86,7 +86,7 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
                     y1={CENTER}
                     x2={x}
                     y2={y}
-                    stroke="hsl(var(--border-strong))"
+                    stroke="var(--line-strong)"
                     strokeWidth={strokeWidth}
                 />
             ))}
@@ -97,43 +97,31 @@ export function CoauthorEgoGraph({ subjectName, coAuthors }: CoauthorEgoGraphPro
                     role="link"
                     tabIndex={0}
                     aria-label={co.name}
-                    onClick={() => goTo(co.id)}
+                    onClick={() => void goTo(co.id)}
                     onKeyDown={(event) => onKeyDown(event, co.id)}
                     style={{ cursor: "pointer" }}
                 >
-                    <circle cx={x} cy={y} r={radius} fill="hsl(var(--surface))" stroke={ringColor} strokeWidth={1.6} />
-                    <text
-                        x={x}
-                        y={y + radius + 13}
-                        textAnchor="middle"
-                        fontSize={11.5}
-                        style={{ fill: "hsl(var(--foreground))" }}
-                    >
+                    <circle cx={x} cy={y} r={radius} fill="var(--surface)" stroke={ringColor} strokeWidth={1.6} />
+                    <text x={x} y={y + radius + 13} textAnchor="middle" fontSize={11.5} style={{ fill: "var(--fg)" }}>
                         {shortLabel(co.name)}
                     </text>
                 </g>
             ))}
 
-            <circle cx={CENTER} cy={CENTER} r={SUBJECT_RADIUS} fill="hsl(var(--foreground))" />
+            <circle cx={CENTER} cy={CENTER} r={SUBJECT_RADIUS} fill="var(--fg)" />
             <text
                 x={CENTER}
                 y={CENTER + 4}
                 textAnchor="middle"
                 fontSize={12}
                 fontWeight={600}
-                style={{ fill: "hsl(var(--background))" }}
+                style={{ fill: "var(--ground)" }}
             >
                 {shortLabel(subjectName, 12)}
             </text>
 
             {overflow > 0 && (
-                <text
-                    x={CENTER}
-                    y={SIZE - 6}
-                    textAnchor="middle"
-                    fontSize={11}
-                    style={{ fill: "hsl(var(--muted-foreground))" }}
-                >
+                <text x={CENTER} y={SIZE - 6} textAnchor="middle" fontSize={11} style={{ fill: "var(--fg-muted)" }}>
                     +{overflow} more
                 </text>
             )}

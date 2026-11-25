@@ -1,11 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {
-    paperYears,
-    paperTitles,
-    paperAuthorIds,
-    paperRefRecords,
-    sourceKeyMap,
-} from "./papers-index.ts";
+import { paperYears, paperTitles, paperAuthorIds, paperRefRecords, sourceKeyMap } from "./papers-index.ts";
 import type { RawIndexEntry } from "./papers-index.ts";
 
 describe("paperYears", () => {
@@ -14,7 +8,12 @@ describe("paperYears", () => {
             { id: "a", year: 2000 },
             { id: "b", kind: "paper", year: 2010 },
         ];
-        expect(paperYears(entries)).toEqual(new Map([["a", 2000], ["b", 2010]]));
+        expect(paperYears(entries)).toEqual(
+            new Map([
+                ["a", 2000],
+                ["b", 2010],
+            ]),
+        );
     });
 
     it("skips repo/doc entries and entries without a numeric year", () => {
@@ -64,9 +63,7 @@ describe("paperAuthorIds", () => {
 describe("paperRefRecords", () => {
     it("fills in display fallbacks for missing fields", () => {
         const entries: RawIndexEntry[] = [{ id: "p1" }];
-        expect(paperRefRecords(entries)).toEqual([
-            { id: "p1", title: "p1", authors: [], year: 0, venue: "", url: "" },
-        ]);
+        expect(paperRefRecords(entries)).toEqual([{ id: "p1", title: "p1", authors: [], year: 0, venue: "", url: "" }]);
     });
 
     it("passes through arxiv/doi only when present", () => {
@@ -124,9 +121,7 @@ describe("sourceKeyMap", () => {
         const errors: string[] = [];
         const map = sourceKeyMap([{ id: "r1", kind: "repo" }], errors);
         expect(map.size).toBe(0);
-        expect(errors).toEqual([
-            '[index.yaml] entry id "r1" (kind: repo) must have "repo" and "commit" fields',
-        ]);
+        expect(errors).toEqual(['[index.yaml] entry id "r1" (kind: repo) must have "repo" and "commit" fields']);
     });
 
     it("keys a doc entry as doc:<path>", () => {
@@ -139,9 +134,7 @@ describe("sourceKeyMap", () => {
     it("errors on a doc entry missing path", () => {
         const errors: string[] = [];
         sourceKeyMap([{ id: "d1", kind: "doc" }], errors);
-        expect(errors).toEqual([
-            '[index.yaml] entry id "d1" (kind: doc) must have a "path" field',
-        ]);
+        expect(errors).toEqual(['[index.yaml] entry id "d1" (kind: doc) must have a "path" field']);
     });
 
     it("errors when a paper id starts with a reserved prefix", () => {

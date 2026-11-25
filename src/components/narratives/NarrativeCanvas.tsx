@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { NarrativeEdgeType, NarrativeNode, ResolvedNarrative } from "../../lib/content/schema.ts";
 import { buildEdge } from "../../lib/graph/edgeGeometry.ts";
 import { useViewport, type ViewportBounds } from "../../lib/graph/useViewport.ts";
-import { ZoomControls } from "../atlas/graph/ZoomControls.tsx";
+import ZoomControls from "../shared/ZoomControls.tsx";
 import { PannableViewport } from "../atlas/graph/PannableViewport.tsx";
 import { EdgeMarkers } from "../atlas/graph/EdgeMarkers.tsx";
 import { EdgeLabelPill } from "../atlas/graph/EdgeLabelPill.tsx";
@@ -79,27 +79,27 @@ function NodeChip({ node, pos, areaIds, dimmed, hidden, selected, onSelect }: No
             aria-pressed={selected}
             data-narrative-node={node.id}
             onClick={() => onSelect(selected ? null : node.id)}
-            className={`absolute left-0 top-0 flex flex-col justify-center gap-0.5 overflow-hidden rounded-lg bg-surface px-2.5 py-1.5 text-left shadow-sm ${
+            className={`absolute left-0 top-0 flex flex-col justify-center gap-0.5 overflow-hidden rounded-control bg-surface px-2.5 py-1.5 text-left shadow-sm ${
                 node.kind === "paper" || node.kind === "question" ? "border border-dashed" : "border"
-            } ${selected ? "border-border-strong ring-2 ring-brand/50" : "border-border hover:border-border-strong"}`}
+            } ${selected ? "border-line-strong ring-2 ring-signal/50" : "border-line hover:border-line-strong"}`}
             style={{
-                width:       NARRATIVE_NODE_W,
-                height:      NARRATIVE_NODE_H,
-                transform:   `translate3d(${pos.x}px, ${pos.y + NARRATIVE_TOP_PAD}px, 0)`,
-                transition:  `transform ${LENS_TRANSITION_MS}ms cubic-bezier(0.4, 0, 0.2, 1), opacity 220ms ease`,
-                opacity:     hidden ? 0 : dimmed ? 0.26 : 1,
+                width: NARRATIVE_NODE_W,
+                height: NARRATIVE_NODE_H,
+                transform: `translate3d(${pos.x}px, ${pos.y + NARRATIVE_TOP_PAD}px, 0)`,
+                transition: `transform ${LENS_TRANSITION_MS}ms cubic-bezier(0.4, 0, 0.2, 1), opacity 220ms ease`,
+                opacity: hidden ? 0 : dimmed ? 0.26 : 1,
                 pointerEvents: hidden ? "none" : undefined,
                 touchAction: "none",
             }}
         >
             <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[3px]" style={{ background: accent }} />
-            <span className="text-[12px] font-semibold leading-tight text-foreground line-clamp-2 -tracking-[0.1px]">
+            <span className="text-[12px] font-semibold leading-tight text-fg line-clamp-2 -tracking-[0.1px]">
                 {node.kind === "question" && <span aria-hidden="true">? </span>}
                 {node.title}
             </span>
-            <span className="flex items-center gap-1.5 text-[9.5px] text-muted-foreground truncate">
+            <span className="flex items-center gap-1.5 text-[9.5px] text-fg-muted truncate">
                 {node.kind === "paper" && (
-                    <span className="font-mono uppercase tracking-[0.1em] text-muted-foreground/80">paper</span>
+                    <span className="font-mono uppercase tracking-[0.1em] text-fg-muted/80">paper</span>
                 )}
                 <span className="truncate">{meta}</span>
             </span>
@@ -113,10 +113,10 @@ function YearRuler({ minYear, maxYear, width }: { minYear: number; maxYear: numb
     const ticks = yearRulerTicks(minYear, maxYear);
     if (ticks.length === 0) return null;
 
-    const left  = NARRATIVE_NODE_W / 2;
+    const left = NARRATIVE_NODE_W / 2;
     const right = width - NARRATIVE_NODE_W / 2;
-    const span  = maxYear - minYear;
-    const at    = (year: number) => (span > 0 ? left + ((year - minYear) / span) * (right - left) : left);
+    const span = maxYear - minYear;
+    const at = (year: number) => (span > 0 ? left + ((year - minYear) / span) * (right - left) : left);
     const baseY = NARRATIVE_TOP_PAD - 9;
 
     return (
@@ -126,19 +126,17 @@ function YearRuler({ minYear, maxYear, width }: { minYear: number; maxYear: numb
             height={NARRATIVE_TOP_PAD}
             aria-hidden="true"
         >
-            <line
-                x1={left} y1={baseY} x2={right} y2={baseY}
-                stroke="hsl(var(--border))" strokeWidth="1"
-            />
+            <line x1={left} y1={baseY} x2={right} y2={baseY} stroke="var(--line)" strokeWidth="1" />
             {ticks.map((year) => (
                 <g key={year} transform={`translate(${at(year)} 0)`}>
-                    <line x1={0} y1={baseY - 4} x2={0} y2={baseY} stroke="hsl(var(--border))" strokeWidth="1" />
+                    <line x1={0} y1={baseY - 4} x2={0} y2={baseY} stroke="var(--line)" strokeWidth="1" />
                     <text
-                        x={0} y={baseY - 8}
+                        x={0}
+                        y={baseY - 8}
                         textAnchor="middle"
                         style={{
-                            font: "500 9.5px ui-monospace, Geist Mono, monospace",
-                            fill: "hsl(var(--muted-foreground))",
+                            font: "500 9.5px var(--font-mono)",
+                            fill: "var(--fg-muted)",
                         }}
                     >
                         {year}
@@ -175,10 +173,7 @@ export default function NarrativeCanvas({
 
     const areaIds = useMemo(() => narrative.areas.map((a) => a.id), [narrative.areas]);
 
-    const hasQuestionNodes = useMemo(
-        () => narrative.nodes.some((n) => n.kind === "question"),
-        [narrative.nodes],
-    );
+    const hasQuestionNodes = useMemo(() => narrative.nodes.some((n) => n.kind === "question"), [narrative.nodes]);
 
     const contentW = layout.width;
     const contentH = layout.height + NARRATIVE_TOP_PAD;
@@ -234,12 +229,7 @@ export default function NarrativeCanvas({
         const leavingWalkthrough = hadFocusRef.current;
         hadFocusRef.current = false;
 
-        const plan = planInitialCamera(
-            bounds,
-            vp,
-            CAMERA_FIT_PADDING,
-            focusBoxFor(firstStepFocusIds ?? []),
-        );
+        const plan = planInitialCamera(bounds, vp, CAMERA_FIT_PADDING, focusBoxFor(firstStepFocusIds ?? []));
         if (plan) {
             fitBounds(plan.box, true, plan.maxScale, plan.minScale);
         } else if (leavingWalkthrough) {
@@ -247,7 +237,7 @@ export default function NarrativeCanvas({
         }
         // else: the whole lens already fits legibly — the hook's own
         // mount/resize/lens-switch effect has already fit it; nothing to override.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // oxlint-disable-next-line react/exhaustive-deps -- keyed on the values the camera depends on (vp.w/vp.h, layout, focus ids); focusBoxFor/vp are per-render closures over them and would refit on every render
     }, [focusIds, layout, vp.w, vp.h, bounds, firstStepFocusIds, fitBounds, fitView]);
 
     // Chips slide to their new coordinates on a lens switch; the bezier edges
@@ -277,21 +267,20 @@ export default function NarrativeCanvas({
 
     if (!lens || nodes.length === 0) {
         return (
-            <div className="flex items-center justify-center py-20 text-[13px] text-muted-foreground">
+            <div className="flex items-center justify-center py-20 text-[13px] text-fg-muted">
                 This narrative has no layout to draw.
             </div>
         );
     }
 
     const isDimmed = (id: string) => focusIds !== null && !focusIds.includes(id);
-    const isHidden = (id: string) =>
-        walkthrough === "reveal" && focusIds !== null && !(revealedIds ?? []).includes(id);
+    const isHidden = (id: string) => walkthrough === "reveal" && focusIds !== null && !(revealedIds ?? []).includes(id);
 
     return (
         <PannableViewport
             viewportRef={viewportRef}
             planeRef={planeRef}
-            viewportClassName="relative h-full w-full overflow-hidden rounded-xl border border-border"
+            viewportClassName="relative h-full w-full overflow-hidden rounded-xl border border-line"
             planeClassName="absolute left-0 top-0"
             view={view}
             animate={animate}
@@ -304,8 +293,14 @@ export default function NarrativeCanvas({
             overlays={
                 <>
                     {/* Viewport overlays — not scaled or translated */}
-                    <NarrativeLegend edgeTypes={edgeTypes} areas={narrative.areas} hasQuestionNodes={hasQuestionNodes} />
+                    <NarrativeLegend
+                        edgeTypes={edgeTypes}
+                        areas={narrative.areas}
+                        hasQuestionNodes={hasQuestionNodes}
+                    />
                     <ZoomControls
+                        orientation="column"
+                        className="absolute bottom-3 right-3"
                         onZoomIn={() => zoomAroundCenter(1.25)}
                         onZoomOut={() => zoomAroundCenter(1 / 1.25)}
                         onFit={() => fitView(true)}
@@ -313,9 +308,7 @@ export default function NarrativeCanvas({
                 </>
             }
         >
-            {showRuler && (
-                <YearRuler minYear={yearRange.min} maxYear={yearRange.max} width={contentW} />
-            )}
+            {showRuler && <YearRuler minYear={yearRange.min} maxYear={yearRange.max} width={contentW} />}
 
             {/* Edge layer */}
             <svg
@@ -331,13 +324,14 @@ export default function NarrativeCanvas({
 
                 {narrative.edges.map((edge, i) => {
                     const from = layout.positions[edge.from];
-                    const to   = layout.positions[edge.to];
+                    const to = layout.positions[edge.to];
                     if (!from || !to) return null;
-                    const geom   = buildEdge(nodeBox(from), nodeBox(to));
-                    const dim    = isDimmed(edge.from) || isDimmed(edge.to);
+                    const geom = buildEdge(nodeBox(from), nodeBox(to));
+                    const dim = isDimmed(edge.from) || isDimmed(edge.to);
                     const hidden = isHidden(edge.from) || isHidden(edge.to);
                     return (
                         <path
+                            // oxlint-disable-next-line react/no-array-index-key -- edges have no id and (from, to) may repeat across edge types; the list is static per lens
                             key={`e-${i}`}
                             d={geom.path}
                             fill="none"
@@ -355,15 +349,16 @@ export default function NarrativeCanvas({
                 {narrative.edges.map((edge, i) => {
                     if (!edge.label) return null;
                     const from = layout.positions[edge.from];
-                    const to   = layout.positions[edge.to];
+                    const to = layout.positions[edge.to];
                     if (!from || !to) return null;
-                    const geom   = buildEdge(nodeBox(from), nodeBox(to));
-                    const color  = narrativeEdgeColor(edge.type);
-                    const dim    = isDimmed(edge.from) || isDimmed(edge.to);
+                    const geom = buildEdge(nodeBox(from), nodeBox(to));
+                    const color = narrativeEdgeColor(edge.type);
+                    const dim = isDimmed(edge.from) || isDimmed(edge.to);
                     const hidden = isHidden(edge.from) || isHidden(edge.to);
-                    const w      = edge.label.length * 5.6 + 10;
+                    const w = edge.label.length * 5.6 + 10;
                     return (
                         <EdgeLabelPill
+                            // oxlint-disable-next-line react/no-array-index-key -- edges have no id and (from, to) may repeat across edge types; the list is static per lens
                             key={`lbl-${i}`}
                             label={edge.label}
                             width={w}
@@ -376,18 +371,22 @@ export default function NarrativeCanvas({
                 })}
             </svg>
 
-            {nodes.map((node) => (
-                <NodeChip
-                    key={node.id}
-                    node={node}
-                    pos={layout.positions[node.id]}
-                    areaIds={areaIds}
-                    dimmed={isDimmed(node.id)}
-                    hidden={isHidden(node.id)}
-                    selected={selectedId === node.id}
-                    onSelect={onSelect}
-                />
-            ))}
+            {nodes.map((node) => {
+                const pos = layout.positions[node.id];
+                if (!pos) return null; // unreachable: `nodes` is filtered to ids with a position
+                return (
+                    <NodeChip
+                        key={node.id}
+                        node={node}
+                        pos={pos}
+                        areaIds={areaIds}
+                        dimmed={isDimmed(node.id)}
+                        hidden={isHidden(node.id)}
+                        selected={selectedId === node.id}
+                        onSelect={onSelect}
+                    />
+                );
+            })}
         </PannableViewport>
     );
 }

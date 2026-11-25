@@ -25,15 +25,41 @@ const author: ScholarlyAuthor = {
 };
 
 const papers: PapersById = {
-    p1: { id: "p1", title: "Deep Residual Learning for Image Recognition", authors: ["He", "Zhang"], year: 2016, venue: "CVPR", url: "https://x" },
+    p1: {
+        id: "p1",
+        title: "Deep Residual Learning for Image Recognition",
+        authors: ["He", "Zhang"],
+        year: 2016,
+        venue: "CVPR",
+        url: "https://x",
+    },
     p2: { id: "p2", title: "Mask R-CNN", authors: ["He", "Gkioxari"], year: 2017, venue: "ICCV", url: "https://x" },
     p3: { id: "p3", title: "Group Normalization", authors: ["Wu", "He"], year: 2018, venue: "ECCV", url: "https://x" },
-    p4: { id: "p4", title: "Focal Loss: for Dense Object Detection", authors: ["Lin"], year: 2017, venue: "ICCV", url: "https://x" },
+    p4: {
+        id: "p4",
+        title: "Focal Loss: for Dense Object Detection",
+        authors: ["Lin"],
+        year: 2017,
+        venue: "ICCV",
+        url: "https://x",
+    },
 };
 
 const scholarlyPapers: Record<string, ScholarlyPaper> = {
-    p1: { primaryPages: ["resnet"], citingPages: ["fpn"], cites: [], citedBy: [], narratives: [{ slug: "n1", title: "Narrative One", via: "page" }] },
-    p2: { primaryPages: ["mask-rcnn"], citingPages: [], cites: [], citedBy: [], narratives: [{ slug: "n2", title: "Narrative Two", via: "page" }] },
+    p1: {
+        primaryPages: ["resnet"],
+        citingPages: ["fpn"],
+        cites: [],
+        citedBy: [],
+        narratives: [{ slug: "n1", title: "Narrative One", via: "page" }],
+    },
+    p2: {
+        primaryPages: ["mask-rcnn"],
+        citingPages: [],
+        cites: [],
+        citedBy: [],
+        narratives: [{ slug: "n2", title: "Narrative Two", via: "page" }],
+    },
     p3: { primaryPages: [], citingPages: ["fpn"], cites: [], citedBy: [], narratives: [] },
     p4: { primaryPages: [], citingPages: [], cites: [], citedBy: [], narratives: [] },
 };
@@ -56,7 +82,12 @@ describe("buildAuthorSummary", () => {
     });
 
     it("uses singular forms for count-1 fields", () => {
-        const one: ScholarlyAuthor = { ...author, pageCount: 1, primaryPages: ["resnet"], domains: [{ domain: "features", count: 1 }] };
+        const one: ScholarlyAuthor = {
+            ...author,
+            pageCount: 1,
+            primaryPages: ["resnet"],
+            domains: [{ domain: "features", count: 1 }],
+        };
         const s = buildAuthorSummary(one, 1, 1);
         expect(s.first).toBe("1 paper in the Atlas registry, 2015–2021.");
         expect(s.second!.bold).toBe("1 Atlas page");
@@ -105,7 +136,7 @@ describe("groupContributionByDomain", () => {
             b: { primaryPages: ["resnet"], citingPages: [], cites: [], citedBy: [], narratives: [] },
         };
         const groups = groupContributionByDomain(["a", "b"], spWithBothOrders, pages);
-        expect(groups[0].entries[0].isPrimary).toBe(true);
+        expect(groups[0]?.entries[0]?.isPrimary).toBe(true);
     });
 });
 
@@ -176,8 +207,8 @@ describe("computeAuthorTimelineLayout", () => {
     it("places a single entry on the axis at the layout's midpoint x", () => {
         const layout = computeAuthorTimelineLayout([{ id: "a", year: 2016, label: "A", state: "primary" }], 700);
         expect(layout.points).toHaveLength(1);
-        expect(layout.points[0].y).toBe(layout.axisY);
-        expect(layout.points[0].x).toBeCloseTo((layout.axisX1 + layout.axisX2) / 2);
+        expect(layout.points[0]?.y).toBe(layout.axisY);
+        expect(layout.points[0]?.x).toBeCloseTo((layout.axisX1 + layout.axisX2) / 2);
     });
 
     it("stacks same-year labels upward without collision and nudges dots apart on x", () => {
@@ -186,7 +217,8 @@ describe("computeAuthorTimelineLayout", () => {
             { id: "b", year: 2017, label: "B", state: "primary" as const },
         ];
         const layout = computeAuthorTimelineLayout(entries, 700);
-        const [a, b] = layout.points;
+        const a = layout.points[0]!;
+        const b = layout.points[1]!; // two entries in the fixture above
         expect(a.y).toBe(b.y); // both dots sit on the axis
         expect(a.x).not.toBe(b.x); // nudged apart so each stays clickable
         expect(a.labelY).not.toBe(b.labelY);
@@ -209,12 +241,15 @@ describe("buildCoAuthorRows", () => {
             [{ id: "A2", name: "Jian Sun", shared: 2, sharedPaperIds: ["p1", "p2"] }],
             papers,
         );
-        expect(rows[0].sharedPapers.map((p) => p.id)).toEqual(["p2", "p1"]);
+        expect(rows[0]?.sharedPapers.map((p) => p.id)).toEqual(["p2", "p1"]);
     });
 
     it("drops shared paper ids unknown to PapersById", () => {
-        const rows = buildCoAuthorRows([{ id: "A2", name: "Jian Sun", shared: 1, sharedPaperIds: ["unknown"] }], papers);
-        expect(rows[0].sharedPapers).toEqual([]);
+        const rows = buildCoAuthorRows(
+            [{ id: "A2", name: "Jian Sun", shared: 1, sharedPaperIds: ["unknown"] }],
+            papers,
+        );
+        expect(rows[0]?.sharedPapers).toEqual([]);
     });
 });
 

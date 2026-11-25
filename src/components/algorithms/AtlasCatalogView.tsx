@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Input } from "@vitavision/ui";
 import { Search, SlidersHorizontal, ChevronDown } from "lucide-react";
 import SeoHead from "../seo/SeoHead.tsx";
 import AlgorithmsSidebar from "./AlgorithmsSidebar.tsx";
@@ -68,34 +69,34 @@ export default function AtlasCatalogView({
                         <div className="flex items-baseline justify-between mb-1">
                             <h1 className="text-[22px] font-bold -tracking-[0.4px]">
                                 Atlas{" "}
-                                <span className="text-muted-foreground font-normal text-[15px] ml-1.5">
-                                    {facets.total}
-                                </span>
+                                <span className="text-fg-muted font-normal text-[15px] ml-1.5">{facets.total}</span>
                             </h1>
 
                             {/* Right cluster */}
-                            <div className="flex items-center gap-2.5 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-2.5 text-xs text-fg-muted">
                                 {/* Search */}
-                                <div className="w-[200px] flex items-center gap-1.5 px-2.5 py-1.5 rounded-md border border-[hsl(var(--border)/0.7)] bg-[hsl(var(--bg-soft))]">
-                                    <Search size={13} className="shrink-0 text-muted-foreground" />
-                                    <input
+                                <div className="relative w-[200px]">
+                                    <Search
+                                        size={13}
+                                        className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-fg-muted"
+                                        aria-hidden="true"
+                                    />
+                                    <Input
                                         type="search"
+                                        aria-label="Search the Atlas"
                                         placeholder="Search…"
                                         value={filters.query}
                                         onChange={(e) => setQuery(e.target.value)}
-                                        className="flex-1 bg-transparent outline-none text-xs placeholder:text-muted-foreground text-foreground min-w-0"
+                                        className="pl-8 text-xs"
                                     />
                                 </div>
 
-                                <AtlasViewTabs
-                                    view={filters.view}
-                                    onChange={setView}
-                                />
+                                <AtlasViewTabs view={filters.view} onChange={setView} />
                             </div>
                         </div>
 
                         {/* Subtitle */}
-                        <p className="text-[13px] text-muted-foreground mb-3">
+                        <p className="text-[13px] text-fg-muted mb-3">
                             Practical computer vision atlas — algorithms, models, and concepts.
                         </p>
 
@@ -113,12 +114,12 @@ export default function AtlasCatalogView({
                         {/* Results */}
                         {filters.query.trim() !== "" && <PeoplePapersMatches query={filters.query} />}
                         {showRecentlyAdded && (
-                            <RecentlyAddedSection entries={recentEntries} layout={filters.view === "list" ? "list" : "grid"} />
+                            <RecentlyAddedSection
+                                entries={recentEntries}
+                                layout={filters.view === "list" ? "list" : "grid"}
+                            />
                         )}
-                        <UnifiedResults
-                            groups={unifiedGroups}
-                            layout={filters.view === "list" ? "list" : "grid"}
-                        />
+                        <UnifiedResults groups={unifiedGroups} layout={filters.view === "list" ? "list" : "grid"} />
                     </main>
                 </div>
             </div>
@@ -129,17 +130,12 @@ export default function AtlasCatalogView({
 
     return (
         <div className="w-full min-w-0 max-w-[640px] mx-auto px-4 py-5 space-y-4">
-            <SeoHead
-                title="Atlas"
-                description="Practical computer vision atlas — algorithms, models, and concepts."
-            />
+            <SeoHead title="Atlas" description="Practical computer vision atlas — algorithms, models, and concepts." />
 
             {/* Title row */}
             <div className="flex items-baseline justify-between">
                 <h1 className="text-[22px] font-bold -tracking-[0.5px]">Atlas</h1>
-                <span className="text-xs text-muted-foreground">
-                    {facets.total} entries
-                </span>
+                <span className="text-xs text-fg-muted">{facets.total} entries</span>
             </div>
 
             <AtlasViewTabs view={filters.view} onChange={setView} compact />
@@ -148,14 +144,14 @@ export default function AtlasCatalogView({
             <div
                 role="radiogroup"
                 aria-label="Type"
-                className="grid grid-cols-4 gap-[3px] p-[3px] bg-[hsl(var(--bg-soft))] border border-[hsl(var(--border)/0.8)] rounded-lg"
+                className="grid grid-cols-4 gap-[3px] p-[3px] bg-raised border border-line/80 rounded-control"
             >
                 {(
                     [
-                        ["all",       "All"],
+                        ["all", "All"],
                         ["algorithm", "Algos"],
-                        ["model",     "Models"],
-                        ["concept",   "Concepts"],
+                        ["model", "Models"],
+                        ["concept", "Concepts"],
                     ] as const
                 ).map(([key, label]) => {
                     const active = filters.kind === key;
@@ -167,9 +163,7 @@ export default function AtlasCatalogView({
                             aria-checked={active}
                             onClick={() => setKind(key)}
                             className={`py-[7px] rounded-[5px] text-center text-[12px] transition-colors ${
-                                active
-                                    ? "bg-[hsl(var(--surface-hi))] text-foreground font-semibold"
-                                    : "text-muted-foreground"
+                                active ? "bg-line text-fg font-semibold" : "text-fg-muted"
                             }`}
                         >
                             {label}
@@ -182,37 +176,29 @@ export default function AtlasCatalogView({
             <button
                 type="button"
                 onClick={() => setFilterSheetOpen(true)}
-                className="w-full flex items-center justify-between px-3 py-2 text-xs border border-[hsl(var(--border)/0.8)] bg-[hsl(var(--bg-soft))] rounded-lg text-[hsl(var(--foreground)/0.8)]"
+                className="w-full flex items-center justify-between px-3 py-2 text-xs border border-line/80 bg-raised rounded-control text-fg/80"
             >
                 <span className="flex items-center gap-1.5">
                     <SlidersHorizontal size={13} />
                     <span className="text-[13px]">Filters</span>
                     {activeCount > 0 && (
-                        <span className="text-[10px] font-bold bg-brand text-background rounded-full px-1.5 leading-none py-[2px]">
+                        <span className="text-[10px] font-bold bg-signal text-ground rounded-full px-1.5 leading-none py-[2px]">
                             {activeCount}
                         </span>
                     )}
                 </span>
-                <ChevronDown size={13} className="text-muted-foreground" />
+                <ChevronDown size={13} className="text-fg-muted" />
             </button>
 
             {/* Active tag chips */}
-            <ActiveTagChips
-                tags={filters.tags}
-                onRemove={toggleTag}
-                onClearAll={() => setTags([])}
-            />
+            <ActiveTagChips tags={filters.tags} onRemove={toggleTag} onClearAll={() => setTags([])} />
 
             {/* Card sections */}
             {filters.query.trim() !== "" && <PeoplePapersMatches query={filters.query} />}
             {showRecentlyAdded && (
                 <RecentlyAddedSection entries={recentEntries} layout={filters.view === "grid" ? "grid" : "list"} />
             )}
-            <UnifiedResults
-                groups={unifiedGroups}
-                layout={filters.view === "grid" ? "grid" : "list"}
-                isMobile={true}
-            />
+            <UnifiedResults groups={unifiedGroups} layout={filters.view === "grid" ? "grid" : "list"} isMobile={true} />
 
             {/* Filter sheet (mobile) */}
             <AlgorithmsFilterSheet

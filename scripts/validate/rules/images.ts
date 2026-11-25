@@ -14,12 +14,7 @@ import type { Diagnostic, ValidationContext } from "../types.ts";
 const SUPPORTED_CONTENT_IMAGE_PREFIX = /^(?:\.{1,2}\/)?images\//;
 const ABSOLUTE_OR_EXTERNAL = /^(?:[a-z]+:|\/|#|data:)/i;
 
-function validateImageSrc(
-    diagnostics: Diagnostic[],
-    ctx: ValidationContext,
-    file: string,
-    src: string,
-): void {
+function validateImageSrc(diagnostics: Diagnostic[], ctx: ValidationContext, file: string, src: string): void {
     if (SUPPORTED_CONTENT_IMAGE_PREFIX.test(src)) {
         const imageName = src.replace(SUPPORTED_CONTENT_IMAGE_PREFIX, "");
         if (!ctx.imageExists(imageName)) {

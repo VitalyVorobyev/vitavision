@@ -24,17 +24,17 @@ export function getFocusEntry(slug: string): FocusEntry | null {
 
     const algoPage = algorithmPages.find((p) => p.slug === slug);
     if (algoPage) {
-        return { node, kind: "algorithm", fm: algoPage.frontmatter as Record<string, unknown> };
+        return { node, kind: "algorithm", fm: algoPage.frontmatter };
     }
 
     const modelPage = modelPages.find((p) => p.slug === slug);
     if (modelPage) {
-        return { node, kind: "model", fm: modelPage.frontmatter as Record<string, unknown> };
+        return { node, kind: "model", fm: modelPage.frontmatter };
     }
 
     const conceptPage = conceptPages.find((p) => p.slug === slug);
     if (conceptPage) {
-        return { node, kind: "concept", fm: conceptPage.frontmatter as Record<string, unknown> };
+        return { node, kind: "concept", fm: conceptPage.frontmatter };
     }
 
     return null;

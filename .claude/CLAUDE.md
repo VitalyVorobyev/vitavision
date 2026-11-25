@@ -12,7 +12,7 @@ This file provides guidance to Claude Code when working with this repository.
 
 ## Development Workflow
 
-Work is driven from approved plan files (typically under `~/.claude/plans/`) — not from a tracked backlog.
+Work is driven from approved plan files (typically under `~/.claude/plans/`). Atlas work also keeps living state in `docs/atlas/roadmap.md` and `docs/atlas/backlog.md`; edit them only when the task asks.
 
 The main agent (Opus) acts as architect + reviewer. Implementation is delegated to a Sonnet subagent per discrete task.
 
@@ -33,16 +33,17 @@ For local dev setup see `README.dev.md`.
 ```bash
 bun run dev       # Dev server at http://localhost:5173
 bun run build     # Type-check + Vite production build
-bun run lint      # ESLint
+bun run lint      # Oxlint
+bun run format    # oxfmt (write); format:check in CI
 ```
 
 ### Verification Checklist
 After any code change, run **all** of the following before committing:
 1. `bun run build` — type-check + production build
-2. `bun run lint` — ESLint
+2. `bun run lint` — Oxlint; `bun run format:check` — oxfmt (run `bun run format` to fix)
 3. `npx vitest run` — unit tests
 4. `bun run scripts/test-wasm-schemas.ts` — WASM integration tests (when touching algorithm configs)
-5. `bun run ds:validate` — design-system boundary (when touching a component exported from `.design-sync/ds-entry.tsx`)
+5. `bun run ds:validate` — design-system boundary (when touching a component exported from `.design-sync/ds-entry.tsx` or a `.design-sync/previews/` file; it also checks that the entry, `config.json` and the previews agree)
 
 ### Secrets & Credentials
 
@@ -86,7 +87,7 @@ For symmetric relation types (`compared_with`, `alternative_formulation_of`, `pa
 - Omitted = normal published page (default).
 - `quality: "stub"` = public placeholder; reader-visible warning badge.
 - `quality: "canonical"` = flagship reviewed page; reader-visible badge; passes stricter validation (sources, prerequisites, no TODO).
-- `quality: "historical"` = preserved for citation/lineage; method is superseded for practical use. Renders a "Historical" badge and a prominent "Superseded by" link derived from the page's `relations[]`. Body is trimmed to `# Goal` + `# Historical context` + `# References` only — no `# Algorithm`, no `# Implementation`, no `# Remarks`. Requires at least one `relations[]` entry of type `generalized_by` with `confidence: high`. Drops `editorAlgorithmId` (no Try-in-editor CTA) and any `comparedWith:` entries.
+- `quality: "historical"` = preserved for citation/lineage; method is superseded for practical use. Renders a "Historical" badge and a prominent "Superseded by" link derived from the page's `relations[]`. Body is trimmed to `# Goal` + `# Historical context` + `# References` only — no `# Algorithm`, no `# Implementation`, no `# Remarks`. Requires at least one `relations[]` entry of type `generalized_by` with `confidence: high`. Drops `editorAlgorithmId` (no Try-in-editor CTA) and any `relations[type=compared_with]` entry.
 
 `draft: true` remains the publication gate. Do not introduce `status:` or `review:` fields.
 
@@ -117,7 +118,7 @@ Each entry has:
 
 Symmetric types are mirrored by the build onto the target's `relations[]`. Asymmetric types produce typed reverse buckets on the target (`generalises`, `extending`, `fedBy`, `hasLearnedAlternative`). Author one side only — the renderer composes the reader-visible bidirectional view.
 
-The renderer groups entries into three sidebar sections by category — **Lineage**, **Practice**, **Cross-paradigm** — each entry showing its specific type label, target link, confidence-if-not-high, and optional caution. The legacy fields `related`, `relatedAlgorithms`, and `comparedWith` are removed; do not introduce them.
+The renderer groups entries into three sidebar sections by category — **Lineage**, **Practice**, **Cross-paradigm** — each entry showing its specific type label, target link, confidence-if-not-high, and optional caution. The legacy fields `related`, `relatedAlgorithms`, and `comparedWith` are removed from algorithm/model/concept frontmatter; do not introduce them there. (`relatedAlgorithms` remains valid on blog and demo frontmatter.)
 
 ### Sources
 
@@ -209,16 +210,25 @@ section to public pages — never publish from a raw LLM summary.
 Static computer vision web app: image annotation editor + WASM algorithm runner. **No backend** — all processing is client-side.
 
 ### Tech Stack
-- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS
+- **Frontend**: React 19 + TypeScript + Vite + Tailwind CSS v4 + react-router
+- **UI system**: `@vitavision/ui` — design tokens (`@vitavision/ui/styles.css`: `ground` / `surface` / `raised` / `overlay` / `line` / `fg*` / `signal` + verdicts `normal` / `defect` / `warn`), the theme controller, IBM Plex fonts, and every interactive control (`Button`, `Field` + `NumberInput`, `Select`, `SegmentedControl`, `Checkbox`, `Switch`, `Dialog`, `Callout`, `Tooltip` / `InfoHint`, `toast()` …). It is built in the separate **lab-ui** monorepo (`~/vision/lab-ui`; `docs/plan/PLAN.md` and `docs/visual-language.md` are the source of truth for UI, and its Storybook specifies each component). Use the ui component rather than hand-rolling a control; editorial pages keep their own markup (Source Serif 4, `src/styles/editorial-tokens.css`).
+- **Toolchain**: `@vitavision/config-ts` (strict compiler options, incl. `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes`) and `@vitavision/config-oxlint` (type-aware Oxlint via `oxlint-tsgolint` plus the `vitavision/tokens-only` rule on `src/**`, gate G5.1: no raw Tailwind palette classes or hex literals in `src/`; colour data lives in the modules allowlisted with a reason in `.oxlintrc.json`)
 - **State**: Zustand (`src/store/editor/useEditorStore.ts`)
-- **Canvas**: react-konva
+- **Canvas**: react-konva (colours from `useCanvasTokens()`, since canvas cannot resolve `var(--x)`)
 - **CV Processing**: WASM npm packages executed in Web Workers
+- **Auth**: Clerk (sign-in and `/admin` only)
+- **Design sync**: `.design-sync/` curates the components synced to claude.ai/design (`NOTES.md` first)
 - **Hosting**: Cloudflare Pages (static)
 
-### Frontend Routes
+### Frontend Routes (`src/App.tsx`)
 - `/` — Home
 - `/blog`, `/blog/:slug` — Blog
-- `/editor` — Main image editor
+- `/atlas` — the Atlas (views via `?view=`: catalog grid/list, graph, narratives, people, papers; `?kind=` filters); `/atlas/:slug` — algorithm/model/concept page; `/atlas/narratives/:slug` — narrative
+- `/authors/:id`, `/papers/:id` — author and paper pages (unlisted registers; `/authors` redirects to the People view)
+- `/demos`, `/demos/:slug` — Demos
+- `/editor` — Main image editor; `/tools/target-generator` — calibration target generator
+- `/about`, `/sign-in`, `/admin/*` (drafts, users, analytics)
+- `/algorithms/*`, `/concepts/*` — legacy redirects into `/atlas`
 
 ### Editor Layout (`src/pages/Editor.tsx`)
 Two modes via `galleryMode` in the Zustand store:

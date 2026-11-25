@@ -1,9 +1,5 @@
 import { type ReactNode, type ElementType } from "react";
-
-// Lightweight className merger — no external deps required.
-function cn(...classes: (string | undefined | false | null)[]): string {
-    return classes.filter(Boolean).join(" ");
-}
+import { cn } from "@vitavision/ui";
 
 // ---------------------------------------------------------------------------
 // Panel — gradient surface card (matches .panel in vv.css)
@@ -18,8 +14,8 @@ export function Panel({ as: Tag = "div", className, children, ...rest }: PanelPr
     return (
         <Tag
             className={cn(
-                "rounded-[1.5rem] border border-border",
-                "bg-[linear-gradient(180deg,hsl(var(--surface)),hsl(var(--background)))]",
+                "rounded-[1.5rem] border border-line",
+                "bg-[linear-gradient(180deg,var(--surface),var(--ground))]",
                 className,
             )}
             {...rest}
@@ -40,10 +36,7 @@ interface PanelFlatProps extends React.HTMLAttributes<HTMLElement> {
 
 export function PanelFlat({ as: Tag = "div", className, children, ...rest }: PanelFlatProps) {
     return (
-        <Tag
-            className={cn("rounded-[1rem] border border-border bg-surface", className)}
-            {...rest}
-        >
+        <Tag className={cn("rounded-[1rem] border border-line bg-surface", className)} {...rest}>
             {children}
         </Tag>
     );
@@ -61,8 +54,8 @@ export function FloatingPanel({ className, children, ...rest }: FloatingPanelPro
     return (
         <div
             className={cn(
-                "rounded-[14px] border border-border",
-                "bg-[hsl(var(--surface)/0.92)] backdrop-blur-md",
+                "rounded-[14px] border border-line",
+                "bg-surface/92 backdrop-blur-md",
                 "shadow-[0_12px_30px_-16px_rgba(0,0,0,0.6)]",
                 className,
             )}
@@ -83,28 +76,7 @@ interface BrowProps {
 
 export function TinyBrow({ className, children }: BrowProps) {
     return (
-        <span
-            className={cn(
-                "text-[10px] font-mono uppercase tracking-[0.18em] text-muted-foreground",
-                className,
-            )}
-        >
-            {children}
-        </span>
-    );
-}
-
-// ---------------------------------------------------------------------------
-// Eyebrow — 11 px mono uppercase label (slightly larger than TinyBrow)
-// ---------------------------------------------------------------------------
-export function Eyebrow({ className, children }: BrowProps) {
-    return (
-        <span
-            className={cn(
-                "text-[11px] font-mono uppercase tracking-[0.22em] text-muted-foreground",
-                className,
-            )}
-        >
+        <span className={cn("text-[10px] font-mono uppercase tracking-[0.18em] text-fg-muted", className)}>
             {children}
         </span>
     );
@@ -116,10 +88,10 @@ export function Eyebrow({ className, children }: BrowProps) {
 type Tone = "neutral" | "good" | "warn" | "bad";
 
 const toneStyles: Record<Tone, { cell: string; value: string }> = {
-    neutral: { cell: "", value: "text-foreground" },
-    good:    { cell: "border-emerald-500/40 bg-emerald-500/10", value: "text-emerald-400" },
-    warn:    { cell: "border-amber-500/40   bg-amber-500/10",   value: "text-amber-400"   },
-    bad:     { cell: "border-rose-500/40    bg-rose-500/10",    value: "text-rose-400"    },
+    neutral: { cell: "", value: "text-fg" },
+    good: { cell: "border-normal/40 bg-normal/10", value: "text-normal" },
+    warn: { cell: "border-warn/40 bg-warn/10", value: "text-warn" },
+    bad: { cell: "border-defect/40 bg-defect/10", value: "text-defect" },
 };
 
 interface MetricCellProps {
@@ -134,18 +106,16 @@ export function MetricCell({ label, value, tone = "neutral", className }: Metric
     return (
         <div
             className={cn(
-                "flex flex-col min-w-0 rounded-[0.6rem] border border-border",
-                "bg-background/60 px-1.5 py-[0.55rem]",
+                "flex flex-col min-w-0 rounded-[0.6rem] border border-line",
+                "bg-ground/60 px-1.5 py-[0.55rem]",
                 cell,
                 className,
             )}
         >
-            <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-muted-foreground leading-none">
+            <span className="text-[10px] font-mono uppercase tracking-[0.16em] text-fg-muted leading-none">
                 {label}
             </span>
-            <span className={cn("mt-1.5 text-[13px] font-mono font-semibold leading-none", valueColor)}>
-                {value}
-            </span>
+            <span className={cn("mt-1.5 text-[13px] font-mono font-semibold leading-none", valueColor)}>{value}</span>
         </div>
     );
 }
@@ -163,7 +133,7 @@ export function Kbd({ className, children }: KbdProps) {
         <kbd
             className={cn(
                 "text-[10px] font-mono px-1.5 py-px rounded-[4px]",
-                "border border-border-strong bg-background text-muted-foreground",
+                "border border-line-strong bg-ground text-fg-muted",
                 className,
             )}
         >
@@ -184,8 +154,8 @@ export function Pill({ className, children }: PillProps) {
     return (
         <span
             className={cn(
-                "inline-flex items-center gap-2 rounded-full border border-border",
-                "bg-background/80 text-muted-foreground px-3 py-1.5 text-xs font-mono",
+                "inline-flex items-center gap-2 rounded-full border border-line",
+                "bg-ground/80 text-fg-muted px-3 py-1.5 text-xs font-mono",
                 className,
             )}
         >
@@ -206,8 +176,8 @@ export function Note({ className, children }: NoteProps) {
     return (
         <div
             className={cn(
-                "text-xs text-muted-foreground border-l-2 border-primary/50",
-                "pl-3 pr-2 py-1 bg-primary/5 rounded-r-md",
+                "text-xs text-fg-muted border-l-2 border-signal/50",
+                "pl-3 pr-2 py-1 bg-signal/5 rounded-r-control",
                 className,
             )}
         >

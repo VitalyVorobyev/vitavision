@@ -1,4 +1,4 @@
-import { SourceStrip } from 'vitcv';
+import { SourceStrip } from "vitcv";
 
 export const ZhangPlanarCalibration = () => (
     <div style={{ width: 560 }}>

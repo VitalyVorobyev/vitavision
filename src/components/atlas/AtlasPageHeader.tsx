@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import { BookOpen } from "lucide-react";
 import TagBadge from "../blog/TagBadge.tsx";
 import SourceStrip from "./SourceStrip.tsx";
@@ -11,13 +11,13 @@ type PageKind = "algorithm" | "model" | "concept";
 interface AtlasFrontmatter {
     title: string;
     date: string;
-    updated?: string;
-    readingTimeMinutes?: number;
-    difficulty?: Difficulty;
+    updated?: string | undefined;
+    readingTimeMinutes?: number | undefined;
+    difficulty?: Difficulty | undefined;
     tags: string[];
-    draft?: boolean;
-    dev?: boolean;
-    sources?: { primary?: string };
+    draft?: boolean | undefined;
+    dev?: boolean | undefined;
+    sources?: { primary?: string | undefined } | undefined;
 }
 
 interface AtlasPageHeaderProps {
@@ -33,51 +33,57 @@ interface AtlasPageHeaderProps {
 }
 
 const KIND_CLASSES: Record<PageKind, string> = {
-    algorithm: "text-brand border-brand/40",
-    model:     "text-violet-600 dark:text-violet-400 border-violet-500/40",
-    concept:   "text-muted-foreground border-border",
+    algorithm: "text-signal border-signal/40",
+    model: "text-ink-violet border-ink-violet/40",
+    concept: "text-fg-muted border-line",
 };
 
 const DIFFICULTY_DOT: Record<Difficulty, string> = {
-    advanced:     "bg-red-500",
-    intermediate: "bg-amber-500",
-    beginner:     "bg-emerald-500",
+    advanced: "bg-difficulty-advanced",
+    intermediate: "bg-difficulty-intermediate",
+    beginner: "bg-difficulty-beginner",
 };
 
 const DIFFICULTY_LABEL: Record<Difficulty, string> = {
-    advanced:     "Advanced",
+    advanced: "Advanced",
     intermediate: "Intermediate",
-    beginner:     "Beginner",
+    beginner: "Beginner",
 };
 
 export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges, kind, slug }: AtlasPageHeaderProps) {
     return (
         <header className="space-y-4 mb-8">
-            <Link
-                to={backTo}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-            >
+            <Link to={backTo} className="text-sm text-fg-muted hover:text-fg transition-colors">
                 &larr; {backLabel}
             </Link>
             <h1 className="text-[clamp(1.875rem,4vw,2.625rem)] font-bold tracking-[-0.03em] leading-[1.2]">
                 {kind && (
-                    <span aria-hidden="true" className={`text-sm font-mono uppercase tracking-wider border rounded px-2 py-1 mr-3 align-middle ${KIND_CLASSES[kind]}`}>
+                    <span
+                        aria-hidden="true"
+                        className={`text-sm font-mono uppercase tracking-wider border rounded px-2 py-1 mr-3 align-middle ${KIND_CLASSES[kind]}`}
+                    >
                         {kind}
                     </span>
                 )}
                 {frontmatter.dev && (
-                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-blue-500 border border-blue-500/40 rounded px-2 py-1 mr-3 align-middle">
+                    <span
+                        aria-hidden="true"
+                        className="text-sm font-mono uppercase tracking-wider text-ink-blue border border-ink-blue/40 rounded px-2 py-1 mr-3 align-middle"
+                    >
                         dev sample
                     </span>
                 )}
                 {frontmatter.draft && (
-                    <span aria-hidden="true" className="text-sm font-mono uppercase tracking-wider text-amber-500 border border-amber-500/40 rounded px-2 py-1 mr-3 align-middle">
+                    <span
+                        aria-hidden="true"
+                        className="text-sm font-mono uppercase tracking-wider text-ink-amber border border-ink-amber/40 rounded px-2 py-1 mr-3 align-middle"
+                    >
                         draft
                     </span>
                 )}
                 {frontmatter.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs text-fg-muted">
                 <time>{frontmatter.date}</time>
                 {frontmatter.updated && (
                     <>
@@ -114,13 +120,23 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                         <span aria-hidden="true">·</span>
                         <Link
                             to={`/atlas?view=graph&focus=${slug}`}
-                            className="inline-flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
+                            className="inline-flex items-center gap-1.5 text-fg-muted hover:text-fg transition-colors"
                         >
-                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <svg
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="1.8"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                aria-hidden="true"
+                            >
                                 <circle cx="12" cy="12" r="3" />
-                                <circle cx="5"  cy="5"  r="1.6" />
-                                <circle cx="19" cy="5"  r="1.6" />
-                                <circle cx="5"  cy="19" r="1.6" />
+                                <circle cx="5" cy="5" r="1.6" />
+                                <circle cx="19" cy="5" r="1.6" />
+                                <circle cx="5" cy="19" r="1.6" />
                                 <circle cx="19" cy="19" r="1.6" />
                                 <line x1="7" y1="6.5" x2="10" y2="10" />
                                 <line x1="17" y1="6.5" x2="14" y2="10" />
@@ -131,18 +147,19 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                         </Link>
                     </>
                 )}
-                {slug && (narrativeRefs[slug] ?? []).map((ref) => (
-                    <span key={ref.slug} className="contents">
-                        <span aria-hidden="true">·</span>
-                        <Link
-                            to={`/atlas/narratives/${ref.slug}`}
-                            className="inline-flex items-center gap-1.5 text-muted-foreground transition-colors hover:text-foreground"
-                        >
-                            <BookOpen size={13} aria-hidden="true" />
-                            In narrative: {ref.title}
-                        </Link>
-                    </span>
-                ))}
+                {slug &&
+                    (narrativeRefs[slug] ?? []).map((ref) => (
+                        <span key={ref.slug} className="contents">
+                            <span aria-hidden="true">·</span>
+                            <Link
+                                to={`/atlas/narratives/${ref.slug}`}
+                                className="inline-flex items-center gap-1.5 text-fg-muted transition-colors hover:text-fg"
+                            >
+                                <BookOpen size={13} aria-hidden="true" />
+                                In narrative: {ref.title}
+                            </Link>
+                        </span>
+                    ))}
             </div>
             <SourceStrip primary={frontmatter.sources?.primary} />
             {frontmatter.tags.length > 0 && (
@@ -152,7 +169,7 @@ export default function AtlasPageHeader({ backTo, backLabel, frontmatter, badges
                     ))}
                 </div>
             )}
-            <div className="border-t border-border" />
+            <div className="border-t border-line" />
         </header>
     );
 }

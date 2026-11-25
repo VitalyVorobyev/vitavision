@@ -37,5 +37,5 @@ export function ScholarlyProvider({ initial, children }: ScholarlyProviderProps)
 
     const value = useMemo(() => ({ ...state, request }), [state, request]);
 
-    return <ScholarlyContext.Provider value={value}>{children}</ScholarlyContext.Provider>;
+    return <ScholarlyContext value={value}>{children}</ScholarlyContext>;
 }

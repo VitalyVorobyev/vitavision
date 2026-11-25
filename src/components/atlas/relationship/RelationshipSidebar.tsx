@@ -9,7 +9,7 @@ export type ResolvedLink = { slug: string; title: string; href: string };
 
 interface RelationshipSidebarProps {
     result: RelationDisplayResult;
-    supersededBy?: string;
+    supersededBy?: string | undefined;
     sectionsOpen: boolean;
     resolvedNarratives: ResolvedLink[];
     resolvedPosts: ResolvedLink[];
@@ -32,30 +32,23 @@ export default function RelationshipSidebar({
     const postsFirst = !narrativesFirst && resolvedPosts.length > 0;
 
     return (
-        <div className="border border-border rounded-[10px] bg-card p-[18px]">
+        <div className="border border-line rounded-[10px] bg-surface p-[18px]">
             {result.hasSuccessor && <SupersededBy successor={supersededBy!} variant="sidebar" />}
             <SidebarSection
                 heading="Prerequisites"
                 slugs={result.prerequisites}
-                itemColor="text-foreground"
+                itemColor="text-fg"
                 defaultOpen={sectionsOpen}
             />
             {SECTION_ORDER.map((label) => {
                 const items = result.grouped.get(label) ?? [];
                 if (items.length === 0) return null;
-                return (
-                    <TypedRelationSection
-                        key={label}
-                        heading={label}
-                        items={items}
-                        defaultOpen={sectionsOpen}
-                    />
-                );
+                return <TypedRelationSection key={label} heading={label} items={items} defaultOpen={sectionsOpen} />;
             })}
             <SidebarSection
                 heading="Used by"
                 slugs={result.usedBy}
-                itemColor="text-blue-600 dark:text-blue-400"
+                itemColor="text-ink-blue"
                 maxItems={4}
                 defaultOpen={sectionsOpen}
             />

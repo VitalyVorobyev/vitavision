@@ -2,7 +2,7 @@
  * Shared types for the content validator (scripts/validate/**).
  *
  * `ValidationContext` is the read-only bag every rule module consumes —
- * built once by `buildValidationContext` (or, for tests, `createContext`)
+ * built once by `buildValidationContext` (or, for tests, `createTestContext`)
  * in ./context.ts. Rules never touch disk; they only read from the context
  * and return `Diagnostic[]`.
  */
@@ -125,7 +125,7 @@ export interface ValidationContext {
     /** True when `content/images/<relPath>` exists on disk (or is present in
      *  a test fixture's injected image list). Kept as a function (backed by
      *  a precomputed Set) so rules stay pure/sync while tests can inject an
-     *  arbitrary fixture image list via `createContext({ images: [...] })`. */
+     *  arbitrary fixture image list via `createTestContext({ images: [...] })`. */
     imageExists: (relPath: string) => boolean;
 
     /** Every author id in docs/papers/authors.yaml (canonical AND merged-away

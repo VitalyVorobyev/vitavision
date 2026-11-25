@@ -6,8 +6,9 @@ import type {
     MarkerBoardConfig,
     RingGridConfig,
     PuzzleboardConfig,
+    PuzzlepoleConfig,
     CircleSpec,
-    TargetType,
+    ScreenSettings,
 } from "./types";
 
 /** Compute default circle triangle centered on the board. */
@@ -17,11 +18,7 @@ export function defaultCircles(innerRows: number, innerCols: number): [CircleSpe
     const ci = Math.floor((totalRows - 1) / 2);
     const cj = Math.floor((totalCols - 1) / 2);
 
-    return [
-        { cell: { i: ci, j: cj } },
-        { cell: { i: ci + 1, j: cj } },
-        { cell: { i: ci + 1, j: cj + 1 } },
-    ];
+    return [{ cell: { i: ci, j: cj } }, { cell: { i: ci + 1, j: cj } }, { cell: { i: ci + 1, j: cj + 1 } }];
 }
 
 const DEFAULT_CHESSBOARD: ChessboardConfig = {
@@ -66,6 +63,16 @@ export const DEFAULT_PUZZLEBOARD: PuzzleboardConfig = {
     cellSizeMm: 15,
 };
 
+// 12 pieces round at 10 mm is a ~38 mm cylinder and a 100 x 140 mm strip, so the
+// default fits the generator's default (landscape A4) page. start_row 73 is the
+// first period the library lists for 12.
+export const DEFAULT_PUZZLEPOLE: PuzzlepoleConfig = {
+    circumferenceSquares: 12,
+    startRow: 73,
+    axialSquares: 10,
+    squareSizeMm: 10,
+};
+
 export function defaultConfigForType(targetType: string) {
     switch (targetType) {
         case "chessboard":
@@ -78,10 +85,22 @@ export function defaultConfigForType(targetType: string) {
             return { ...DEFAULT_RINGGRID };
         case "puzzleboard":
             return { ...DEFAULT_PUZZLEBOARD };
+        case "puzzlepole":
+            return { ...DEFAULT_PUZZLEPOLE };
         default:
             return { ...DEFAULT_CHESSBOARD };
     }
 }
+
+// pixelPitchMm has no honest prefill (the browser cannot know the panel's physical
+// size); 0.25 mm is a placeholder in the range of common desktop monitors, and the
+// UI tells the user to replace it from the display's spec sheet.
+export const DEFAULT_SCREEN: ScreenSettings = {
+    widthPx: 1920,
+    heightPx: 1080,
+    pixelPitchMm: 0.25,
+    marginPx: null,
+};
 
 export const INITIAL_STATE: TargetGeneratorState = {
     target: { targetType: "chessboard", config: { ...DEFAULT_CHESSBOARD } },
@@ -94,6 +113,10 @@ export const INITIAL_STATE: TargetGeneratorState = {
         pngDpi: 300,
         showScaleLine: true,
     },
+    medium: "print",
+    screen: { ...DEFAULT_SCREEN },
+    screenPrefilled: false,
+    screenResult: null,
     previewSvg: "",
     validation: { errors: [], warnings: [] },
     configCache: {},
@@ -109,7 +132,7 @@ export function targetGeneratorReducer(
                 ...state.configCache,
                 [state.target.targetType]: state.target.config,
             };
-            const config = cache[action.targetType as TargetType] ?? defaultConfigForType(action.targetType);
+            const config = cache[action.targetType] ?? defaultConfigForType(action.targetType);
             return {
                 ...state,
                 configCache: cache,
@@ -121,7 +144,7 @@ export function targetGeneratorReducer(
 
             // Auto-center circles when markerboard dimensions change
             if (state.target.targetType === "markerboard") {
-                const prev = state.target.config as MarkerBoardConfig;
+                const prev = state.target.config;
                 const next = merged as MarkerBoardConfig;
                 const dimsChanged =
                     ("innerRows" in action.partial && action.partial.innerRows !== prev.innerRows) ||
@@ -150,6 +173,25 @@ export function targetGeneratorReducer(
                 ...state,
                 page: { ...state.page, ...action.partial },
             };
+        case "SET_MEDIUM": {
+            if (action.medium === state.medium) return state;
+            // The display size is prefilled once, the first time Screen is chosen;
+            // later visits keep whatever the user has typed.
+            const px = action.medium === "screen" && !state.screenPrefilled ? action.displayPx : undefined;
+            return {
+                ...state,
+                medium: action.medium,
+                screenPrefilled: state.screenPrefilled || action.medium === "screen",
+                screen: px ? { ...state.screen, widthPx: px.widthPx, heightPx: px.heightPx } : state.screen,
+                // The two media have separate results and validation; drop the stale ones.
+                screenResult: null,
+                validation: { errors: [], warnings: [] },
+            };
+        }
+        case "UPDATE_SCREEN":
+            return { ...state, screen: { ...state.screen, ...action.partial } };
+        case "SET_SCREEN_PREVIEW":
+            return { ...state, screenResult: action.result, validation: action.validation };
         case "SET_PREVIEW":
             return {
                 ...state,

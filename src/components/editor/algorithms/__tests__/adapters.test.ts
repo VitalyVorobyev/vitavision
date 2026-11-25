@@ -1,5 +1,14 @@
 import { describe, it, expect } from "vitest";
-import type { ChessCornersResult, CalibrationTargetResult, CalibrationTargetAlgorithm, CalibrationTargetKind, RinggridDetectResult, RadsymResult, PuzzleBoardDetectResult } from "../../../../lib/types";
+import type {
+    ChessCornersResult,
+    CalibrationTargetResult,
+    CalibrationTargetAlgorithm,
+    CalibrationTargetKind,
+    RinggridDetectResult,
+    RadsymResult,
+    PuzzleBoardDetectResult,
+} from "../../../../lib/types";
+import type { LabeledPointFeature } from "../../../../store/editor/useEditorStore";
 import { chessCornersAlgorithm } from "../chessCorners/adapter";
 import { chessboardAlgorithm } from "../calibrationTargets/chessboardAdapter";
 import { charucoAlgorithm } from "../calibrationTargets/charucoAdapter";
@@ -20,16 +29,6 @@ function mockChessCornersResult(count: number): ChessCornersResult {
         image_width: 640,
         image_height: 480,
         frame: { name: "image_px_center", origin: "top_left", x_axis: "right", y_axis: "down", units: "pixels" },
-        config: {
-            threshold: 30,
-            nms_radius: 2,
-            broad_mode: false,
-            min_cluster_size: 2,
-            pyramid_levels: 4,
-            pyramid_min_size: 128,
-            upscale_factor: 0,
-            refiner: "center_of_mass",
-        },
         summary: {
             count,
             response_min: count > 0 ? 0.1 : null,
@@ -47,8 +46,18 @@ function mockChessCornersResult(count: number): ChessCornersResult {
             y_norm: (60 + i * 15) / 480,
             response: 0.5,
             axes: [
-                { angle_rad: axis0Angle, angle_deg: 45, sigma_rad: 0.05, direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) } },
-                { angle_rad: axis1Angle, angle_deg: 135, sigma_rad: 0.06, direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) } },
+                {
+                    angle_rad: axis0Angle,
+                    angle_deg: 45,
+                    fit_std_error_rad: 0.05,
+                    direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) },
+                },
+                {
+                    angle_rad: axis1Angle,
+                    angle_deg: 135,
+                    fit_std_error_rad: 0.06,
+                    direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) },
+                },
             ],
             confidence: 0.8,
             confidence_level: "high" as const,
@@ -56,7 +65,11 @@ function mockChessCornersResult(count: number): ChessCornersResult {
     };
 }
 
-function mockCalibResult(algorithm: CalibrationTargetAlgorithm, cornerCount: number, markerCount = 0): CalibrationTargetResult {
+function mockCalibResult(
+    algorithm: CalibrationTargetAlgorithm,
+    cornerCount: number,
+    markerCount = 0,
+): CalibrationTargetResult {
     const kind: CalibrationTargetKind = algorithm === "markerboard" ? "checkerboard_marker" : algorithm;
     return {
         status: "success",
@@ -72,6 +85,7 @@ function mockCalibResult(algorithm: CalibrationTargetAlgorithm, cornerCount: num
             circle_candidate_count: algorithm === "markerboard" ? 3 : null,
             circle_match_count: algorithm === "markerboard" ? 2 : null,
             alignment_inliers: algorithm === "markerboard" ? 10 : null,
+            alignment_runner_up_inliers: algorithm === "markerboard" ? 2 : null,
             runtime_ms: 45.2,
         },
         detection: {
@@ -88,18 +102,31 @@ function mockCalibResult(algorithm: CalibrationTargetAlgorithm, cornerCount: num
                 target_position: null,
             })),
         },
-        markers: algorithm === "charuco" ? Array.from({ length: markerCount }, (_, i) => ({
-            id: i,
-            grid_cell: { gx: i, gy: 0 },
-            rotation: 0,
-            hamming: 0,
-            score: 0.9,
-            border_score: 0.8,
-            code: i * 10,
-            inverted: false,
-            corners_rect: [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }, { x: 0, y: 10 }],
-            corners_img: [{ x: 100 + i * 50, y: 200 }, { x: 110 + i * 50, y: 200 }, { x: 110 + i * 50, y: 210 }, { x: 100 + i * 50, y: 210 }],
-        })) : null,
+        markers:
+            algorithm === "charuco"
+                ? Array.from({ length: markerCount }, (_, i) => ({
+                      id: i,
+                      grid_cell: { gx: i, gy: 0 },
+                      rotation: 0,
+                      hamming: 0,
+                      score: 0.9,
+                      border_score: 0.8,
+                      code: i * 10,
+                      inverted: false,
+                      corners_rect: [
+                          { x: 0, y: 0 },
+                          { x: 10, y: 0 },
+                          { x: 10, y: 10 },
+                          { x: 0, y: 10 },
+                      ],
+                      corners_img: [
+                          { x: 100 + i * 50, y: 200 },
+                          { x: 110 + i * 50, y: 200 },
+                          { x: 110 + i * 50, y: 210 },
+                          { x: 100 + i * 50, y: 210 },
+                      ],
+                  }))
+                : null,
         alignment: null,
         circle_candidates: null,
         circle_matches: null,
@@ -121,7 +148,12 @@ function mockRinggridResult(markerCount: number): RinggridDetectResult {
             ellipse_outer: { cx: 100 + i * 40, cy: 200 + i * 30, a: 20, b: 18, angle: 0.1 },
             ellipse_inner: { cx: 100 + i * 40, cy: 200 + i * 30, a: 10, b: 9, angle: 0.1 },
             decode: { best_id: i, best_rotation: 0, best_dist: 0, margin: 1, decode_confidence: 0.9 },
-            fit: { rms_residual_outer: 0.5, rms_residual_inner: 0.3, ransac_inlier_ratio_outer: 0.95, ransac_inlier_ratio_inner: 0.9 },
+            fit: {
+                rms_residual_outer: 0.5,
+                rms_residual_inner: 0.3,
+                ransac_inlier_ratio_outer: 0.95,
+                ransac_inlier_ratio_inner: 0.9,
+            },
             board_xy_mm: { x: i * 8, y: 0 },
         })),
     };
@@ -154,8 +186,9 @@ describe("chessCornersAlgorithm", () => {
     });
 
     it("run() throws", async () => {
-        await expect(chessCornersAlgorithm.run({ key: "", storageMode: "local", config: {} }))
-            .rejects.toThrow("only available via client-side WASM");
+        await expect(chessCornersAlgorithm.run({ key: "", storageMode: "local", config: {} })).rejects.toThrow(
+            "only available via client-side WASM",
+        );
     });
 
     it("toFeatures maps corners to directed_point features", () => {
@@ -172,26 +205,26 @@ describe("chessCornersAlgorithm", () => {
         }
     });
 
-    it("applies +0.5 pixel offset", () => {
+    it("keeps the detector's own coordinates (no half-pixel offset)", () => {
         const result = mockChessCornersResult(1);
         const features = chessCornersAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].type === "directed_point" && features[0].x).toBe(result.corners[0].x + 0.5);
+        expect(features[0]!.type === "directed_point" && features[0].x).toBe(result.corners[0]!.x);
     });
 
     it("emits two axes with dx/dy/angleRad/sigmaRad", () => {
         const result = mockChessCornersResult(1);
         const features = chessCornersAlgorithm.toFeatures(result, "run-1");
-        const f = features[0];
+        const f = features[0]!;
         if (f.type === "directed_point") {
             expect(f.axes).toHaveLength(2);
-            expect(f.axes[0].dx).toBeCloseTo(result.corners[0].axes[0].direction.dx, 5);
-            expect(f.axes[0].dy).toBeCloseTo(result.corners[0].axes[0].direction.dy, 5);
-            expect(f.axes[0].angleRad).toBeCloseTo(result.corners[0].axes[0].angle_rad, 5);
-            expect(f.axes[0].sigmaRad).toBeCloseTo(result.corners[0].axes[0].sigma_rad, 5);
-            expect(f.axes[1].dx).toBeCloseTo(result.corners[0].axes[1].direction.dx, 5);
-            expect(f.axes[1].dy).toBeCloseTo(result.corners[0].axes[1].direction.dy, 5);
-            expect(f.axes[1].angleRad).toBeCloseTo(result.corners[0].axes[1].angle_rad, 5);
-            expect(f.axes[1].sigmaRad).toBeCloseTo(result.corners[0].axes[1].sigma_rad, 5);
+            expect(f.axes[0].dx).toBeCloseTo(result.corners[0]!.axes[0].direction.dx, 5);
+            expect(f.axes[0].dy).toBeCloseTo(result.corners[0]!.axes[0].direction.dy, 5);
+            expect(f.axes[0].angleRad).toBeCloseTo(result.corners[0]!.axes[0].angle_rad, 5);
+            expect(f.axes[0].sigmaRad).toBeCloseTo(result.corners[0]!.axes[0].fit_std_error_rad, 5);
+            expect(f.axes[1].dx).toBeCloseTo(result.corners[0]!.axes[1].direction.dx, 5);
+            expect(f.axes[1].dy).toBeCloseTo(result.corners[0]!.axes[1].direction.dy, 5);
+            expect(f.axes[1].angleRad).toBeCloseTo(result.corners[0]!.axes[1].angle_rad, 5);
+            expect(f.axes[1].sigmaRad).toBeCloseTo(result.corners[0]!.axes[1].fit_std_error_rad, 5);
         }
     });
 
@@ -222,7 +255,7 @@ describe("chessCornersAlgorithm", () => {
         const result = mockChessCornersResult(0);
         const diags = chessCornersAlgorithm.diagnostics!(result);
         expect(diags.length).toBe(1);
-        expect(diags[0].level).toBe("warning");
+        expect(diags[0]!.level).toBe("warning");
     });
 
     it("diagnostics empty on successful detection", () => {
@@ -240,8 +273,9 @@ describe("chessboardAlgorithm", () => {
     });
 
     it("run() throws", async () => {
-        await expect(chessboardAlgorithm.run({ key: "", storageMode: "local", config: {} }))
-            .rejects.toThrow("only available via client-side WASM");
+        await expect(chessboardAlgorithm.run({ key: "", storageMode: "local", config: {} })).rejects.toThrow(
+            "only available via client-side WASM",
+        );
     });
 
     it("toFeatures maps corners to point features", () => {
@@ -283,8 +317,9 @@ describe("charucoAlgorithm", () => {
     });
 
     it("run() throws", async () => {
-        await expect(charucoAlgorithm.run({ key: "", storageMode: "local", config: {} }))
-            .rejects.toThrow("only available via client-side WASM");
+        await expect(charucoAlgorithm.run({ key: "", storageMode: "local", config: {} })).rejects.toThrow(
+            "only available via client-side WASM",
+        );
     });
 
     it("toFeatures maps corners and markers", () => {
@@ -324,8 +359,9 @@ describe("markerboardAlgorithm", () => {
     });
 
     it("run() throws", async () => {
-        await expect(markerboardAlgorithm.run({ key: "", storageMode: "local", config: {} }))
-            .rejects.toThrow("only available via client-side WASM");
+        await expect(markerboardAlgorithm.run({ key: "", storageMode: "local", config: {} })).rejects.toThrow(
+            "only available via client-side WASM",
+        );
     });
 
     it("toFeatures maps corners", () => {
@@ -349,8 +385,9 @@ describe("ringgridAlgorithm", () => {
     });
 
     it("run() throws", async () => {
-        await expect(ringgridAlgorithm.run({ key: "", storageMode: "local", config: {} }))
-            .rejects.toThrow("only available via client-side WASM");
+        await expect(ringgridAlgorithm.run({ key: "", storageMode: "local", config: {} })).rejects.toThrow(
+            "only available via client-side WASM",
+        );
     });
 
     it("toFeatures maps markers to ring_marker features", () => {
@@ -365,42 +402,21 @@ describe("ringgridAlgorithm", () => {
         }
     });
 
-    it("applies +0.5 pixel offset to center", () => {
+    it("keeps the detector's own centre coordinates", () => {
         const result = mockRinggridResult(1);
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
-        const f = features[0];
-        expect(f.type === "ring_marker" && f.x).toBe(result.markers[0].center.x + 0.5);
+        const f = features[0]!;
+        expect(f.type === "ring_marker" && f.x).toBe(result.markers[0]!.center.x);
     });
 
     it("converts ellipse angle from radians to degrees", () => {
         const result = mockRinggridResult(1);
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
-        const f = features[0];
+        const f = features[0]!;
         if (f.type === "ring_marker") {
-            const expected = result.markers[0].ellipse_outer.angle * (180 / Math.PI);
+            const expected = result.markers[0]!.ellipse_outer.angle * (180 / Math.PI);
             expect(f.outerEllipse.angleDeg).toBeCloseTo(expected, 5);
         }
-    });
-
-    it("board JSON overrides only user-configured fields", () => {
-        // The adapter sends only user fields; the worker merges with WASM defaults
-        // that provide `schema`, `name`, etc.
-        const config = ringgridAlgorithm.initialConfig as { rows: number; longRowCols: number; pitchMm: number; markerOuterRadiusMm: number; markerInnerRadiusMm: number; markerRingWidthMm: number };
-        const boardJson = JSON.stringify({
-            rows: config.rows,
-            long_row_cols: config.longRowCols,
-            pitch_mm: config.pitchMm,
-            marker_outer_radius_mm: config.markerOuterRadiusMm,
-            marker_inner_radius_mm: config.markerInnerRadiusMm,
-            marker_ring_width_mm: config.markerRingWidthMm,
-        });
-        const parsed = JSON.parse(boardJson);
-        // User fields are present
-        expect(parsed.rows).toBe(15);
-        expect(parsed.long_row_cols).toBe(14);
-        // Schema/name are NOT in user JSON — the worker merges from defaults
-        expect(parsed.schema).toBeUndefined();
-        expect(parsed.name).toBeUndefined();
     });
 
     it("summary returns marker count and runtime", () => {
@@ -416,7 +432,7 @@ describe("ringgridAlgorithm", () => {
         const result = mockRinggridResult(0);
         const diags = ringgridAlgorithm.diagnostics!(result);
         expect(diags.length).toBe(1);
-        expect(diags[0].level).toBe("warning");
+        expect(diags[0]!.level).toBe("warning");
     });
 
     it("handles empty result", () => {
@@ -425,24 +441,24 @@ describe("ringgridAlgorithm", () => {
         expect(features).toHaveLength(0);
     });
 
-    it("assigns ringgrid_decoded kind to decoded markers", () => {
+    it("assigns ringgrid_decoded kind to identified markers", () => {
         const result = mockRinggridResult(1);
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].meta?.kind).toBe("ringgrid_decoded");
+        expect(features[0]!.meta?.kind).toBe("ringgrid_decoded");
     });
 
-    it("assigns ringgrid_proposal kind to undecoded markers", () => {
+    it("assigns ringgrid_proposal kind to unidentified markers", () => {
         const result = mockRinggridResult(1);
-        result.markers[0].decode = null;
+        result.markers[0]!.id = null;
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].meta?.kind).toBe("ringgrid_proposal");
+        expect(features[0]!.meta?.kind).toBe("ringgrid_proposal");
     });
 
     it("generates unique feature IDs even with duplicate marker IDs", () => {
         const result = mockRinggridResult(3);
-        result.markers[0].decode = null;
-        result.markers[1].decode = null;
-        result.markers[2].decode = null;
+        result.markers[0]!.decode = null;
+        result.markers[1]!.decode = null;
+        result.markers[2]!.decode = null;
         const features = ringgridAlgorithm.toFeatures(result, "run-1");
         const ids = features.map((f) => f.id);
         expect(new Set(ids).size).toBe(ids.length);
@@ -457,8 +473,9 @@ describe("radsymAlgorithm", () => {
     });
 
     it("run() throws", async () => {
-        await expect(radsymAlgorithm.run({ key: "", storageMode: "local", config: {} }))
-            .rejects.toThrow("only available via client-side WASM");
+        await expect(radsymAlgorithm.run({ key: "", storageMode: "local", config: {} })).rejects.toThrow(
+            "only available via client-side WASM",
+        );
     });
 
     it("toFeatures maps proposals to point features", () => {
@@ -473,16 +490,16 @@ describe("radsymAlgorithm", () => {
         }
     });
 
-    it("applies +0.5 pixel offset", () => {
+    it("keeps the detector's own coordinates (no half-pixel offset)", () => {
         const result = mockRadsymResult(1);
         const features = radsymAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].type === "point" && features[0].x).toBe(result.circles[0].x + 0.5);
+        expect(features[0]!.type === "point" && features[0].x).toBe(result.circles[0]!.x);
     });
 
     it("preserves score in meta", () => {
         const result = mockRadsymResult(1);
         const features = radsymAlgorithm.toFeatures(result, "run-1");
-        expect(features[0].meta?.score).toBe(result.circles[0].score);
+        expect(features[0]!.meta?.score).toBe(result.circles[0]!.score);
     });
 
     it("summary returns count and runtime", () => {
@@ -498,7 +515,7 @@ describe("radsymAlgorithm", () => {
         const result = mockRadsymResult(0);
         const diags = radsymAlgorithm.diagnostics!(result);
         expect(diags.length).toBe(1);
-        expect(diags[0].level).toBe("warning");
+        expect(diags[0]!.level).toBe("warning");
     });
 
     it("handles empty result", () => {
@@ -559,8 +576,9 @@ describe("puzzleboardAlgorithm", () => {
     });
 
     it("run() throws", async () => {
-        await expect(puzzleboardAlgorithm.run({ key: "", storageMode: "local", config: {} }))
-            .rejects.toThrow("only available via client-side WASM");
+        await expect(puzzleboardAlgorithm.run({ key: "", storageMode: "local", config: {} })).rejects.toThrow(
+            "only available via client-side WASM",
+        );
     });
 
     it("toFeatures emits labeled_point features with gridIndex and masterId", () => {
@@ -574,15 +592,15 @@ describe("puzzleboardAlgorithm", () => {
             expect(f.runId).toBe("run-pb");
             expect(f.readonly).toBe(true);
         }
-        const first = features[0] as import("../../../../store/editor/useEditorStore").LabeledPointFeature;
+        const first = features[0] as LabeledPointFeature;
         expect(first.gridIndex).toEqual({ i: 0, j: 0 });
         expect(first.masterId).toBe(10);
     });
 
     it("skips corners with null grid or null master_id", () => {
         const result = mockPuzzleboardResult(3);
-        result.detection.corners[1].grid = null;
-        result.detection.corners[2].master_id = null;
+        result.detection.corners[1]!.grid = null;
+        result.detection.corners[2]!.master_id = null;
         const features = puzzleboardAlgorithm.toFeatures(result, "run-pb");
         expect(features).toHaveLength(1);
     });
@@ -592,14 +610,14 @@ describe("puzzleboardAlgorithm", () => {
         const summary = puzzleboardAlgorithm.summary(result);
         expect(summary).toHaveLength(5);
         expect(summary[0]).toEqual({ label: "Corners", value: "10" });
-        expect(summary[1].label).toBe("Mean confidence");
-        expect(summary[2].label).toBe("Bit error rate");
+        expect(summary[1]!.label).toBe("Mean confidence");
+        expect(summary[2]!.label).toBe("Bit error rate");
         expect(summary[3]).toEqual({ label: "Master origin", value: "(3, 2)" });
-        expect(summary[4].label).toBe("Runtime");
+        expect(summary[4]!.label).toBe("Runtime");
     });
 
     it("diagnostics warns on high bit error rate paired with low confidence", () => {
-        const result = mockPuzzleboardResult(10, 0.30);
+        const result = mockPuzzleboardResult(10, 0.3);
         result.summary.mean_confidence = 0.5;
         const diags = puzzleboardAlgorithm.diagnostics!(result);
         expect(diags.some((d) => d.level === "warning" && d.message.includes("bit error rate"))).toBe(true);
@@ -607,7 +625,7 @@ describe("puzzleboardAlgorithm", () => {
 
     it("diagnostics stays quiet when bit error rate is high but confidence is high", () => {
         // Detection succeeded with high mean confidence — even a moderately high BER is not actionable.
-        const result = mockPuzzleboardResult(10, 0.30);
+        const result = mockPuzzleboardResult(10, 0.3);
         result.summary.mean_confidence = 0.85;
         const diags = puzzleboardAlgorithm.diagnostics!(result);
         expect(diags.some((d) => d.level === "warning" && d.message.includes("bit error rate"))).toBe(false);

@@ -33,7 +33,7 @@ import { NetworkToolbar } from "./NetworkToolbar.tsx";
 import { FocusCard } from "./FocusCard.tsx";
 import { Legend } from "./Legend.tsx";
 import { Minimap } from "./Minimap.tsx";
-import { ZoomButtons } from "./ZoomButtons.tsx";
+import ZoomControls from "../../shared/ZoomControls.tsx";
 
 export interface PeopleNetworkProps {
     /** Focused person (canonical author id) or undefined for the overview. */
@@ -159,10 +159,16 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
                 extraLimit,
                 tieBudget,
             );
-            return { labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx), unlabelledTies: unlabelled };
+            return {
+                labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx),
+                unlabelledTies: unlabelled,
+            };
         }
         const candidates = selectOverviewLabelCandidates(labelPeople, labelMode);
-        return { labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx), unlabelledTies: [] as CoauthorTie[] };
+        return {
+            labels: layoutLabels(candidates, canvas, reserved, contentPerScreenPx),
+            unlabelledTies: [] as CoauthorTie[],
+        };
     }, [labelPeople, activeFocusId, ties, labelMode, cameraBounds, contentPerScreenPx, isPhone]);
 
     // Hover (mouse) / tap-reveal (touch, first tap) shows an unlabelled tie's
@@ -182,7 +188,7 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
     // ── Render ───────────────────────────────────────────────────────────────
 
     return (
-        <div className="w-full h-[min(72vh,620px)] md:h-[700px] rounded-lg border border-border bg-surface overflow-hidden flex flex-col">
+        <div className="w-full h-[min(72vh,620px)] md:h-[700px] rounded-panel border border-line bg-surface overflow-hidden flex flex-col">
             <NetworkToolbar
                 scholarly={{ authors: scholarly?.authors ?? {} }}
                 authorsIdx={{ authors: authorsIdx.authors }}
@@ -247,7 +253,14 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
                                 />
                             )}
                             <Legend isPhone={isPhone} />
-                            <ZoomButtons onZoomIn={() => zoomAroundCenter(1.25)} onZoomOut={() => zoomAroundCenter(1 / 1.25)} onFit={() => fitView(true)} />
+                            <ZoomControls
+                                orientation="column"
+                                className="absolute bottom-3 right-3 gap-1.5"
+                                buttonClassName="size-11"
+                                onZoomIn={() => zoomAroundCenter(1.25)}
+                                onZoomOut={() => zoomAroundCenter(1 / 1.25)}
+                                onFit={() => fitView(true)}
+                            />
                             {activeFocusId && focusPerson && (
                                 <FocusCard
                                     id={activeFocusId}
@@ -268,12 +281,12 @@ export default function PeopleNetwork({ focusId, onFocusChange }: PeopleNetworkP
                     }
                 />
                 {status === "error" && (
-                    <div className="absolute inset-0 grid place-items-center bg-surface/80 text-sm text-muted-foreground">
+                    <div className="absolute inset-0 grid place-items-center bg-surface/80 text-sm text-fg-muted">
                         Couldn&apos;t load the co-author network.
                     </div>
                 )}
                 {status !== "ready" && status !== "error" && (
-                    <div className="absolute inset-0 grid place-items-center bg-surface/80 text-sm text-muted-foreground">
+                    <div className="absolute inset-0 grid place-items-center bg-surface/80 text-sm text-fg-muted">
                         Loading co-author network…
                     </div>
                 )}

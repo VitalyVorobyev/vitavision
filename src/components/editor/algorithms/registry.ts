@@ -52,20 +52,13 @@ export const DEFAULT_ALGORITHM_ID = "chess-corners";
 
 // Per-id dynamic import map. Each import() creates its own chunk.
 const LOADERS: Record<string, () => Promise<AlgorithmDefinition>> = {
-    "chess-corners": () =>
-        import("./chessCorners/adapter").then((m) => m.chessCornersAlgorithm),
-    chessboard: () =>
-        import("./calibrationTargets/chessboardAdapter").then((m) => m.chessboardAlgorithm),
-    charuco: () =>
-        import("./calibrationTargets/charucoAdapter").then((m) => m.charucoAlgorithm),
-    markerboard: () =>
-        import("./calibrationTargets/markerboardAdapter").then((m) => m.markerboardAlgorithm),
-    ringgrid: () =>
-        import("./ringgrid/adapter").then((m) => m.ringgridAlgorithm),
-    radsym: () =>
-        import("./radsym/adapter").then((m) => m.radsymAlgorithm),
-    puzzleboard: () =>
-        import("./puzzleboard/adapter").then((m) => m.puzzleboardAlgorithm),
+    "chess-corners": () => import("./chessCorners/adapter").then((m) => m.chessCornersAlgorithm),
+    chessboard: () => import("./calibrationTargets/chessboardAdapter").then((m) => m.chessboardAlgorithm),
+    charuco: () => import("./calibrationTargets/charucoAdapter").then((m) => m.charucoAlgorithm),
+    markerboard: () => import("./calibrationTargets/markerboardAdapter").then((m) => m.markerboardAlgorithm),
+    ringgrid: () => import("./ringgrid/adapter").then((m) => m.ringgridAlgorithm),
+    radsym: () => import("./radsym/adapter").then((m) => m.radsymAlgorithm),
+    puzzleboard: () => import("./puzzleboard/adapter").then((m) => m.puzzleboardAlgorithm),
 };
 
 // Promise cache — guarantees each adapter module is loaded at most once.
@@ -82,8 +75,9 @@ export function loadAlgorithm(id: string): Promise<AlgorithmDefinition> {
     const cached = pendingLoads.get(id);
     if (cached) return cached;
 
-    const loader = LOADERS[id] ?? LOADERS[DEFAULT_ALGORITHM_ID];
     const resolvedId = LOADERS[id] ? id : DEFAULT_ALGORITHM_ID;
+    // DEFAULT_ALGORITHM_ID is always a key of LOADERS (declared above).
+    const loader = LOADERS[resolvedId]!;
 
     const promise = loader().then((algo) => {
         loadedAlgorithms.set(resolvedId, algo);

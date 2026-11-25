@@ -15,12 +15,12 @@ export function Legend({ isPhone }: LegendProps) {
     const open = !isPhone || expanded;
 
     return (
-        <div className="absolute left-3 bottom-3 max-w-[calc(100%-5rem)] rounded-md border border-border bg-surface/95 backdrop-blur px-3 py-2 text-[11px] shadow-sm">
+        <div className="absolute left-3 bottom-3 max-w-[calc(100%-5rem)] rounded-control border border-line bg-surface/95 backdrop-blur px-3 py-2 text-[11px] shadow-sm">
             {isPhone && (
                 <button
                     type="button"
                     onClick={() => setExpanded((v) => !v)}
-                    className="flex items-center gap-1 text-muted-foreground font-medium"
+                    className="flex items-center gap-1 text-fg-muted font-medium"
                     aria-expanded={expanded}
                 >
                     Legend
@@ -30,12 +30,12 @@ export function Legend({ isPhone }: LegendProps) {
             {open && (
                 <div className="flex flex-col gap-1 mt-1 first:mt-0">
                     {GROUPS.map((g) => (
-                        <span key={g.group} className="flex items-center gap-1.5 text-foreground">
+                        <span key={g.group} className="flex items-center gap-1.5 text-fg">
                             <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: g.color }} />
                             {g.label}
                         </span>
                     ))}
-                    <span className="text-muted-foreground pt-0.5">Node size = Atlas pages · edge = shared papers</span>
+                    <span className="text-fg-muted pt-0.5">Node size = Atlas pages · edge = shared papers</span>
                 </div>
             )}
         </div>

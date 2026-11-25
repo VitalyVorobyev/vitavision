@@ -17,6 +17,9 @@
   name: "Aidan N. Gomez"
   orcid: "0000-0001-5601-5437"
 
+- id: A5095094437
+  name: "Aimira Baitieva"
+
 - id: A5077791956
   name: "Aishwarya Kamath"
 
@@ -141,6 +144,9 @@
 - id: A5108691882
   name: "Apoorv Vyas"
 
+- id: A5092031241
+  name: "Arian Mousakhan"
+
 - id: A5107859338
   name: "Armand Joulin"
 
@@ -212,6 +218,10 @@
   name: "Bin Xiao"
   orcid: "0000-0001-6477-5911"
 
+- id: A5000290451
+  name: "Bin-Bin Gao"
+  orcid: "0000-0003-2572-8156"
+
 - id: A5032599820
   name: "Bingyi Kang"
   orcid: "0000-0003-2637-4695"
@@ -243,6 +253,9 @@
 - id: A5101589005
   name: "Bowen Cheng"
   orcid: "0000-0002-4348-3845"
+
+- id: A5089665295
+  name: "Bozhong Zheng"
 
 - id: A5008294855
   name: "Brian G. Schunck"
@@ -317,6 +330,10 @@
 
 - id: A5043890037
   name: "Charles Loop"
+
+- id: A5023834700
+  name: "Chengjie Wang"
+  orcid: "0000-0003-4216-8090"
 
 - id: A5043279771
   name: "Chloe Rolland"
@@ -395,8 +412,16 @@
   name: "Daniel Y. Fu"
   orcid: "0000-0002-2500-2577"
 
+- id: A5024699185
+  name: "Danijel Skočaj"
+  orcid: "0000-0002-5290-4736"
+
 - id: A5100972569
   name: "David Hafner"
+
+- id: A5086144380
+  name: "David Hurych"
+  orcid: "0000-0002-0580-4038"
 
 - id: A5055202003
   name: "David Lowe"
@@ -432,6 +457,10 @@
 - id: A5004353237
   name: "Deva Ramanan"
   orcid: "0009-0008-9180-8983"
+
+- id: A5025671893
+  name: "Dick Ameln"
+  orcid: "0000-0002-1887-1483"
 
 - id: A5120696483
   name: "Didac Suris"
@@ -702,11 +731,14 @@
 - id: A5065231880
   name: "Jamie Kiros"
 
+- id: A5018151384
+  name: "Jan‐Michael Frahm"
+
 - id: A5010104340
   name: "Jana Nosková"
 
-- id: A5018151384
-  name: "Jan‐Michael Frahm"
+- id: A5002497004
+  name: "Jawad Tayyub"
 
 - id: A5052176965
   name: "Jean-Bastien Grill"
@@ -785,6 +817,10 @@
 - id: A5019616738
   name: "Joan Lasenby"
   orcid: "0000-0002-0571-0218"
+
+- id: A5026041233
+  name: "João P C Bertoldo"
+  orcid: "0000-0002-9512-772X"
 
 - id: A5104090766
   name: "Joaquin Zepeda"
@@ -1027,6 +1063,10 @@
   name: "Mathilde Caron"
   orcid: "0000-0001-6594-6698"
 
+- id: A5040408220
+  name: "Matic Fučka"
+  orcid: "0009-0007-9654-8386"
+
 - id: A5082762217
   name: "Matthew J. Stephens"
   orcid: "0000-0001-7593-4578"
@@ -1099,6 +1139,9 @@
 - id: A5021943393
   name: "Michiel de Jong"
   orcid: "0000-0002-2153-3362"
+
+- id: A5139671087
+  name: "Min Xu"
 
 - id: A5100730802
   name: "Minghao Chen"
@@ -1393,6 +1436,9 @@
 - id: A5017248470
   name: "Russell Howes"
 
+- id: A5026911576
+  name: "Ryuji Imamura"
+
 - id: A5062061555
   name: "S. Ahmad"
   orcid: "0000-0001-7165-7024"
@@ -1407,6 +1453,10 @@
 - id: A5102416863
   name: "Saining Xie"
 
+- id: A5038518813
+  name: "Samet Akçay"
+  orcid: "0000-0003-3334-7118"
+
 - id: A5083670972
   name: "Sami S. Brandt"
   orcid: "0000-0003-2141-9815"
@@ -1417,6 +1467,9 @@
 - id: A5046849436
   name: "Santosh Divvala"
   orcid: "0000-0003-4042-5874"
+
+- id: A5104153935
+  name: "Sassan Mokhtar"
 
 - id: A5059110895
   name: "Scott Reed"
@@ -1469,6 +1522,9 @@
   name: "Shibo He"
   orcid: "0000-0002-1505-6766"
 
+- id: A5105783109
+  name: "Shota Sugawara"
+
 - id: A5006168104
   name: "Shoubhik Debnath"
 
@@ -1479,6 +1535,10 @@
 - id: A5103227553
   name: "Shuzhe Wang"
   orcid: "0000-0003-1281-4370"
+
+- id: A5064946819
+  name: "Silvio Galesso"
+  orcid: "0009-0007-0249-6029"
 
 - id: A5056175786
   name: "Simon Donné"
@@ -1617,9 +1677,6 @@
 - id: A5062321523
   name: "Tom Wehrbein"
 
-- id: A5127845778
-  name: "Tri Dao"
-
 - id: A5067498868
   name: "Tomasz Malisiewicz"
 
@@ -1632,6 +1689,9 @@
 - id: A5029105520
   name: "Trevor Darrell"
   orcid: "0000-0001-5453-8533"
+
+- id: A5127845778
+  name: "Tri Dao"
 
 - id: A5018690028
   name: "Triantafyllos Afouras"
@@ -1659,6 +1719,9 @@
   name: "Vasu Sharma"
   orcid: "0009-0006-4348-7412"
 
+- id: A5074326665
+  name: "Victor Besnier"
+
 - id: A5004650249
   name: "Vijay Vasudevan"
 
@@ -1676,6 +1739,9 @@
 - id: A5013813527
   name: "Vincent Vanhoucke"
   orcid: "0000-0003-0544-2791"
+
+- id: A5078364765
+  name: "Vitjan Zavrtanik"
 
 - id: A5021390142
   name: "Vladimir Kolmogorov"
@@ -1734,12 +1800,24 @@
   name: "Xiaogang Xu"
   orcid: "0000-0003-4364-5856"
 
+- id: A5018803784
+  name: "Xiaohao Xu"
+  orcid: "0000-0002-6750-9704"
+
 - id: A5071668416
   name: "Xiaohua Zhai"
+
+- id: A5053905081
+  name: "Xiaonan Huang"
+  orcid: "0000-0001-8292-8862"
 
 - id: A5101814482
   name: "Xiaowei Zhou"
   orcid: "0000-0003-1926-5597"
+
+- id: A5020923609
+  name: "Ximiao Zhang"
+  orcid: "0000-0002-6450-0915"
 
 - id: A5037191476
   name: "Xinggang Wang"
@@ -1802,6 +1880,14 @@
 - id: A5100711802
   name: "Yiming Zhou"
   orcid: "0000-0001-6111-3904"
+
+- id: A5085431435
+  name: "Xiuzhuang Zhou"
+  orcid: "0000-0003-1458-4118"
+
+- id: A5111513090
+  name: "Yingna Wu"
+  orcid: "0009-0005-4858-3852"
 
 - id: A5009248953
   name: "Yixuan Wei"

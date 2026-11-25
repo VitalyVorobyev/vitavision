@@ -9,13 +9,13 @@ import type {
 interface StructuredArticleFrontmatter {
     title: string;
     summary: string;
-    author?: string;
+    author?: string | undefined;
     date: string;
-    updated?: string;
-    coverImage?: string;
+    updated?: string | undefined;
+    coverImage?: string | undefined;
     tags: string[];
-    difficulty?: "beginner" | "intermediate" | "advanced";
-    readingTimeMinutes?: number;
+    difficulty?: "beginner" | "intermediate" | "advanced" | undefined;
+    readingTimeMinutes?: number | undefined;
 }
 
 function buildStructuredArticleJsonLd(
@@ -39,65 +39,30 @@ function buildStructuredArticleJsonLd(
     };
 }
 
-export function buildBlogJsonLd(
-    frontmatter: BlogFrontmatterSerialized,
-    slug: string,
-): Record<string, unknown> {
-    return buildStructuredArticleJsonLd(
-        "BlogPosting",
-        frontmatter,
-        `/blog/${slug}`,
-    );
+export function buildBlogJsonLd(frontmatter: BlogFrontmatterSerialized, slug: string): Record<string, unknown> {
+    return buildStructuredArticleJsonLd("BlogPosting", frontmatter, `/blog/${slug}`);
 }
 
 export function buildAlgorithmJsonLd(
     frontmatter: AlgorithmFrontmatterSerialized,
     slug: string,
 ): Record<string, unknown> {
-    return buildStructuredArticleJsonLd(
-        "TechArticle",
-        frontmatter,
-        `/atlas/${slug}`,
-    );
+    return buildStructuredArticleJsonLd("TechArticle", frontmatter, `/atlas/${slug}`);
 }
 
-export function buildDemoJsonLd(
-    frontmatter: DemoFrontmatterSerialized,
-    slug: string,
-): Record<string, unknown> {
-    return buildStructuredArticleJsonLd(
-        "TechArticle",
-        frontmatter,
-        `/demos/${slug}`,
-    );
+export function buildDemoJsonLd(frontmatter: DemoFrontmatterSerialized, slug: string): Record<string, unknown> {
+    return buildStructuredArticleJsonLd("TechArticle", frontmatter, `/demos/${slug}`);
 }
 
-export function buildModelJsonLd(
-    frontmatter: ModelFrontmatterSerialized,
-    slug: string,
-): Record<string, unknown> {
-    return buildStructuredArticleJsonLd(
-        "TechArticle",
-        frontmatter,
-        `/atlas/${slug}`,
-    );
+export function buildModelJsonLd(frontmatter: ModelFrontmatterSerialized, slug: string): Record<string, unknown> {
+    return buildStructuredArticleJsonLd("TechArticle", frontmatter, `/atlas/${slug}`);
 }
 
-export function buildConceptJsonLd(
-    frontmatter: ConceptFrontmatterSerialized,
-    slug: string,
-): Record<string, unknown> {
-    return buildStructuredArticleJsonLd(
-        "TechArticle",
-        frontmatter,
-        `/atlas/${slug}`,
-    );
+export function buildConceptJsonLd(frontmatter: ConceptFrontmatterSerialized, slug: string): Record<string, unknown> {
+    return buildStructuredArticleJsonLd("TechArticle", frontmatter, `/atlas/${slug}`);
 }
 
-export function comparePublicationDateDesc<T extends { frontmatter: { date: string } }>(
-    a: T,
-    b: T,
-): number {
+export function comparePublicationDateDesc<T extends { frontmatter: { date: string } }>(a: T, b: T): number {
     return b.frontmatter.date.localeCompare(a.frontmatter.date);
 }
 

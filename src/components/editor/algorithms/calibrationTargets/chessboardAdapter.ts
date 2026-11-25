@@ -1,32 +1,26 @@
-import type { AlgorithmDefinition, AlgorithmPreset, DiagnosticEntry } from "../types";
+import type { AlgorithmDefinition, DiagnosticEntry } from "../types";
 import type { CalibrationTargetResult } from "../../../../lib/types";
 import { detectChessboardWasm } from "../../../../lib/wasm/wasmWorkerProxy";
 import { calibrationCornerFeatures, calibrationSummary } from "./shared";
-import ChessboardConfigForm, { type ChessboardConfig } from "./ChessboardConfigForm";
-import ChessboardOverlay from "../../canvas/overlays/ChessboardOverlay";
-
-const initialConfig: ChessboardConfig = {
-    expectedRows: 7,
-    expectedCols: 11,
-    minCornerStrength: 15,
-    completenessThreshold: 0.1,
-    maxFitRmsRatio: 0.5,
-    peakMinSeparationDeg: 60,
-    minPeakWeightFraction: 0.02,
-};
-
-const presets: AlgorithmPreset[] = [
-    { label: "7×11 board", description: "Standard calibration board", config: { ...initialConfig } },
-    { label: "6×9 board", description: "Common smaller board", config: { ...initialConfig, expectedRows: 6, expectedCols: 9 } },
-    { label: "5×8 board", config: { ...initialConfig, expectedRows: 5, expectedCols: 8 } },
-];
+import { createConfigForm } from "../createConfigForm";
+import { initialConfig } from "./chessboard/config";
+import { schema } from "./chessboard/schema";
+import { ui } from "./chessboard/ui";
 
 const toDiagnostics = (result: CalibrationTargetResult): DiagnosticEntry[] => {
     const entries: DiagnosticEntry[] = [];
     if (result.summary.corner_count === 0) {
-        entries.push({ level: "error", message: "No corners detected", detail: "Check that the image contains a chessboard pattern, or lower the corner strength threshold." });
+        entries.push({
+            level: "error",
+            message: "No corners detected",
+            detail: "Check that the image contains a chessboard pattern, or lower the corner strength threshold.",
+        });
     } else if (result.summary.corner_count < 10) {
-        entries.push({ level: "warning", message: `Low corner count: ${result.summary.corner_count}`, detail: "The board may be partially occluded or the expected size may be wrong." });
+        entries.push({
+            level: "warning",
+            message: `Low corner count: ${result.summary.corner_count}`,
+            detail: "The board may be partially occluded or the expected size may be wrong.",
+        });
     }
     return entries;
 };
@@ -36,53 +30,14 @@ export const chessboardAlgorithm: AlgorithmDefinition = {
     title: "Chessboard",
     description: "Detect labeled chessboard corner grid with subpixel accuracy.",
     initialConfig,
-    presets,
     executionModes: ["wasm"],
     sampleDefaults: {
-        chessboard: {
-            expectedRows: 7,
-            expectedCols: 11,
-            minCornerStrength: 15,
-            completenessThreshold: 0.1,
-            maxFitRmsRatio: 0.5,
-            peakMinSeparationDeg: 60,
-            minPeakWeightFraction: 0.02,
-        },
+        chessboard: { ...initialConfig },
     },
-    ConfigComponent: ChessboardConfigForm as AlgorithmDefinition["ConfigComponent"],
-    run: async () => {
-        throw new Error("Chessboard detection is only available via client-side WASM.");
-    },
-    runWasm: async ({ pixels, width, height, config }) => {
-        const c = config as ChessboardConfig;
-        return detectChessboardWasm(pixels, width, height, {
-            // calib-targets 0.11 collapsed the tagged
-            // `threshold: { relative | absolute }` enum back to a plain f32,
-            // dropping relative mode entirely — the value is now an ABSOLUTE
-            // floor on the raw ChESS response (default_chess_config() ships 15).
-            // Passing the old `{ relative: v }` object throws
-            // "invalid type: JsValue(Object(...)), expected f32" at detect time.
-            chessCfg: { threshold: c.minCornerStrength },
-            params: {
-                min_corner_strength: c.minCornerStrength,
-                completeness_threshold: c.completenessThreshold,
-                expected_rows: c.expectedRows,
-                expected_cols: c.expectedCols,
-                max_fit_rms_ratio: c.maxFitRmsRatio,
-                peak_min_separation_deg: c.peakMinSeparationDeg,
-                min_peak_weight_fraction: c.minPeakWeightFraction,
-                graph: {
-                    min_spacing_pix: 5,
-                    max_spacing_pix: 50,
-                    k_neighbors: 8,
-                    orientation_tolerance_deg: 22.5,
-                },
-            },
-        });
-    },
-    toFeatures: (result, runId) =>
-        calibrationCornerFeatures(result as CalibrationTargetResult, runId, "chessboard"),
+    ConfigComponent: createConfigForm({ schema, ui }),
+    run: () => Promise.reject(new Error("Chessboard detection is only available via client-side WASM.")),
+    runWasm: ({ pixels, width, height, config }) => detectChessboardWasm(pixels, width, height, config),
+    toFeatures: (result, runId) => calibrationCornerFeatures(result as CalibrationTargetResult, runId, "chessboard"),
     summary: (result) => calibrationSummary(result as CalibrationTargetResult),
     diagnostics: (result) => toDiagnostics(result as CalibrationTargetResult),
-    OverlayComponent: ChessboardOverlay,
 };

@@ -125,11 +125,17 @@ export function linksRule(ctx: ValidationContext): Diagnostic[] {
             if (narrativeMatch) {
                 const slug = narrativeMatch[1];
                 if (!ctx.narrativeSlugs.has(slug)) {
-                    diagnostics.push({ level: "error", message: `[${e.file}] broken link: ${href} (narrative slug not found)` });
+                    diagnostics.push({
+                        level: "error",
+                        message: `[${e.file}] broken link: ${href} (narrative slug not found)`,
+                    });
                 } else if (frag) {
                     const ids = headingsFor("narrative", slug);
                     if (ids && !ids.has(frag)) {
-                        diagnostics.push({ level: "warning", message: `[${e.file}] broken link: ${href} (anchor "#${frag}" not found on narrative "${slug}")` });
+                        diagnostics.push({
+                            level: "warning",
+                            message: `[${e.file}] broken link: ${href} (anchor "#${frag}" not found on narrative "${slug}")`,
+                        });
                     }
                 }
                 continue;
@@ -139,18 +145,24 @@ export function linksRule(ctx: ValidationContext): Diagnostic[] {
             if (atlasMatch) {
                 const slug = atlasMatch[1];
                 if (!ctx.knownSlugs.has(slug)) {
-                    diagnostics.push({ level: "error", message: `[${e.file}] broken link: ${href} (atlas slug not found)` });
+                    diagnostics.push({
+                        level: "error",
+                        message: `[${e.file}] broken link: ${href} (atlas slug not found)`,
+                    });
                 } else if (frag) {
                     const kind = bySlugKind.has(`algorithm:${slug}`)
                         ? "algorithm"
                         : bySlugKind.has(`model:${slug}`)
-                            ? "model"
-                            : bySlugKind.has(`concept:${slug}`)
-                                ? "concept"
-                                : undefined;
+                          ? "model"
+                          : bySlugKind.has(`concept:${slug}`)
+                            ? "concept"
+                            : undefined;
                     const ids = kind ? headingsFor(kind, slug) : undefined;
                     if (ids && !ids.has(frag)) {
-                        diagnostics.push({ level: "warning", message: `[${e.file}] broken link: ${href} (anchor "#${frag}" not found on atlas page "${slug}")` });
+                        diagnostics.push({
+                            level: "warning",
+                            message: `[${e.file}] broken link: ${href} (anchor "#${frag}" not found on atlas page "${slug}")`,
+                        });
                     }
                 }
                 continue;
@@ -159,7 +171,10 @@ export function linksRule(ctx: ValidationContext): Diagnostic[] {
             const blogMatch = path.match(/^\/blog\/([^/]+)$/);
             if (blogMatch) {
                 if (!ctx.blogSlugs.has(blogMatch[1])) {
-                    diagnostics.push({ level: "error", message: `[${e.file}] broken link: ${href} (blog slug not found)` });
+                    diagnostics.push({
+                        level: "error",
+                        message: `[${e.file}] broken link: ${href} (blog slug not found)`,
+                    });
                 }
                 continue;
             }
@@ -167,7 +182,10 @@ export function linksRule(ctx: ValidationContext): Diagnostic[] {
             const demoMatch = path.match(/^\/demos\/([^/]+)$/);
             if (demoMatch) {
                 if (!ctx.demoSlugs.has(demoMatch[1])) {
-                    diagnostics.push({ level: "error", message: `[${e.file}] broken link: ${href} (demo slug not found)` });
+                    diagnostics.push({
+                        level: "error",
+                        message: `[${e.file}] broken link: ${href} (demo slug not found)`,
+                    });
                 }
                 continue;
             }
@@ -175,7 +193,10 @@ export function linksRule(ctx: ValidationContext): Diagnostic[] {
             const authorMatch = path.match(/^\/authors\/([^/]+)$/);
             if (authorMatch) {
                 if (!ctx.authorIds.has(authorMatch[1])) {
-                    diagnostics.push({ level: "error", message: `[${e.file}] broken link: ${href} (author id not found)` });
+                    diagnostics.push({
+                        level: "error",
+                        message: `[${e.file}] broken link: ${href} (author id not found)`,
+                    });
                 }
                 continue;
             }
@@ -183,7 +204,10 @@ export function linksRule(ctx: ValidationContext): Diagnostic[] {
             const paperMatch = path.match(/^\/papers\/([^/]+)$/);
             if (paperMatch) {
                 if (!ctx.paperYears.has(paperMatch[1])) {
-                    diagnostics.push({ level: "error", message: `[${e.file}] broken link: ${href} (registry paper not found)` });
+                    diagnostics.push({
+                        level: "error",
+                        message: `[${e.file}] broken link: ${href} (registry paper not found)`,
+                    });
                 }
                 continue;
             }

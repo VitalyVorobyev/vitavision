@@ -6,8 +6,9 @@ function generateId(): string {
     }
     const bytes = new Uint8Array(16);
     crypto.getRandomValues(bytes);
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    // `bytes` is a fixed 16-byte buffer, so indices 6 and 8 are in bounds.
+    bytes[6] = (bytes[6]! & 0x0f) | 0x40;
+    bytes[8] = (bytes[8]! & 0x3f) | 0x80;
     const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
@@ -20,24 +21,25 @@ const baseFeatureSchema = z.object({
     readonly: z.boolean().optional(),
     color: z.string().optional(),
     label: z.string().optional(),
-    meta: z.object({
-        kind: z.string().optional(),
-        score: z.number().optional(),
-        grid: z.object({ i: z.number(), j: z.number() }).optional(),
-        gridCell: z.object({ gx: z.number(), gy: z.number() }).optional(),
-        cornerId: z.number().nullable().optional(),
-        markerId: z.number().nullable().optional(),
-        targetPosition: z.object({ x: z.number(), y: z.number() }).nullable().optional(),
-        rotation: z.number().optional(),
-        hamming: z.number().optional(),
-        borderScore: z.number().optional(),
-        code: z.number().optional(),
-        inverted: z.boolean().optional(),
-        polarity: z.string().optional(),
-        contrast: z.number().optional(),
-        distanceCells: z.number().nullable().optional(),
-        offsetCells: z.object({ di: z.number(), dj: z.number() }).nullable().optional(),
-    }).optional(),
+    meta: z
+        .object({
+            kind: z.string().optional(),
+            score: z.number().optional(),
+            grid: z.object({ i: z.number(), j: z.number() }).optional(),
+            gridCell: z.object({ gx: z.number(), gy: z.number() }).optional(),
+            cornerId: z.number().nullable().optional(),
+            markerId: z.number().nullable().optional(),
+            targetPosition: z.object({ x: z.number(), y: z.number() }).nullable().optional(),
+            rotation: z.number().optional(),
+            hamming: z.number().optional(),
+            borderScore: z.number().optional(),
+            code: z.number().optional(),
+            inverted: z.boolean().optional(),
+            polarity: z.string().optional(),
+            contrast: z.number().optional(),
+            offsetCells: z.object({ di: z.number(), dj: z.number() }).nullable().optional(),
+        })
+        .optional(),
 });
 
 const pointFeatureSchema = baseFeatureSchema.extend({
@@ -118,10 +120,7 @@ const arucoMarkerFeatureSchema = baseFeatureSchema.extend({
     type: z.literal("aruco_marker"),
     x: z.number(),
     y: z.number(),
-    corners: z.tuple([
-        z.number(), z.number(), z.number(), z.number(),
-        z.number(), z.number(), z.number(), z.number(),
-    ]),
+    corners: z.tuple([z.number(), z.number(), z.number(), z.number(), z.number(), z.number(), z.number(), z.number()]),
 });
 
 const circleFeatureSchema = baseFeatureSchema.extend({

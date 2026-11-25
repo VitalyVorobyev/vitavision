@@ -15,7 +15,7 @@
 // param); GraphExplorer and the People network never call this module.
 
 import type { ViewportBounds } from "../graph/useViewport.ts";
-import { NARRATIVE_NODE_H, NARRATIVE_NODE_W } from "./narrativeLayout.ts";
+import { NARRATIVE_NODE_W } from "./narrativeLayout.ts";
 
 // ── Legibility floor ─────────────────────────────────────────────────────────
 
@@ -114,7 +114,3 @@ export function planInitialCamera(
     };
     return { box, minScale, maxScale: minScale };
 }
-
-// Re-exported so callers that only need chip metrics don't have to import
-// narrativeLayout.ts directly just for this module's slice-sizing floor.
-export { NARRATIVE_NODE_H, NARRATIVE_NODE_W };

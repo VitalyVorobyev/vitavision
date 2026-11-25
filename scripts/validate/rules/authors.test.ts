@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { createContext } from "../context.ts";
+import { createTestContext } from "../context.ts";
 import { authorsRule } from "./authors.ts";
 import type { RawIndexEntry } from "../../lib/papers-index.ts";
 import type { AuthorRecord } from "../../lib/authors.ts";
@@ -13,7 +13,7 @@ function paper(overrides: Partial<RawIndexEntry> = {}): RawIndexEntry {
 
 describe("authorsRule", () => {
     it("passes when authorIds all resolve and counts match", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             indexEntries: [paper({ authors: ["A. Author", "B. Coauthor"], authorIds: ["A1", "A2"] })],
             authorRecords: [author, coauthor],
         });
@@ -21,20 +21,21 @@ describe("authorsRule", () => {
     });
 
     it("flags an authorIds entry not present in authors.yaml", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             indexEntries: [paper({ authors: ["A. Author", "B. Coauthor"], authorIds: ["A1", "A99"] })],
             authorRecords: [author],
         });
         expect(authorsRule(ctx)).toEqual([
             {
                 level: "error",
-                message: '[docs/papers/index.yaml] paper "some-paper" authorIds entry "A99" not found in docs/papers/authors.yaml',
+                message:
+                    '[docs/papers/index.yaml] paper "some-paper" authorIds entry "A99" not found in docs/papers/authors.yaml',
             },
         ]);
     });
 
     it("warns when a paper has no authorIds", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             indexEntries: [paper()],
             authorRecords: [author],
         });
@@ -44,41 +45,50 @@ describe("authorsRule", () => {
     });
 
     it("does not warn about missing authorIds for a repo/doc entry", () => {
-        const ctx = createContext({
-            indexEntries: [{ id: "repo:https://example.com/x@1234567", kind: "repo", repo: "https://example.com/x", commit: "1234567" }],
+        const ctx = createTestContext({
+            indexEntries: [
+                {
+                    id: "repo:https://example.com/x@1234567",
+                    kind: "repo",
+                    repo: "https://example.com/x",
+                    commit: "1234567",
+                },
+            ],
             authorRecords: [],
         });
         expect(authorsRule(ctx)).toEqual([]);
     });
 
     it("warns when authorIds.length does not match authors.length, naming both counts", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             indexEntries: [paper({ authors: ["A. Author", "B. Coauthor"], authorIds: ["A1"] })],
             authorRecords: [author],
         });
         expect(authorsRule(ctx)).toEqual([
             {
                 level: "warning",
-                message: '[docs/papers/index.yaml] paper "some-paper" authorIds count (1) does not match authors count (2)',
+                message:
+                    '[docs/papers/index.yaml] paper "some-paper" authorIds count (1) does not match authors count (2)',
             },
         ]);
     });
 
     it("flags a mergedInto target that does not exist", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             indexEntries: [],
             authorRecords: [{ id: "A1", name: "A. Author", mergedInto: "A99" }],
         });
         expect(authorsRule(ctx)).toEqual([
             {
                 level: "error",
-                message: '[docs/papers/authors.yaml] author "A1" mergedInto target "A99" does not exist in authors.yaml',
+                message:
+                    '[docs/papers/authors.yaml] author "A1" mergedInto target "A99" does not exist in authors.yaml',
             },
         ]);
     });
 
     it("flags a mergedInto cycle exactly once", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             indexEntries: [],
             authorRecords: [
                 { id: "A1", name: "A. Author", mergedInto: "A2" },
@@ -92,7 +102,7 @@ describe("authorsRule", () => {
     });
 
     it("passes for a normal (non-cyclic) mergedInto chain", () => {
-        const ctx = createContext({
+        const ctx = createTestContext({
             indexEntries: [],
             authorRecords: [
                 { id: "A1", name: "A. Author", mergedInto: "A2" },

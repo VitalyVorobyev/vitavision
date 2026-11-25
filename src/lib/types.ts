@@ -40,7 +40,12 @@ export type DictionaryName =
 export interface ChessCornerAxis {
     angle_rad: number;
     angle_deg: number;
-    sigma_rad: number;
+    /**
+     * Standard error of the axis fit in radians (chess-corners `fit_std_error`; called `sigma`
+     * before 2.0): a fit-quality score, lower is cleaner, pi means no information. It is not
+     * a calibrated 1-sigma bound on the angle.
+     */
+    fit_std_error_rad: number;
     direction: { dx: number; dy: number };
 }
 
@@ -53,7 +58,7 @@ export interface ChessCornerFeature {
     response: number;
     // chess-corners 1.x dropped `contrast` and `fit_rms` from the detection
     // output (stride 9 → 7); the corner prefilter is now a gate on the axes'
-    // reported angular uncertainty, exposed as `sigma_rad` below.
+    // fit standard error, exposed as `fit_std_error_rad` below.
     axes: [ChessCornerAxis, ChessCornerAxis];
     confidence: number;
     confidence_level: ConfidenceLevel;
@@ -71,16 +76,6 @@ export interface ChessCornersResult {
         x_axis: "right";
         y_axis: "down";
         units: "pixels";
-    };
-    config: {
-        threshold: number;
-        nms_radius: number;
-        broad_mode: boolean;
-        min_cluster_size: number;
-        pyramid_levels: number;
-        pyramid_min_size: number;
-        upscale_factor: number;
-        refiner: string;
     };
     summary: {
         count: number;
@@ -176,7 +171,6 @@ export interface CalibrationCircleMatch {
         polarity: "white" | "black";
     };
     matched_index: number | null;
-    distance_cells: number | null;
     offset_cells: { di: number; dj: number } | null;
 }
 
@@ -200,6 +194,8 @@ export interface CalibrationTargetResult {
         circle_candidate_count: number | null;
         circle_match_count: number | null;
         alignment_inliers: number | null;
+        /** Circles consistent with the best *competing* board frame (marker board only). */
+        alignment_runner_up_inliers: number | null;
         runtime_ms: number;
     };
     detection: {
@@ -241,7 +237,8 @@ export interface RinggridFitMetrics {
 }
 
 export interface RinggridDetectedMarker {
-    id: number;
+    /** Identified codeword id; null when the marker was found but not identified. */
+    id: number | null;
     confidence: number;
     center: FramePoint;
     ellipse_outer: RinggridEllipse;
@@ -274,9 +271,7 @@ export interface PuzzleBoardSpec {
     origin_col: number;
 }
 
-export type PuzzleBoardSearchMode =
-    | { kind: "full" }
-    | { kind: "fixed_board" };
+export type PuzzleBoardSearchMode = { kind: "full" } | { kind: "fixed_board" };
 
 export interface PuzzleBoardDecodeConfig {
     min_window: number;
@@ -288,7 +283,6 @@ export interface PuzzleBoardDecodeConfig {
 }
 
 export interface PuzzleBoardParams {
-    px_per_square: number;
     chessboard: Record<string, unknown>;
     board: PuzzleBoardSpec;
     decode: PuzzleBoardDecodeConfig;

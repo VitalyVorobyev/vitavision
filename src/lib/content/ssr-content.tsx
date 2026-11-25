@@ -1,4 +1,4 @@
-import { createContext, useContext } from "react";
+import { createContext, use } from "react";
 
 export interface StaticContentContextValue {
     blogHtmlBySlug?: Record<string, string>;
@@ -10,10 +10,8 @@ export interface StaticContentContextValue {
     narrativeHtmlBySlug?: Record<string, string>;
 }
 
-const StaticContentContext = createContext<StaticContentContextValue | null>(null);
-
-export const StaticContentProvider = StaticContentContext.Provider;
+export const StaticContentContext = createContext<StaticContentContextValue | null>(null);
 
 export function useStaticContent(): StaticContentContextValue | null {
-    return useContext(StaticContentContext);
+    return use(StaticContentContext);
 }

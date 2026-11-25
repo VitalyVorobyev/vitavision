@@ -1,5 +1,5 @@
 import type { KeyboardEvent } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { computeAuthorTimelineLayout, type TimelineEntry } from "../../lib/atlas/authorView.ts";
 import { dotStyle, tickLabel } from "./authorTimelineDots.ts";
 
@@ -15,7 +15,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
     const onKeyDown = (event: KeyboardEvent<SVGGElement>, id: string) => {
         if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            goTo(id);
+            void goTo(id);
         }
     };
 
@@ -23,7 +23,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
         <svg
             viewBox={`0 0 ${layout.width} ${layout.height}`}
             width="100%"
-            height="auto"
+            className="h-auto"
             role="img"
             aria-label={`Papers by year: ${entries.length} paper${entries.length === 1 ? "" : "s"}`}
         >
@@ -32,7 +32,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                 x2={layout.axisX2}
                 y1={layout.axisY}
                 y2={layout.axisY}
-                stroke="hsl(var(--border-strong))"
+                stroke="var(--line-strong)"
                 strokeWidth={1.5}
             />
             {layout.ticks.map((tick) => (
@@ -43,7 +43,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                     textAnchor="middle"
                     fontFamily="var(--font-mono, ui-monospace)"
                     fontSize={11}
-                    fill="hsl(var(--muted-foreground))"
+                    fill="var(--fg-muted)"
                 >
                     {tickLabel(tick.year)}
                 </text>
@@ -66,7 +66,7 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                         role="link"
                         tabIndex={0}
                         aria-label={`${entry.label} (${entry.year})`}
-                        onClick={() => goTo(p.id)}
+                        onClick={() => void goTo(p.id)}
                         onKeyDown={(event) => onKeyDown(event, p.id)}
                         style={{ cursor: "pointer" }}
                     >
@@ -76,18 +76,11 @@ export default function AuthorTimelineStrip({ entries, width }: { entries: Timel
                                 x2={p.x}
                                 y1={p.labelY + 8}
                                 y2={p.y - 8}
-                                stroke="hsl(var(--border))"
+                                stroke="var(--line)"
                                 strokeWidth={1}
                             />
                         )}
-                        <text
-                            x={p.x}
-                            y={p.labelY}
-                            textAnchor={anchor}
-                            fontSize={12}
-                            fontWeight={600}
-                            fill="hsl(var(--foreground))"
-                        >
+                        <text x={p.x} y={p.labelY} textAnchor={anchor} fontSize={12} fontWeight={600} fill="var(--fg)">
                             {entry.label}
                         </text>
                         <circle

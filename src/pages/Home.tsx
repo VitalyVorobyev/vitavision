@@ -1,17 +1,10 @@
-import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { motion } from "motion/react";
+import { Link } from "react-router";
 import { ArrowRight } from "lucide-react";
-import * as TooltipPrimitive from "@radix-ui/react-tooltip";
+import { Tooltip } from "@vitavision/ui";
 import SeoHead from "../components/seo/SeoHead.tsx";
-import Tooltip from "../components/ui/Tooltip";
 import VitavisionLogo from "../components/shared/VitavisionLogo";
-import {
-    SpecBlog,
-    SpecAlgorithms,
-    SpecEditor,
-    SpecTargets,
-    type SpecProps,
-} from "../components/home/specimens";
+import { SpecBlog, SpecAlgorithms, SpecEditor, SpecTargets, type SpecProps } from "../components/home/specimens";
 
 type Tile = {
     label: string;
@@ -30,7 +23,8 @@ const tiles: Tile[] = [
     {
         label: "Atlas",
         href: "/algorithms",
-        tooltip: "Browse the practical CV atlas — algorithms, deep-learning models, and concepts with prerequisites, comparisons, and source-grounded references",
+        tooltip:
+            "Browse the practical CV atlas — algorithms, deep-learning models, and concepts with prerequisites, comparisons, and source-grounded references",
         Spec: SpecAlgorithms,
     },
     {
@@ -51,24 +45,20 @@ export default function Home() {
     return (
         <div className="flex flex-1 flex-col items-center justify-center gap-6 px-4 py-6 text-center sm:gap-8 sm:px-6">
             <SeoHead />
-            <VitavisionLogo
-                variant="full"
-                animate
-                className="h-16 w-auto text-foreground sm:h-20 md:h-24"
-            />
+            <VitavisionLogo variant="full" animate className="h-16 w-auto text-fg sm:h-20 md:h-24" />
             <motion.h1
                 initial={{ opacity: 0, y: 16 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.7, ease: "easeOut", delay: 0.8 }}
                 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl"
             >
-                Vitavision<span className="text-brand">.</span>
+                Vitavision<span className="text-brand-mark">.</span>
             </motion.h1>
             <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.7, delay: 1.0 }}
-                className="max-w-[420px] text-sm text-muted-foreground sm:text-base"
+                className="max-w-[420px] text-sm text-fg-muted sm:text-base"
             >
                 Computer Vision algorithms, interactive tools, technical deep dives.
             </motion.p>
@@ -78,42 +68,38 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 1.2 }}
                 className="w-full max-w-2xl"
             >
-                <TooltipPrimitive.Provider delayDuration={250}>
-                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                        {tiles.map(({ label, href, tooltip, Spec }) => (
-                            <Tooltip key={href} content={tooltip} side="bottom">
-                                <Link
-                                    to={href}
-                                    aria-label={`${label} — ${tooltip}`}
-                                    className="group relative flex min-h-[116px] flex-col overflow-hidden rounded-xl border border-border/70 bg-surface/80 px-3.5 pb-3.5 pt-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/45 hover:shadow-[0_10px_28px_-16px_hsl(var(--brand)/0.5)] focus-visible:border-brand/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/40"
-                                >
-                                    <span
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {tiles.map(({ label, href, tooltip, Spec }) => (
+                        <Tooltip key={href} content={tooltip}>
+                            <Link
+                                to={href}
+                                aria-label={`${label} — ${tooltip}`}
+                                className="group relative flex min-h-[116px] flex-col overflow-hidden rounded-xl border border-line/70 bg-surface/80 px-3.5 pb-3.5 pt-4 text-left transition-all duration-300 hover:-translate-y-0.5 hover:border-signal/45 hover:shadow-[0_10px_28px_-16px_color-mix(in_oklab,var(--signal)_50%,transparent)] focus-visible:border-signal/45 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-signal/40"
+                            >
+                                <span
+                                    aria-hidden
+                                    className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
+                                    style={{
+                                        background:
+                                            "radial-gradient(120% 80% at 100% 0%, color-mix(in oklab, var(--signal) 14%, transparent), transparent 60%)",
+                                    }}
+                                />
+                                <div className="relative flex h-10 items-center">
+                                    <Spec />
+                                </div>
+                                <div className="relative mt-auto flex items-end justify-between pt-3">
+                                    <span className="text-[13px] font-semibold tracking-tight text-fg">{label}</span>
+                                    <ArrowRight
+                                        size={14}
+                                        strokeWidth={2}
                                         aria-hidden
-                                        className="pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100"
-                                        style={{
-                                            background:
-                                                "radial-gradient(120% 80% at 100% 0%, hsl(var(--brand) / 0.14), transparent 60%)",
-                                        }}
+                                        className="-translate-x-1 text-fg-muted/80 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:text-signal group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:text-signal group-focus-visible:opacity-100"
                                     />
-                                    <div className="relative flex h-10 items-center">
-                                        <Spec />
-                                    </div>
-                                    <div className="relative mt-auto flex items-end justify-between pt-3">
-                                        <span className="text-[13px] font-semibold tracking-tight text-foreground">
-                                            {label}
-                                        </span>
-                                        <ArrowRight
-                                            size={14}
-                                            strokeWidth={2}
-                                            aria-hidden
-                                            className="-translate-x-1 text-muted-foreground/80 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:text-brand group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:text-brand group-focus-visible:opacity-100"
-                                        />
-                                    </div>
-                                </Link>
-                            </Tooltip>
-                        ))}
-                    </div>
-                </TooltipPrimitive.Provider>
+                                </div>
+                            </Link>
+                        </Tooltip>
+                    ))}
+                </div>
             </motion.div>
         </div>
     );

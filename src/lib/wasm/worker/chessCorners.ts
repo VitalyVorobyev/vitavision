@@ -12,7 +12,10 @@ export function adaptChessCornersResult(
     // produced them. Nothing in the type-checker sees this — the detector
     // returns a bare Float32Array — so a stale stride here would silently
     // reinterpret axis angles as contrast and shear every corner's geometry.
-    const stride = 7; // x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma
+    // chess-corners 2.x renamed the two per-axis error slots `sigma` -> `fitStdError` (the
+    // residual-scaled standard error of the axis fit, a fit-quality score and not a calibrated
+    // 1-sigma bound) without changing the layout: the stride is still 7.
+    const stride = 7; // x, y, response, axis0_angle, axis0_fitStdError, axis1_angle, axis1_fitStdError
     if (raw.length % stride !== 0) {
         throw new Error(`chess-corners: unexpected output length ${raw.length} (expected multiple of ${stride})`);
     }
@@ -30,9 +33,9 @@ export function adaptChessCornersResult(
         const y = raw[i * stride + 1]!;
         const response = raw[i * stride + 2]!;
         const axis0_angle = raw[i * stride + 3]!;
-        const axis0_sigma = raw[i * stride + 4]!;
+        const axis0_fit_std_error = raw[i * stride + 4]!;
         const axis1_angle = raw[i * stride + 5]!;
-        const axis1_sigma = raw[i * stride + 6]!;
+        const axis1_fit_std_error = raw[i * stride + 6]!;
 
         if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(response)) continue;
 
@@ -40,15 +43,15 @@ export function adaptChessCornersResult(
         responseMax = Math.max(responseMax, response);
         responseSum += response;
 
-        corners.push({ x, y, response, axis0_angle, axis0_sigma, axis1_angle, axis1_sigma });
+        corners.push({ x, y, response, axis0_angle, axis0_fit_std_error, axis1_angle, axis1_fit_std_error });
     }
 
-    type AxisOut = { angle_rad: number; angle_deg: number; sigma_rad: number; direction: { dx: number; dy: number } };
+    type AxisOut = { angle_rad: number; angle_deg: number; fit_std_error_rad: number; direction: { dx: number; dy: number } };
 
-    const makeAxis = (angle: number, sigma: number): AxisOut => ({
+    const makeAxis = (angle: number, fitStdError: number): AxisOut => ({
         angle_rad: angle,
         angle_deg: angle * 180 / Math.PI,
-        sigma_rad: sigma,
+        fit_std_error_rad: fitStdError,
         direction: { dx: Math.cos(angle), dy: Math.sin(angle) },
     });
 
@@ -65,7 +68,7 @@ export function adaptChessCornersResult(
             x_norm: c.x / width,
             y_norm: c.y / height,
             response: c.response,
-            axes: [makeAxis(c.axis0_angle, c.axis0_sigma), makeAxis(c.axis1_angle, c.axis1_sigma)] as [AxisOut, AxisOut],
+            axes: [makeAxis(c.axis0_angle, c.axis0_fit_std_error), makeAxis(c.axis1_angle, c.axis1_fit_std_error)] as [AxisOut, AxisOut],
             confidence,
             confidence_level: confidenceLevel,
             _index: idx,

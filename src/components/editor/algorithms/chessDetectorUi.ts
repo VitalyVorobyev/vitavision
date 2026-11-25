@@ -12,6 +12,12 @@ import { hidden, hideContainers } from "./schemaTools";
  * fraction of the frame maximum instead of an absolute response floor, so every hint and
  * default here would be wrong for it. The ChESS knobs inside `strategy.chess` are listed
  * leaf by leaf, and the selector itself is hidden.
+ *
+ * The subpixel stage is two controls: the ChESS center of mass (`strategy.chess.center_of_mass`,
+ * the detector's own localizer) and the optional image refiner (`refiner`, none by default,
+ * or the saddle-point fit, which replaces the center of mass). `strategy.chess.on_refiner_reject`
+ * (what happens to a corner the refiner rejects) and `uncertainty` (position covariance) are
+ * not offered: the library default applies.
  */
 
 const at = (prefix: string, path: string): string => (prefix === "" ? path : `${prefix}.${path}`);
@@ -33,7 +39,8 @@ export const chessPyramidPath = (prefix: string): string => at(prefix, "multisca
 export function chessAdvancedPaths(prefix: string): string[] {
     return [
         at(prefix, "upscale"),
-        at(prefix, "strategy.chess.refiner"),
+        at(prefix, "refiner"),
+        at(prefix, "strategy.chess.center_of_mass.radius"),
         at(prefix, "orientation_method"),
         at(prefix, "merge_radius"),
     ];
@@ -105,12 +112,17 @@ export function chessDetectorFields(prefix: string): Record<string, FieldUi> {
         ],
         ["upscale.fixed", { label: "Factor", unit: "×" }],
         [
-            "strategy.chess.refiner",
+            "refiner",
             {
-                label: "Refiner",
-                hint: "Subpixel refinement method applied after initial corner detection.",
-                widget: "select",
-                enumLabels: { center_of_mass: "Center of mass", forstner: "Förstner", saddle_point: "Saddle point" },
+                label: "Image refiner",
+                hint: "Optional saddle-point refinement on the image patch (a quadratic surface fit), replacing the center of mass. Off keeps the detector's own center-of-mass localizer.",
+            },
+        ],
+        [
+            "strategy.chess.center_of_mass.radius",
+            {
+                label: "Center-of-mass radius",
+                hint: "Half-size of the window the detector's own subpixel localizer averages over. Unused while an image refiner is set.",
             },
         ],
         [
@@ -132,8 +144,11 @@ export function chessDetectorFields(prefix: string): Record<string, FieldUi> {
     return Object.fromEntries(entries.map(([path, ui]) => [at(prefix, path), ui]));
 }
 
-/** The detector strategy selector, which is not offered (see the note at the top). */
-export const chessDetectorHidden = (prefix: string): string[] => [at(prefix, "strategy")];
+/**
+ * The detector strategy selector and the position-uncertainty switch, which are not offered
+ * (see the note at the top).
+ */
+export const chessDetectorHidden = (prefix: string): string[] => [at(prefix, "strategy"), at(prefix, "uncertainty")];
 
 /*
  * The chessboard-detector block (`ChessboardParams`) the board detectors share: its three

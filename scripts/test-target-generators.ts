@@ -563,10 +563,9 @@ async function runHarness(
                 const cfg: CharucoConfig = c.target.config;
                 const params = mod.default_charuco_params(cfg.rows, cfg.cols, cfg.markerSizeRel, cfg.dictionary) as {
                     board: { border_bits: number };
-                    scan: { border_bits: number };
                 };
+                // calib-targets 0.18 has no scan block: the detector reads the border ring from the board.
                 params.board.border_bits = cfg.borderBits;
-                params.scan.border_bits = cfg.borderBits;
                 const result = mod.detect_charuco(width, height, gray, chessCfg, params) as {
                     corners: unknown[];
                     markers: { id: number; rotation: number }[];

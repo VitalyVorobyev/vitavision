@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { adaptChessCornersResult } from "../chessCorners";
 
 /** Build a synthetic stride-7 `detect_rgba` output: x, y, response,
- * axis0_angle, axis0_sigma, axis1_angle, axis1_sigma per corner. */
+ * axis0_angle, axis0_fitStdError, axis1_angle, axis1_fitStdError per corner. */
 function makeRaw(corners: Array<{ x: number; y: number; response: number }>): Float32Array {
     const out = new Float32Array(corners.length * 7);
     corners.forEach((c, i) => {

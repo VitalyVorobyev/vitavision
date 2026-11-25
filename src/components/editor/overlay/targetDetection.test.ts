@@ -64,8 +64,8 @@ describe("toTargetDetection: chess-corners", () => {
                         y_norm: 0,
                         response: 1,
                         axes: [
-                            { angle_rad: 0, angle_deg: 0, sigma_rad: 0.1, direction: { dx: 1, dy: 0 } },
-                            { angle_rad: 1.5, angle_deg: 90, sigma_rad: 0.1, direction: { dx: 0, dy: 1 } },
+                            { angle_rad: 0, angle_deg: 0, fit_std_error_rad: 0.1, direction: { dx: 1, dy: 0 } },
+                            { angle_rad: 1.5, angle_deg: 90, fit_std_error_rad: 0.1, direction: { dx: 0, dy: 1 } },
                         ],
                         confidence: 0.9,
                         confidence_level: "high",

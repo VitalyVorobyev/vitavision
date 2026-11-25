@@ -218,7 +218,7 @@ const asRecord = (value: unknown, what: string): Record<string, unknown> => {
  *
  * Each is merged over the library's defaults first, so a document with fields missing (a
  * hand-edited deep link) is completed rather than rejected. `mergeConfig`, not `deepMerge`:
- * the ChESS config holds externally tagged enums (`refiner`, `multiscale`, `upscale`), and
+ * the ChESS config holds externally tagged enums (`strategy`, `refiner`, `multiscale`, `upscale`), and
  * merging the default's variant key into another variant's yields an invalid two-key object.
  */
 export async function handleCalibTarget(
@@ -248,7 +248,7 @@ export async function handleCalibTarget(
         // and the rest of the app expect. `cell_size` has no current consumer.
         result = raw ? { detection: { kind: "chessboard", corners: raw.corners } } : null;
     } else if (algorithm === "charuco") {
-        // The defaults depend on the board (the scan block mirrors it), so they are asked for
+        // The defaults depend on the board (marker size, dictionary), so they are asked for
         // with the board the config describes.
         const board = asRecord(config.board, "charuco config.board");
         const defaults = mod.default_charuco_params(
@@ -258,17 +258,21 @@ export async function handleCalibTarget(
             board.dictionary as string,
         ) as Record<string, unknown>;
         const params = mergeConfig(defaults, config);
+        // calib-targets 0.18 returns `null` for "no board found" (it used to throw
+        // "chessboard not detected"); invalid input still throws. A miss is an empty result.
         const raw = mod.detect_charuco(width, height, gray, null, params) as {
             corners: unknown[];
             markers: unknown[];
             alignment: unknown;
-        };
+        } | null;
         // 0.10.1 flattened CharucoDetectionResult to { corners, markers, alignment }.
-        result = {
-            detection: { kind: "charuco", corners: raw.corners },
-            markers: raw.markers,
-            alignment: raw.alignment,
-        };
+        result = raw
+            ? {
+                  detection: { kind: "charuco", corners: raw.corners },
+                  markers: raw.markers,
+                  alignment: raw.alignment,
+              }
+            : null;
     } else {
         const defaults = mod.default_marker_board_params() as Record<string, unknown>;
         const params = mergeConfig(defaults, config);

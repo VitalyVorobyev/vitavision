@@ -34,9 +34,11 @@ const toFeatures = (result: ChessCornersResult, runId: string): Feature[] => {
         // The detector's own frame: the centre of the top-left pixel is (0, 0), as on the stage.
         x: corner.x,
         y: corner.y,
+        // `sigmaRad` is the persisted name of the axis error slot (saved feature JSON uses it);
+        // the value is the fit standard error, not a calibrated 1-sigma (see ChessCornerAxis).
         axes: [
-            { dx: corner.axes[0].direction.dx, dy: corner.axes[0].direction.dy, angleRad: corner.axes[0].angle_rad, sigmaRad: corner.axes[0].sigma_rad },
-            { dx: corner.axes[1].direction.dx, dy: corner.axes[1].direction.dy, angleRad: corner.axes[1].angle_rad, sigmaRad: corner.axes[1].sigma_rad },
+            { dx: corner.axes[0].direction.dx, dy: corner.axes[0].direction.dy, angleRad: corner.axes[0].angle_rad, sigmaRad: corner.axes[0].fit_std_error_rad },
+            { dx: corner.axes[1].direction.dx, dy: corner.axes[1].direction.dy, angleRad: corner.axes[1].angle_rad, sigmaRad: corner.axes[1].fit_std_error_rad },
         ],
         score: corner.confidence,
         label: `corner ${corner.id.slice(0, 8)}`,

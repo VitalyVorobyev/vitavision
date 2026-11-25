@@ -47,7 +47,7 @@ const toFeatures = (result: RinggridDetectResult, runId: string): Feature[] => {
             angleDeg: marker.ellipse_inner.angle * RAD_TO_DEG,
         },
         meta: {
-            kind: marker.decode ? "ringgrid_decoded" : "ringgrid_proposal",
+            kind: marker.id !== null ? "ringgrid_decoded" : "ringgrid_proposal",
             markerId: marker.id,
             score: marker.confidence,
             rotation: marker.decode?.best_rotation,

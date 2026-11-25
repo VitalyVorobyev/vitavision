@@ -35,13 +35,13 @@ function mockChessCornersResult(cornerCount: number): ChessCornersResult {
                 {
                     angle_rad: axis0Angle,
                     angle_deg: axis0Angle * 180 / Math.PI,
-                    sigma_rad: 0.05,
+                    fit_std_error_rad: 0.05,
                     direction: { dx: Math.cos(axis0Angle), dy: Math.sin(axis0Angle) },
                 },
                 {
                     angle_rad: axis1Angle,
                     angle_deg: axis1Angle * 180 / Math.PI,
-                    sigma_rad: 0.06,
+                    fit_std_error_rad: 0.06,
                     direction: { dx: Math.cos(axis1Angle), dy: Math.sin(axis1Angle) },
                 },
             ] as [ChessCornersResult["corners"][0]["axes"][0], ChessCornersResult["corners"][0]["axes"][0]],

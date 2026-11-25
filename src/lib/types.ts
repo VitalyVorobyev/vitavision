@@ -40,7 +40,12 @@ export type DictionaryName =
 export interface ChessCornerAxis {
     angle_rad: number;
     angle_deg: number;
-    sigma_rad: number;
+    /**
+     * Standard error of the axis fit in radians (chess-corners `fit_std_error`; called `sigma`
+     * before 2.0): a fit-quality score, lower is cleaner, pi means no information. It is not
+     * a calibrated 1-sigma bound on the angle.
+     */
+    fit_std_error_rad: number;
     direction: { dx: number; dy: number };
 }
 
@@ -53,7 +58,7 @@ export interface ChessCornerFeature {
     response: number;
     // chess-corners 1.x dropped `contrast` and `fit_rms` from the detection
     // output (stride 9 → 7); the corner prefilter is now a gate on the axes'
-    // reported angular uncertainty, exposed as `sigma_rad` below.
+    // fit standard error, exposed as `fit_std_error_rad` below.
     axes: [ChessCornerAxis, ChessCornerAxis];
     confidence: number;
     confidence_level: ConfidenceLevel;
@@ -232,7 +237,8 @@ export interface RinggridFitMetrics {
 }
 
 export interface RinggridDetectedMarker {
-    id: number;
+    /** Identified codeword id; null when the marker was found but not identified. */
+    id: number | null;
     confidence: number;
     center: FramePoint;
     ellipse_outer: RinggridEllipse;
@@ -279,7 +285,6 @@ export interface PuzzleBoardDecodeConfig {
 }
 
 export interface PuzzleBoardParams {
-    px_per_square: number;
     chessboard: Record<string, unknown>;
     board: PuzzleBoardSpec;
     decode: PuzzleBoardDecodeConfig;

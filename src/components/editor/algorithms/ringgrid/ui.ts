@@ -18,12 +18,6 @@ const groups: UiGroup[] = [
     },
     { id: "proposals", title: "Proposals", collapsible: true, fields: ["config.advanced.proposal.grad_threshold"] },
     {
-        id: "decode",
-        title: "Decode",
-        collapsible: true,
-        fields: ["config.advanced.decode.max_decode_dist", "config.advanced.decode.min_decode_confidence"],
-    },
-    {
         id: "advanced",
         title: "Advanced",
         collapsible: true,
@@ -40,10 +34,19 @@ const groups: UiGroup[] = [
 
 /**
  * Fields deliberately not offered; the schema's other fields are all in a group. Board
- * metadata the detector does not read, and the fields the library derives from the board
- * itself when it loads a config (the schema marks them `readOnly`).
+ * metadata the detector does not read, the fields the library derives from the board
+ * itself when it loads a config (the schema marks them `readOnly`), and the two settings
+ * ringgrid 0.18 added that the editor does not adopt yet: the reporting gate
+ * `config.min_confidence` and the tuning of the opt-in photometric centre refinement
+ * (`config.advanced.photometric`); the library default applies to both.
  */
-export const hiddenPaths: string[] = ["board.schema", "board.name", ...readOnlyPaths(schema)];
+export const hiddenPaths: string[] = [
+    "board.schema",
+    "board.name",
+    "config.min_confidence",
+    "config.advanced.photometric",
+    ...readOnlyPaths(schema),
+];
 
 export const ui: UiSchema = {
     groups,
@@ -96,14 +99,6 @@ export const ui: UiSchema = {
             label: "Gradient threshold",
             hint: "Minimum gradient magnitude for proposal voting. Lower detects weaker features.",
         },
-        "config.advanced.decode.max_decode_dist": {
-            label: "Max decode distance",
-            hint: "Maximum Hamming distance for codebook matching.",
-        },
-        "config.advanced.decode.min_decode_confidence": {
-            label: "Min confidence",
-            hint: "Minimum confidence score for decode acceptance.",
-        },
         "config.advanced.completion.enable": {
             label: "Marker completion",
             hint: "Attempt to recover missing markers using homography reprojection.",
@@ -114,9 +109,6 @@ export const ui: UiSchema = {
             hint: "Estimate and compensate for radial lens distortion during detection.",
             widget: "checkbox",
         },
-        // Board metadata the detector does not read, and the fields the library derives from
-        // the board itself when it loads a config (the schema marks them `readOnly`).
-        ...hidden("board.schema", "board.name", ...readOnlyPaths(schema)),
         ...hidden(...hiddenPaths),
         ...hideContainers(schema, groups),
     },

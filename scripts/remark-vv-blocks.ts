@@ -89,7 +89,7 @@ function createHastMappedNode(
  * Create a text-only hast-mapped node (e.g. for title/label divs).
  */
 function createTextDiv(
-    className: string,
+    className: string[],
     text: string,
 ): MdastNodeWithHast {
     return createHastMappedNode("div", { className }, [
@@ -182,7 +182,7 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             const data = node.data || (node.data = {});
             data.hName = "section";
             data.hProperties = {
-                className: `vv-block vv-block--${kind}`,
+                className: ["vv-block", `vv-block--${kind}`],
                 "data-kind": kind,
             };
 
@@ -190,12 +190,12 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             const newChildren: Parent["children"] = [];
 
             // Title div
-            newChildren.push(createTextDiv("vv-block__title", BLOCK_TITLES[kind] ?? kind) as unknown as Parent["children"][0]);
+            newChildren.push(createTextDiv(["vv-block__title"], BLOCK_TITLES[kind] ?? kind) as unknown as Parent["children"][0]);
 
             // Label div (optional)
             if (hasLabel) {
                 newChildren.push(
-                    createHastMappedNode("div", { className: "vv-block__label" }, labelChildren) as unknown as Parent["children"][0],
+                    createHastMappedNode("div", { className: ["vv-block__label"] }, labelChildren) as unknown as Parent["children"][0],
                 );
             }
 
@@ -211,18 +211,18 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
 
                 if (meta.length > 0) {
                     const metaItems: Parent["children"] = meta.map((m) =>
-                        createHastMappedNode("div", { className: "vv-block__meta-item" }, [
-                            createHastMappedNode("span", { className: "vv-block__meta-key" }, [
+                        createHastMappedNode("div", { className: ["vv-block__meta-item"] }, [
+                            createHastMappedNode("span", { className: ["vv-block__meta-key"] }, [
                                 { type: "text", value: `${m.key}: ` } as PhrasingContent,
                             ]) as unknown as PhrasingContent,
                             createHastMappedNode(
                                 "span",
-                                { className: "vv-block__meta-value" },
+                                { className: ["vv-block__meta-value"] },
                                 m.children,
                             ) as unknown as PhrasingContent,
                         ]),
                     ) as unknown as Parent["children"];
-                    newChildren.push(createHastMappedNode("div", { className: "vv-block__meta" }, metaItems) as unknown as Parent["children"][0]);
+                    newChildren.push(createHastMappedNode("div", { className: ["vv-block__meta"] }, metaItems) as unknown as Parent["children"][0]);
                 }
             }
 
@@ -230,7 +230,7 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             if (kind === "proof") {
                 bodyContent.push(
                     createHastMappedNode("span", {
-                        className: "vv-proof-qed",
+                        className: ["vv-proof-qed"],
                         "aria-label": "end of proof",
                     }, [
                         { type: "text", value: "\u220E" } as PhrasingContent,
@@ -239,7 +239,7 @@ const remarkVvBlocks: Plugin<[], Root> = () => {
             }
 
             // Body wrapper
-            newChildren.push(createHastMappedNode("div", { className: "vv-block__body" }, bodyContent) as unknown as Parent["children"][0]);
+            newChildren.push(createHastMappedNode("div", { className: ["vv-block__body"] }, bodyContent) as unknown as Parent["children"][0]);
 
             // Replace children
             node.children = newChildren as unknown as typeof node.children;

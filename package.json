@@ -84,6 +84,7 @@
     "github-slugger": "2.0.0",
     "gray-matter": "^4.0.3",
     "jsdom": "^31.0.1",
+    "oxfmt": "^0.80.0",
     "oxlint": "^1.95.0",
     "oxlint-tsgolint": "^7.0.2008",
     "pngjs": "^7.0.0",

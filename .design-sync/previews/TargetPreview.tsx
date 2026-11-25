@@ -10,7 +10,7 @@ import {
     PUZZLEPOLE_PRESETS,
 } from "../../src/components/targetgen/presets";
 import type { Preset } from "../../src/components/targetgen/presets";
-import { first, settledState } from "../fixtures/targetgen";
+import { SCREEN_GRID_RESULT, first, settledScreenState, settledState } from "../fixtures/targetgen";
 
 // The component displays `state.previewSvg`; the app fills it through the WASM worker, which a
 // design render does not have. `settledState` (../fixtures/targetgen.ts) supplies a sketched
@@ -30,3 +30,16 @@ export const MarkerBoard = () => <Preview preset={first(MARKERBOARD_PRESETS)} />
 export const RingGrid = () => <Preview preset={first(RINGGRID_PRESETS)} />;
 export const PuzzleBoard = () => <Preview preset={first(PUZZLEBOARD_PRESETS)} />;
 export const PuzzlePole = () => <Preview preset={first(PUZZLEPOLE_PRESETS)} />;
+
+// Screen medium: the real rendered PNG (a stand-in here), scaled to fit with pixelated sampling.
+export const ScreenChessboard = () => {
+    const [state, dispatch] = useReducer(
+        targetGeneratorReducer,
+        settledScreenState(first(CHESSBOARD_PRESETS).target, SCREEN_GRID_RESULT),
+    );
+    return (
+        <div style={{ width: 640, height: 420 }} className="overflow-hidden rounded-panel border border-line">
+            <TargetPreview state={state} dispatch={dispatch} />
+        </div>
+    );
+};

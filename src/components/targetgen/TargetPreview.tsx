@@ -61,7 +61,7 @@ interface Props {
     dispatch: React.Dispatch<TargetGeneratorAction>;
 }
 
-export default function TargetPreview({ state, dispatch }: Props) {
+function PrintPreview({ state, dispatch }: Props) {
     const [zoom, setZoom] = useState(1);
     const [pan, setPan] = useState({ x: 0, y: 0 });
     const [dragging, setDragging] = useState(false);
@@ -449,4 +449,59 @@ export default function TargetPreview({ state, dispatch }: Props) {
             </div>
         </div>
     );
+}
+
+/** PNG bytes as a `data:` URL — pure, so unlike a blob URL it needs no revoke. */
+function pngDataUrl(png: Uint8Array): string {
+    let binary = "";
+    const CHUNK = 0x8000;
+    for (let i = 0; i < png.length; i += CHUNK) {
+        binary += String.fromCharCode(...png.subarray(i, i + CHUNK));
+    }
+    return `data:image/png;base64,${btoa(binary)}`;
+}
+
+/**
+ * Screen medium: the real rendered PNG, scaled to fit with nearest-neighbour
+ * sampling so single pixels stay visible. Deliberately no pan/zoom surface —
+ * the file is meant to be viewed at 100 % on the target display, not here.
+ */
+function ScreenPreview({ state }: { state: TargetGeneratorState }) {
+    const result = state.screenResult;
+    const src = useMemo(() => (result ? pngDataUrl(result.png) : null), [result]);
+    const hasErrors = state.validation.errors.length > 0;
+
+    return (
+        <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-raised/20 p-3">
+            {src && result ? (
+                <img
+                    src={src}
+                    alt={`Rendered screen target, ${result.widthPx} by ${result.heightPx} pixels`}
+                    width={result.widthPx}
+                    height={result.heightPx}
+                    className="max-h-full max-w-full bg-white object-contain shadow-lg"
+                    style={{ imageRendering: "pixelated" }}
+                />
+            ) : (
+                <p className="text-sm text-fg-muted">
+                    {hasErrors ? "Fix the validation errors to see the preview." : "Rendering…"}
+                </p>
+            )}
+            {result && (
+                <div
+                    data-preview-overlay
+                    className="absolute bottom-3 left-3 rounded-control border border-line bg-ground/80 px-2.5 py-1.5 text-[11px] leading-relaxed text-fg-muted backdrop-blur-sm"
+                >
+                    <div>
+                        Native size: {result.widthPx} x {result.heightPx} px (8-bit grayscale)
+                    </div>
+                    <div>Shown scaled to fit; the file is 1:1 with the display.</div>
+                </div>
+            )}
+        </div>
+    );
+}
+
+export default function TargetPreview(props: Props) {
+    return props.state.medium === "screen" ? <ScreenPreview state={props.state} /> : <PrintPreview {...props} />;
 }

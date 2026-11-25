@@ -1,6 +1,7 @@
 import { useRef } from "react";
 import { Grid3X3, QrCode, CircleDot, Target, Puzzle, Cylinder, Upload } from "lucide-react";
-import type { TargetType, TargetGeneratorAction, TargetConfig, PageConfig } from "../types";
+import type { TargetType, TargetGeneratorAction, TargetConfig, PageConfig, Medium } from "../types";
+import { isScreenSupported } from "../screenTarget";
 import { presetsForType } from "../presets";
 import { Button, cn, Select, toast } from "@vitavision/ui";
 
@@ -61,6 +62,13 @@ interface Props {
     dispatch: React.Dispatch<TargetGeneratorAction>;
     showPresets?: boolean;
     layout?: "stack" | "grid";
+    /**
+     * With `"screen"`, the kinds the screen renderers do not support (marker
+     * board, PuzzlePole) are disabled and annotated rather than hidden, so the
+     * reason is visible. A kind that is already selected stays selected; the
+     * validation step then explains the problem.
+     */
+    medium?: Medium;
 }
 
 export default function TargetTypeSelector({
@@ -68,6 +76,7 @@ export default function TargetTypeSelector({
     dispatch,
     showPresets = true,
     layout = "stack",
+    medium = "print",
 }: Props) {
     const fileRef = useRef<HTMLInputElement>(null);
     const presets = presetsForType(selected);
@@ -105,11 +114,14 @@ export default function TargetTypeSelector({
                 Target Type
             </h2>
             <div className={layout === "grid" ? "grid grid-cols-2 gap-2" : "flex flex-col gap-2"}>
-                {TARGET_TYPES.map((t) => (
+                {TARGET_TYPES.map((t) => {
+                    const unavailable = medium === "screen" && !isScreenSupported(t.id);
+                    return (
                     <Button
                         key={t.id}
                         variant="secondary"
                         aria-pressed={selected === t.id}
+                        disabled={unavailable}
                         onClick={() =>
                             dispatch({ type: "SET_TARGET_TYPE", targetType: t.id })
                         }
@@ -129,10 +141,11 @@ export default function TargetTypeSelector({
                         </span>
                         <span className="text-xs font-medium">{t.label}</span>
                         <span className="text-[10px] leading-tight text-fg-muted">
-                            {t.description}
+                            {unavailable ? "Print only — not available as a screen target" : t.description}
                         </span>
                     </Button>
-                ))}
+                    );
+                })}
             </div>
 
             {showPresets && (

@@ -1,6 +1,6 @@
 import { useReducer } from "react";
 import { PaperConfig } from "vitcv";
-import { targetGeneratorReducer } from "../../src/components/targetgen/reducer";
+import { targetGeneratorReducer, DEFAULT_SCREEN } from "../../src/components/targetgen/reducer";
 import type { TargetGeneratorState } from "../../src/components/targetgen/types";
 
 const BASE_TARGET: TargetGeneratorState["target"] = {
@@ -12,6 +12,10 @@ function useConfiguredPage(page: TargetGeneratorState["page"]) {
     const [state, dispatch] = useReducer(targetGeneratorReducer, {
         target: BASE_TARGET,
         page,
+        medium: "print",
+        screen: DEFAULT_SCREEN,
+        screenPrefilled: false,
+        screenResult: null,
         previewSvg: "",
         validation: { errors: [], warnings: [] },
         configCache: {},

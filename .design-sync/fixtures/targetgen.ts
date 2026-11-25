@@ -11,8 +11,10 @@
 // worker proxy.
 
 import { resolvePageDimensions } from '../../src/components/targetgen/svg/paperConstants';
+import { DEFAULT_SCREEN } from '../../src/components/targetgen/reducer';
 import type {
     PageConfig,
+    ScreenRenderResult,
     TargetConfig,
     TargetGeneratorState,
     ValidationResult,
@@ -183,9 +185,69 @@ export function settledState(target: TargetConfig, page: PageConfig = A4_LANDSCA
     return {
         target,
         page,
+        medium: 'print',
+        screen: { ...DEFAULT_SCREEN },
+        screenPrefilled: false,
+        screenResult: null,
         previewSvg: staticPreviewSvg(target, page),
         validation: staticValidation(target, page),
         configCache: {},
+    };
+}
+
+/**
+ * A settled SCREEN state. The real PNG comes from the WASM worker; `screenResult` here carries
+ * a tiny stand-in checkerboard PNG and the sidecar numbers of a real 1920 x 1080 render
+ * (chessboard 8 x 11 inner, 20 mm requested, 0.2745 mm pitch) so the geometry panel and the
+ * pixelated preview have something true-to-shape to show.
+ */
+const CHECKER_8X8_PNG_BASE64 =
+    'iVBORw0KGgoAAAANSUhEUgAAAAgAAAAICAAAAADhZOFXAAAAIklEQVR4ATXBsQEAMAjAIPT/n9PFwpCR9RXFOkNG1lcU6zzIfQwBpEIBKwAAAABJRU5ErkJggg==';
+
+export function stubPng(): Uint8Array {
+    const bin = atob(CHECKER_8X8_PNG_BASE64);
+    return Uint8Array.from(bin, (c) => c.charCodeAt(0));
+}
+
+export const SCREEN_GRID_RESULT: ScreenRenderResult = {
+    png: stubPng(),
+    sidecarJson: '{}',
+    widthPx: 1920,
+    heightPx: 1080,
+    geometry: {
+        kind: 'grid',
+        squareSizePx: 73,
+        squareSizeMm: 20.0385,
+        requestedSquareSizeMm: 20,
+        boardOriginPx: [522, 211],
+    },
+};
+
+export const SCREEN_RINGGRID_RESULT: ScreenRenderResult = {
+    png: stubPng(),
+    sidecarJson: '{}',
+    widthPx: 1920,
+    heightPx: 1080,
+    geometry: {
+        kind: 'ringgrid',
+        rows: 22,
+        columns: 34,
+        markerCount: 737,
+        drawnMarkerDiameterPx: 48,
+        drawnMarkerDiameterMm: 12,
+        codeBandWidthPx: 6.4,
+        boardOriginPx: [44.98, 35.5],
+    },
+};
+
+export function settledScreenState(target: TargetConfig, result: ScreenRenderResult): TargetGeneratorState {
+    return {
+        ...settledState(target),
+        medium: 'screen',
+        screenPrefilled: true,
+        screenResult: result,
+        previewSvg: '',
+        validation: { errors: [], warnings: [] },
     };
 }
 

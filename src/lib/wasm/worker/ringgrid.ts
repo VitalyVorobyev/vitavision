@@ -1,4 +1,4 @@
-import { mapTargetBundle, mergeConfig, type TargetBundle } from "./util";
+import { mapTargetBundle, mergeConfig, type TargetBundle, type RinggridScreenBundle } from "./util";
 import { getRinggridModule } from "./modules";
 
 export function adaptRinggridResult(
@@ -131,4 +131,27 @@ export async function handleRinggridPageSize(targetJson: string, optionsJson: st
     const mod = await getRinggridModule();
     const sizeJson = mod.target_page_size_mm(targetJson, optionsJson);
     return JSON.parse(sizeJson) as [number, number];
+}
+
+/** The slice of the ringgrid module the screen renderer needs (see `CalibScreenModule`). */
+export interface RinggridScreenModule {
+    render_fitted_screen_target_json(
+        targetJson: string,
+        optionsJson: string,
+    ): { png_bytes: Uint8Array; json_text: string; metadata: unknown };
+}
+
+/** Fit and render a ring grid for 1:1 display. `json` is the fitted detector spec. */
+export function renderRinggridScreenWith(
+    mod: RinggridScreenModule,
+    targetJson: string,
+    optionsJson: string,
+): RinggridScreenBundle {
+    const bundle = mod.render_fitted_screen_target_json(targetJson, optionsJson);
+    return { png: bundle.png_bytes, json: bundle.json_text, metadata: bundle.metadata };
+}
+
+export async function handleRenderRinggridScreenTarget(targetJson: string, optionsJson: string): Promise<RinggridScreenBundle> {
+    const mod = await getRinggridModule();
+    return renderRinggridScreenWith(mod, targetJson, optionsJson);
 }

@@ -35,6 +35,7 @@ export default function TargetGenerator() {
                         <TargetTypeSelector
                             selected={state.target.targetType}
                             dispatch={dispatch}
+                            medium={state.medium}
                         />
                     </div>
 

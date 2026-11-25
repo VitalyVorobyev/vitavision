@@ -170,3 +170,77 @@ describe("targetGeneratorReducer", () => {
         expect(config.circles).toHaveLength(3);
     });
 });
+
+describe("screen medium", () => {
+    const display = { widthPx: 2560, heightPx: 1440 };
+
+    it("starts in print with library-shaped screen defaults and no result", () => {
+        expect(INITIAL_STATE.medium).toBe("print");
+        expect(INITIAL_STATE.screen).toEqual({ widthPx: 1920, heightPx: 1080, pixelPitchMm: 0.25, marginPx: null });
+        expect(INITIAL_STATE.screenResult).toBeNull();
+        expect(INITIAL_STATE.screenPrefilled).toBe(false);
+    });
+
+    it("prefills the display size once, the first time Screen is chosen", () => {
+        const first = targetGeneratorReducer(INITIAL_STATE, { type: "SET_MEDIUM", medium: "screen", displayPx: display });
+        expect(first.medium).toBe("screen");
+        expect(first.screen).toMatchObject(display);
+        expect(first.screenPrefilled).toBe(true);
+
+        // The user edits, flips to Print and back: the edit survives.
+        const edited = targetGeneratorReducer(first, { type: "UPDATE_SCREEN", partial: { widthPx: 1280 } });
+        const print = targetGeneratorReducer(edited, { type: "SET_MEDIUM", medium: "print" });
+        const again = targetGeneratorReducer(print, { type: "SET_MEDIUM", medium: "screen", displayPx: display });
+        expect(again.screen.widthPx).toBe(1280);
+    });
+
+    it("keeps the defaults when the display size is unknown (SSR) and does not retry", () => {
+        const s = targetGeneratorReducer(INITIAL_STATE, { type: "SET_MEDIUM", medium: "screen" });
+        expect(s.screen).toEqual(INITIAL_STATE.screen);
+        expect(s.screenPrefilled).toBe(true);
+    });
+
+    it("does not prefill the pixel pitch or margin", () => {
+        const s = targetGeneratorReducer(INITIAL_STATE, { type: "SET_MEDIUM", medium: "screen", displayPx: display });
+        expect(s.screen.pixelPitchMm).toBe(0.25);
+        expect(s.screen.marginPx).toBeNull();
+    });
+
+    it("leaves the print page and target untouched, and drops stale results on a medium change", () => {
+        const withResult = {
+            ...INITIAL_STATE,
+            medium: "screen" as const,
+            screenResult: {
+                png: new Uint8Array(1),
+                sidecarJson: "{}",
+                widthPx: 1,
+                heightPx: 1,
+                geometry: { kind: "grid" as const, squareSizePx: 1, squareSizeMm: 1, requestedSquareSizeMm: 1, boardOriginPx: [0, 0] as [number, number] },
+            },
+        };
+        const back = targetGeneratorReducer(withResult, { type: "SET_MEDIUM", medium: "print" });
+        expect(back.screenResult).toBeNull();
+        expect(back.page).toBe(INITIAL_STATE.page);
+        expect(back.target).toBe(INITIAL_STATE.target);
+    });
+
+    it("is a no-op when the medium does not change", () => {
+        expect(targetGeneratorReducer(INITIAL_STATE, { type: "SET_MEDIUM", medium: "print" })).toBe(INITIAL_STATE);
+    });
+
+    it("UPDATE_SCREEN merges, including clearing the margin", () => {
+        const a = targetGeneratorReducer(INITIAL_STATE, { type: "UPDATE_SCREEN", partial: { marginPx: 4, pixelPitchMm: 0.2745 } });
+        expect(a.screen).toMatchObject({ marginPx: 4, pixelPitchMm: 0.2745 });
+        const b = targetGeneratorReducer(a, { type: "UPDATE_SCREEN", partial: { marginPx: null } });
+        expect(b.screen.marginPx).toBeNull();
+    });
+
+    it("SET_SCREEN_PREVIEW stores the result and validation", () => {
+        const s = targetGeneratorReducer(INITIAL_STATE, {
+            type: "SET_SCREEN_PREVIEW",
+            result: null,
+            validation: { errors: ["boom"], warnings: [] },
+        });
+        expect(s.validation.errors).toEqual(["boom"]);
+    });
+});

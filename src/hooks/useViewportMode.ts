@@ -45,7 +45,6 @@ export default function useViewportMode() {
     useEffect(() => {
         const pointerQuery = window.matchMedia("(pointer: fine)");
         const hoverQuery = window.matchMedia("(hover: hover)");
-        // eslint-disable-next-line @eslint-react/set-state-in-effect -- resync once after mount: the viewport may have changed between the lazy initial read and subscribing
         const update = () => setSnapshot(readViewportSnapshot());
 
         update();

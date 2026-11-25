@@ -110,7 +110,7 @@ export function buildDeepLinkSearch(
  */
 export function useDeepLinkSync() {
     const [searchParams] = useSearchParams();
-    // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- read once on mount
+    // oxlint-disable-next-line react/exhaustive-deps -- read once on mount
     const initialState = useMemo(() => readDeepLink(searchParams), []);
 
     const syncToUrl = useCallback((algorithmId: string, config: unknown, defaultConfig?: unknown) => {

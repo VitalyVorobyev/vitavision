@@ -81,6 +81,6 @@ export function useMermaid(
         return () => {
             cancelled = true;
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- caller-supplied `deps` array (spread) is the intentional re-run trigger, plus theme
+        // oxlint-disable-next-line react/exhaustive-deps -- caller-supplied `deps` array (spread) is the intentional re-run trigger, plus theme
     }, [...deps, theme]);
 }

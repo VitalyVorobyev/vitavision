@@ -168,7 +168,7 @@ export async function renderMarkdown(content: string, highlighter: Awaited<Retur
                 });
             };
         })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any -- rehype-sanitize schema type is complex
+        // oxlint-disable-next-line typescript/no-explicit-any -- rehype-sanitize schema type is complex
         .use(rehypeSanitize, sanitizeSchema as any)
         .use(() => {
             // Custom Shiki transformer — runs AFTER sanitize to avoid style stripping

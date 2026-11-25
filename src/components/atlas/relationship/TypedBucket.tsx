@@ -24,7 +24,7 @@ export default function TypedBucket({
             </h3>
             <ul className="m-0 p-0 list-none space-y-3">
                 {resolved.map(({ rel, node }, i) => (
-                    // eslint-disable-next-line @eslint-react/no-array-index-key -- a symmetric relation authored on both pages can yield the same label+target twice, so no field is provably unique; the list is static
+                    // oxlint-disable-next-line react/no-array-index-key -- a symmetric relation authored on both pages can yield the same label+target twice, so no field is provably unique; the list is static
                     <li key={`${rel.label}:${rel.target}:${i}`}>
                         {rel.confidence !== "high" && (
                             <div className="text-[11px] font-mono uppercase tracking-wider text-fg-muted/70 mb-1">

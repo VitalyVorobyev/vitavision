@@ -139,7 +139,7 @@ export function MobileGraphView({ history, current, onBack, onNavigate }: Mobile
                         </>
                     )}
                     {visible.map((s, i) => (
-                        // eslint-disable-next-line @eslint-react/no-array-index-key -- the trail may revisit a slug, so slug alone is not unique; the list is append-only display
+                        // oxlint-disable-next-line react/no-array-index-key -- the trail may revisit a slug, so slug alone is not unique; the list is append-only display
                         <span key={`m-${s}-${i}`} className="contents">
                             <span className="text-fg whitespace-nowrap">{nodeTitle(s)}</span>
                             <span className="text-fg-muted/60">›</span>

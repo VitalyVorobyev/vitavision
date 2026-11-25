@@ -37,7 +37,6 @@ export default function TableOfContents({ articleRef, deps }: TableOfContentsPro
                     break;
                 }
             }
-            // eslint-disable-next-line @eslint-react/set-state-in-effect -- active heading is derived from live scroll positions of the rendered DOM
             setActiveId(nextActive);
         };
 

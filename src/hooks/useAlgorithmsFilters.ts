@@ -49,7 +49,7 @@ export default function useAlgorithmsFilters(): UseAlgorithmsFiltersReturn {
     // it) keeps its identity until the URL or the stored view actually changes.
     const filters = useMemo(
         () => parseFiltersFromParams(searchParams),
-        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- storedViewNonce is a recompute trigger
+        // oxlint-disable-next-line react/exhaustive-deps -- storedViewNonce is a recompute trigger
         [searchParams, storedViewNonce],
     );
 

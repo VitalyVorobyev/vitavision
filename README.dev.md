@@ -27,7 +27,7 @@ Open `http://localhost:5173/editor`, upload an image or pick a sample, choose an
 
 ```bash
 bun run build                          # Type-check + Vite production build
-bun run lint                           # ESLint
+bun run lint                           # Oxlint
 npx vitest run                         # Unit tests
 bun run scripts/test-wasm-schemas.ts   # WASM integration tests
 bun run test:screens                   # screenshots: main routes + editor canvas per algorithm (after a build)
@@ -52,7 +52,7 @@ change. It is not a CI gate either: the fixture was captured on one machine and
 cross-platform bit-exactness of the WASM runs is unverified.
 
 The toolchain follows the shared vitavision baseline: compiler options from
-`@vitavision/config-ts` and lint from `@vitavision/config-eslint` (type-aware), with no
+`@vitavision/config-ts` and lint from `@vitavision/config-oxlint` (type-aware, Oxlint with `oxlint-tsgolint`), with no
 exceptions: `noUncheckedIndexedAccess` and `exactOptionalPropertyTypes` are on. Index
 reads are narrowed rather than asserted where it reads naturally; a `!` is reserved for
 an access whose bound is visible right there (a loop bound, a length check, a fixed-size
@@ -101,12 +101,12 @@ shared vitavision design system (lab-ui PLAN L3-3):
   editor rail and the target generator's side panel are `DensityProvider value="compact"`;
   touch layouts keep the comfortable density. Editorial pages keep their own markup
   (visual-language §7).
-- **Tokens only (G5.1).** `eslint.config.js` runs `tokensOnly(["src/**"])`: no raw
+- **Tokens only (G5.1).** `.oxlintrc.json` turns on `vitavision/tokens-only` for `src/**`: no raw
   Tailwind palette class, no hex literal. The editor's image canvas (`@vitavision/stage2d`
   and `@vitavision/overlays`) paints in overlay roles (`--stage-feature`, `--stage-model`,
   `--stage-selection`, … from `@vitavision/stage2d/styles.css`), never a literal colour or a
   score tone. Colours that are data sit in
-  a few allowlisted modules, each exempted in `eslint.config.js` with its reason:
+  a few allowlisted modules, each exempted in `.oxlintrc.json` with its reason:
   `src/store/editor/featureColors.ts`, `src/components/targetgen/printColors.ts`,
   `src/components/illustrations/_shared/dataColors.ts` (and Shiki's output in
   `src/generated/`).

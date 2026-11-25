@@ -17,6 +17,7 @@ export function useHeadings(
 ): Heading[] {
     const [headings, setHeadings] = useState<Heading[]>([]);
 
+    // oxlint-disable-next-line react/exhaustive-deps -- headings are read from the rendered DOM after commit, so setState in the effect is intended; re-runs are keyed by the caller's `deps`
     useEffect(() => {
         const el = articleRef.current;
         if (!el) return;
@@ -31,9 +32,8 @@ export function useHeadings(
             result.push({ id, text, level });
         });
 
-        // eslint-disable-next-line @eslint-react/set-state-in-effect -- headings are read from the rendered DOM, which only exists after commit
         setHeadings(result);
-        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- caller-supplied `deps` array is the intentional re-run trigger; articleRef is a stable ref
+        // oxlint-disable-next-line react/exhaustive-deps -- caller-supplied `deps` array is the intentional re-run trigger; articleRef is a stable ref
     }, deps);
 
     return headings;

@@ -97,7 +97,7 @@ export interface UseGraphTrailResult {
 export function useGraphTrail(initialSlug: string | null): UseGraphTrailResult {
     const [state, dispatch] = useReducer(trailReducer, initialSlug ?? "", initialTrailState);
     const [hover, setHover] = useState<string | null>(null);
-    // Destructured so `currentSlug` doesn't end in `.current` — eslint's
+    // Destructured so `currentSlug` doesn't end in `.current` — the lint's
     // exhaustive-deps rule treats any `x.current` member access as a ref read
     // (and thus an invalid hook dependency), which is a false positive here
     // since `current` is just a TrailState field, not a ref.

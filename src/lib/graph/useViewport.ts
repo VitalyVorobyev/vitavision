@@ -109,7 +109,6 @@ export function useViewport({
         });
         ro.observe(el);
         // Read initial size synchronously
-        // eslint-disable-next-line @eslint-react/set-state-in-effect -- initial size is measured from the DOM element, only available after commit
         setVp({ w: el.clientWidth, h: el.clientHeight });
         return () => ro.disconnect();
     }, []);
@@ -143,7 +142,7 @@ export function useViewport({
         const didNavigate = prevKeyRef.current !== refitKey;
         prevKeyRef.current = refitKey;
         fitView(didNavigate);
-    // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- fitView is rebuilt whenever vp/bounds change (both listed); listing it would refit on unrelated option changes
+    // oxlint-disable-next-line react/exhaustive-deps -- fitView is rebuilt whenever vp/bounds change (both listed); listing it would refit on unrelated option changes
     }, [refitKey, bounds, vp.w, vp.h]);
 
     // ── Non-passive wheel listener for zoom-to-cursor ─────────────────────────

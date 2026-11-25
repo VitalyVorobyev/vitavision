@@ -125,7 +125,7 @@ export default function ImplementationsList({
             </h2>
             <div className="space-y-2.5">
                 {implementations.map((impl, i) => (
-                    // eslint-disable-next-line @eslint-react/no-array-index-key -- implementations carry no unique id (a repo can be listed twice); the list is static per page
+                    // oxlint-disable-next-line react/no-array-index-key -- implementations carry no unique id (a repo can be listed twice); the list is static per page
                     <ImplementationCard key={`${impl.repo}-${i}`} impl={impl} />
                 ))}
             </div>

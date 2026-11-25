@@ -178,7 +178,7 @@ Run before every commit:
 
 ```bash
 bun run build              # type-check + content-build + Vite + postbuild guard
-bun run lint               # ESLint
+bun run lint               # Oxlint
 npx vitest run             # unit tests
 bun run content:validate          # public pages only
 INCLUDE_DRAFTS=true bun run content:validate   # public + drafts

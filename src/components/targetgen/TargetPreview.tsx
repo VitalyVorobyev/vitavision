@@ -413,7 +413,7 @@ function PrintPreview({ state, dispatch }: Props) {
             >
                 <div
                     className="bg-white shadow-lg"
-                    // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- SVG is produced locally by the calib-targets/ringgrid WASM renderers from numeric config, never from user-supplied markup
+                    // oxlint-disable-next-line react/no-danger -- SVG is produced locally by the calib-targets/ringgrid WASM renderers from numeric config, never from user-supplied markup
                     dangerouslySetInnerHTML={{ __html: state.previewSvg }}
                 />
             </div>

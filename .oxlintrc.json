@@ -1,0 +1,66 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["./node_modules/@vitavision/config-oxlint/oxlintrc.json"],
+  "options": { "reportUnusedDisableDirectives": "error" },
+  // ds-bundle/ and .ds-sync/ hold generated /design-sync output (gitignored).
+  "ignorePatterns": ["dist/**", ".venv/**", "py/**", "ds-bundle/**", ".ds-sync/**", "e2e/.screens/**", "test-results/**"],
+  "overrides": [
+    {
+      // Build scripts, root config files and the design-sync previews sit outside the tsc
+      // projects, so type-aware rules are off there (Node env, Bun global).
+      "files": ["scripts/**", "*.config.{js,ts}", "e2e/**", ".design-sync/**"],
+      "env": { "node": true },
+      "globals": { "Bun": "readonly" },
+      "rules": {
+        "typescript/await-thenable": "off",
+        "typescript/no-array-delete": "off",
+        "typescript/no-base-to-string": "off",
+        "typescript/no-duplicate-type-constituents": "off",
+        "typescript/no-floating-promises": "off",
+        "typescript/no-for-in-array": "off",
+        "typescript/no-implied-eval": "off",
+        "typescript/no-misused-promises": "off",
+        "typescript/no-redundant-type-constituents": "off",
+        "typescript/no-unnecessary-type-assertion": "off",
+        "typescript/no-unsafe-argument": "off",
+        "typescript/no-unsafe-assignment": "off",
+        "typescript/no-unsafe-call": "off",
+        "typescript/no-unsafe-enum-comparison": "off",
+        "typescript/no-unsafe-member-access": "off",
+        "typescript/no-unsafe-return": "off",
+        "typescript/no-unsafe-unary-minus": "off",
+        "typescript/only-throw-error": "off",
+        "typescript/prefer-promise-reject-errors": "off",
+        "typescript/require-await": "off",
+        "typescript/restrict-plus-operands": "off",
+        "typescript/restrict-template-expressions": "off",
+        "typescript/unbound-method": "off"
+      }
+    },
+    {
+      "files": ["**/*.{ts,tsx}"],
+      "env": { "browser": true },
+      "rules": {
+        "no-unused-vars": ["error", { "varsIgnorePattern": "^_", "argsIgnorePattern": "^_", "caughtErrorsIgnorePattern": "^_" }],
+        "react/only-export-components": ["error", { "allowConstantExport": true }]
+      }
+    },
+    // Gate G5.1 (lab-ui PLAN section 5): in src/, colour comes from the @vitavision/ui tokens
+    // or the editorial token layer (src/styles/editorial-tokens.css). Tests are exempt by the rule.
+    { "files": ["src/**"], "rules": { "vitavision/tokens-only": "error" } },
+    {
+      // Literal colours on purpose, one reason each:
+      "files": [
+        // Build output of scripts/content-build.ts: Shiki writes its theme colours inline.
+        "src/generated/**",
+        // Feature colours are data: stored on each feature, exported with it, shown as its swatch.
+        "src/store/editor/featureColors.ts",
+        // A printed target is black ink on white paper whatever the viewer theme.
+        "src/components/targetgen/printColors.ts",
+        // The ChESS figure SR/DR/MR hues: the article text names the terms by these colours.
+        "src/components/illustrations/_shared/dataColors.ts"
+      ],
+      "rules": { "vitavision/tokens-only": "off" }
+    }
+  ]
+}

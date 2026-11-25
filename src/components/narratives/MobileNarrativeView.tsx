@@ -60,7 +60,7 @@ export default function MobileNarrativeView({ narrative, steps, chapters }: Mobi
                         {chapter && (
                             <div
                                 className={`${proseClasses} !max-w-none !text-[14.5px] !leading-[1.7] [&>h2]:hidden`}
-                                // eslint-disable-next-line @eslint-react/dom-no-dangerously-set-innerhtml -- chapter HTML is a slice of the build-time rehype-sanitize output (scripts/content-build.ts sliceChapters); no runtime user content
+                                // oxlint-disable-next-line react/no-danger -- chapter HTML is a slice of the build-time rehype-sanitize output (scripts/content-build.ts sliceChapters); no runtime user content
                                 dangerouslySetInnerHTML={{ __html: chapter }}
                             />
                         )}

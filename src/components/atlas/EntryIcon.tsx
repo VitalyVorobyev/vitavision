@@ -71,6 +71,7 @@ const _GLYPHS: Array<(s: string) => React.ReactNode> = [
             const a = (i * Math.PI) / 4;
             const x1 = 12 + 4  * Math.cos(a), y1 = 12 + 4  * Math.sin(a);
             const x2 = 12 + 10 * Math.cos(a), y2 = 12 + 10 * Math.sin(a);
+            // eslint-disable-next-line @eslint-react/no-array-index-key -- fixed 8-spoke static glyph; items have no identity beyond position
             return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} />;
         })}
         <circle cx="12" cy="12" r="1.4" fill={s} stroke="none" />

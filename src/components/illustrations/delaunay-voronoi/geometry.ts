@@ -37,19 +37,3 @@ export function pointInTriangle(p: Vec2, a: Vec2, b: Vec2, c: Vec2): boolean {
     const hasPos = d1 > 0 || d2 > 0 || d3 > 0;
     return !(hasNeg && hasPos);
 }
-
-// Ray-casting algorithm for convex or concave polygons.
-export function pointInPolygon(p: Vec2, polygon: Vec2[]): boolean {
-    let inside = false;
-    const n = polygon.length;
-    for (let i = 0, j = n - 1; i < n; j = i++) {
-        // i and j are both in [0, n) by the loop bounds.
-        const pi = polygon[i]!, pj = polygon[j]!;
-        const xi = pi.x, yi = pi.y;
-        const xj = pj.x, yj = pj.y;
-        if ((yi > p.y) !== (yj > p.y) && p.x < ((xj - xi) * (p.y - yi)) / (yj - yi) + xi) {
-            inside = !inside;
-        }
-    }
-    return inside;
-}

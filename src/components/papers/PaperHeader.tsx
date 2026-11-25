@@ -53,6 +53,7 @@ export default function PaperHeader({ paper, authorsIndex, primarySlug }: PaperH
                         const id = authorIds[i];
                         const name = id ? (authorsIndex.authors[id]?.name ?? display) : display;
                         return (
+                            // eslint-disable-next-line @eslint-react/no-array-index-key -- author names can repeat; authors are positional and parallel to authorIds
                             <Fragment key={`${display}-${i}`}>
                                 {id ? (
                                     <Link

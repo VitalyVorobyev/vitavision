@@ -41,9 +41,9 @@ function ChessResponseCover() {
             fill="none"
             aria-hidden="true"
         >
-            {cells.map((c, i) => (
+            {cells.map((c) => (
                 <rect
-                    key={i}
+                    key={`${c.x}-${c.y}`}
                     x={c.x}
                     y={c.y}
                     width={cell}
@@ -52,8 +52,8 @@ function ChessResponseCover() {
                     fill="currentColor"
                 />
             ))}
-            {saddles.map((s, i) => (
-                <g key={i}>
+            {saddles.map((s) => (
+                <g key={`${s.x}-${s.y}`}>
                     <circle cx={s.x} cy={s.y} r="20" className="text-signal" fill="currentColor" fillOpacity="0.12" />
                     <circle cx={s.x} cy={s.y} r="12" className="text-signal" fill="currentColor" fillOpacity="0.28" />
                     <circle cx={s.x} cy={s.y} r="6" className="text-signal" fill="currentColor" fillOpacity="0.85" />
@@ -107,12 +107,12 @@ function DelaunayVoronoiCover() {
             />
 
             {/* Delaunay triangulation outlines */}
-            {tris.map(([a, b, c], i) => {
+            {tris.map(([a, b, c]) => {
                 const A = pts[a], B = pts[b], C = pts[c];
                 if (!A || !B || !C) return null;
                 return (
                     <polygon
-                        key={i}
+                        key={`${a}-${b}-${c}`}
                         points={`${A.x},${A.y} ${B.x},${B.y} ${C.x},${C.y}`}
                         className="text-fg"
                         stroke="currentColor"
@@ -124,12 +124,12 @@ function DelaunayVoronoiCover() {
             })}
 
             {/* Highlighted dual-graph spokes from the centre */}
-            {dualEdges.map(([a, b], i) => {
+            {dualEdges.map(([a, b]) => {
                 const A = pts[a], B = pts[b];
                 if (!A || !B) return null;
                 return (
                     <line
-                        key={i}
+                        key={`${a}-${b}`}
                         x1={A.x} y1={A.y} x2={B.x} y2={B.y}
                         className="text-signal"
                         stroke="currentColor"
@@ -141,7 +141,7 @@ function DelaunayVoronoiCover() {
 
             {/* Seed points */}
             {pts.map((p, i) => (
-                <g key={i}>
+                <g key={`${p.x}-${p.y}`}>
                     <circle
                         cx={p.x} cy={p.y} r="6"
                         className="text-signal"

@@ -23,7 +23,7 @@ export const FORWARD_LABEL: Record<RelationType, string> = {
 };
 
 /** Reverse-direction label for asymmetric types (when target's panel renders the entry). */
-export const REVERSE_LABEL: Partial<Record<RelationType, string>> = {
+const REVERSE_LABEL: Partial<Record<RelationType, string>> = {
     generalized_by: "Generalises",
     extended_by: "Extends",
     feeds_into: "Fed by",

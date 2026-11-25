@@ -55,7 +55,7 @@ function ShiTomasiGlyph() {
                 <line x1="42" y1="14" x2="44" y2="50" />
             </g>
             {features.map((f, i) => (
-                <CornerMark key={i} cx={f.x} cy={f.y} accent={i === 2} />
+                <CornerMark key={`${f.x}-${f.y}`} cx={f.x} cy={f.y} accent={i === 2} />
             ))}
         </svg>
     );
@@ -74,9 +74,9 @@ function FastGlyph() {
     return (
         <svg viewBox="0 0 64 64" className={svgClass} fill="none" aria-hidden="true">
             <circle cx={cx} cy={cy} r={r} className="text-fg/15" stroke="currentColor" strokeWidth="0.6" strokeDasharray="1 2" />
-            {dots.map((d, i) => (
+            {dots.map((d) => (
                 <rect
-                    key={i}
+                    key={`${d.x}-${d.y}`}
                     x={d.x - 1.8}
                     y={d.y - 1.8}
                     width={3.6}
@@ -108,9 +108,9 @@ function ChessCornersGlyph() {
     }
     return (
         <svg viewBox="0 0 64 64" className={svgClass} fill="none" aria-hidden="true">
-            {cells.map((cell, i) => (
+            {cells.map((cell) => (
                 <rect
-                    key={i}
+                    key={`${cell.x}-${cell.y}`}
                     x={cell.x}
                     y={cell.y}
                     width="12"
@@ -119,8 +119,8 @@ function ChessCornersGlyph() {
                     fill="currentColor"
                 />
             ))}
-            {saddles.map((s, i) => (
-                <g key={i} className="text-signal" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
+            {saddles.map((s) => (
+                <g key={`${s.x}-${s.y}`} className="text-signal" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
                     <line x1={s.x - 2.5} y1={s.y - 2.5} x2={s.x + 2.5} y2={s.y + 2.5} />
                     <line x1={s.x + 2.5} y1={s.y - 2.5} x2={s.x - 2.5} y2={s.y + 2.5} />
                 </g>

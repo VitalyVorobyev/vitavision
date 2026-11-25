@@ -12,7 +12,7 @@
 
 import type { ScholarlyGroup } from "./scholarlyTypes.ts";
 
-export const GROUP_OF_DOMAIN: Record<string, ScholarlyGroup> = {
+const GROUP_OF_DOMAIN: Record<string, ScholarlyGroup> = {
     detection: "recognition",
     segmentation: "recognition",
     "representation-learning": "representation",

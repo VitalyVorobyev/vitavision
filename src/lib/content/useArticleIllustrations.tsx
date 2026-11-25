@@ -88,6 +88,6 @@ export function useArticleIllustrations(
         return () => {
             roots.forEach((root) => root.unmount());
         };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- caller-supplied `deps` array is the intentional re-run trigger (article HTML changes)
     }, deps);
 }

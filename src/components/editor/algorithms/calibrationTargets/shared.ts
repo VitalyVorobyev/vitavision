@@ -110,37 +110,6 @@ export const calibrationMarkerFeatures = (
         });
 };
 
-export const calibrationCircleCandidateFeatures = (
-    candidates: CalibrationCircleCandidate[] | null,
-    runId: string,
-    algorithmId: string,
-    color = DETECTION_COLORS.marker,
-): Feature[] => {
-    if (!candidates) {
-        return [];
-    }
-
-    return candidates.map((candidate, index) => ({
-        id: `${algorithmId}-circle-${index + 1}`,
-        type: "point",
-        source: "algorithm",
-        algorithmId,
-        runId,
-        readonly: true,
-        x: candidate.center_img.x,
-        y: candidate.center_img.y,
-        color,
-        label: `circle ${index + 1}`,
-        meta: {
-            kind: "circle_candidate",
-            grid: candidate.cell,
-            score: candidate.score,
-            polarity: candidate.polarity,
-            contrast: candidate.contrast,
-        },
-    }));
-};
-
 export const calibrationCircleMatchFeatures = (
     matches: CalibrationCircleMatch[] | null,
     candidates: CalibrationCircleCandidate[] | null,

@@ -247,7 +247,7 @@ export default function NarrativeCanvas({
         }
         // else: the whole lens already fits legibly — the hook's own
         // mount/resize/lens-switch effect has already fit it; nothing to override.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- keyed on the values the camera depends on (vp.w/vp.h, layout, focus ids); focusBoxFor/vp are per-render closures over them and would refit on every render
     }, [focusIds, layout, vp.w, vp.h, bounds, firstStepFocusIds, fitBounds, fitView]);
 
     // Chips slide to their new coordinates on a lens switch; the bezier edges
@@ -340,6 +340,7 @@ export default function NarrativeCanvas({
                     const hidden = isHidden(edge.from) || isHidden(edge.to);
                     return (
                         <path
+                            // eslint-disable-next-line @eslint-react/no-array-index-key -- edges have no id and (from, to) may repeat across edge types; the list is static per lens
                             key={`e-${i}`}
                             d={geom.path}
                             fill="none"
@@ -366,6 +367,7 @@ export default function NarrativeCanvas({
                     const w      = edge.label.length * 5.6 + 10;
                     return (
                         <EdgeLabelPill
+                            // eslint-disable-next-line @eslint-react/no-array-index-key -- edges have no id and (from, to) may repeat across edge types; the list is static per lens
                             key={`lbl-${i}`}
                             label={edge.label}
                             width={w}

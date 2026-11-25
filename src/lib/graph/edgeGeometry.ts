@@ -27,7 +27,7 @@ export interface EdgeGeometry {
 }
 
 /** Where a straight line from the box's center toward (toX, toY) crosses the box's border. */
-export function edgeExit(boxX: number, boxY: number, w: number, h: number, toX: number, toY: number): ExitPoint {
+function edgeExit(boxX: number, boxY: number, w: number, h: number, toX: number, toY: number): ExitPoint {
     const bcx = boxX + w / 2, bcy = boxY + h / 2;
     const dx = toX - bcx, dy = toY - bcy;
     const adx = Math.abs(dx) / (w / 2 + 0.0001);
@@ -46,7 +46,7 @@ export function edgeExit(boxX: number, boxY: number, w: number, h: number, toX: 
 }
 
 /** Bezier control point offset `dist` px outward from an exit point, along its side's normal. */
-export function ctrlFromSide(p: ExitPoint, side: ExitPoint["side"], dist: number): { x: number; y: number } {
+function ctrlFromSide(p: ExitPoint, side: ExitPoint["side"], dist: number): { x: number; y: number } {
     switch (side) {
         case "right":  return { x: p.x + dist, y: p.y };
         case "left":   return { x: p.x - dist, y: p.y };

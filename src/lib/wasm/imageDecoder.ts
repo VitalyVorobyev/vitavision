@@ -15,7 +15,7 @@ export async function decodeImageUrl(imageSrc: string): Promise<DecodedImage> {
     return decodeImageBlob(blob);
 }
 
-export async function decodeImageBlob(blob: Blob): Promise<DecodedImage> {
+async function decodeImageBlob(blob: Blob): Promise<DecodedImage> {
     const bitmap = await createImageBitmap(blob);
     const { width, height } = bitmap;
 

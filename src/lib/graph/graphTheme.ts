@@ -36,7 +36,7 @@ export function graphRelColor(rel: GraphRelKey): string {
 export type GraphKind = "algorithm" | "model" | "concept";
 
 /** entry kind → `--graph-kind-accent-*` custom property name. */
-export const GRAPH_KIND_ACCENT_VAR: Record<GraphKind, string> = {
+const GRAPH_KIND_ACCENT_VAR: Record<GraphKind, string> = {
     algorithm: "--graph-kind-accent-algorithm",
     model:     "--graph-kind-accent-model",
     concept:   "--graph-kind-accent-concept",

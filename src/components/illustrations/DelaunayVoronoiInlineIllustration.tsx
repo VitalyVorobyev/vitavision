@@ -38,7 +38,7 @@ export default function DelaunayVoronoiInlineIllustration({
         if (initialLayers?.delaunay === false && demo.state.layers.delaunay) toggleLayer("delaunay");
         if (initialLayers?.voronoi && !demo.state.layers.voronoi) toggleLayer("voronoi");
         if (initialLayers?.circumcircles && !demo.state.layers.circumcircles) toggleLayer("circumcircles");
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps, @eslint-react/exhaustive-deps -- run once on mount: applies the initial layer props; re-running would fight the user's later toggles
     }, []);
 
     const reset = () => {

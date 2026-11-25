@@ -32,7 +32,7 @@ function applyContrast(unitValue: number, contrast: number): number {
     return clamp(0.5 + (unitValue - 0.5) * contrast, 0, 1);
 }
 
-export function sampleIntensityAt(
+function sampleIntensityAt(
     x: number,
     y: number,
     controls: ChessResponseControls,

@@ -5,7 +5,7 @@ import { readOnlyPaths } from "../../schemaTools";
 import { schema } from "./schema";
 
 /** `DICT_4X4_1000` -> `4×4 (1000)`, `DICT_APRILTAG_36h11` -> `AprilTag 36h11`. */
-export function dictionaryLabel(name: string): string {
+function dictionaryLabel(name: string): string {
     const grid = /^DICT_(\d)X(\d)_(\d+)$/.exec(name);
     if (grid) return `${grid[1]}×${grid[2]} (${grid[3]})`;
     const tag = /^DICT_APRILTAG_(\w+)$/.exec(name);

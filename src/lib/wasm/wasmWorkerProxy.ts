@@ -218,3 +218,33 @@ export async function generateRadsymHeatmap(
         height: number;
     }>;
 }
+
+/** Render a chessboard / ChArUco / PuzzleBoard as a native-resolution screen PNG
+ * (`png` bytes are transferred, not copied) plus the library's JSON sidecar. */
+export async function renderScreenTargetWasm(
+    target: unknown,
+    screen: unknown,
+): Promise<{ png: Uint8Array; json: string }> {
+    return postCommand(
+        "render-screen-target",
+        new Uint8Array(0),
+        0,
+        0,
+        { target, screen },
+    ) as Promise<{ png: Uint8Array; json: string }>;
+}
+
+/** Fit and render a ring grid as a native-resolution screen PNG. `json` is the
+ * fitted detector spec; `metadata` is the realised screen geometry. */
+export async function renderRinggridScreenTargetWasm(
+    targetJson: string,
+    optionsJson: string,
+): Promise<{ png: Uint8Array; json: string; metadata: unknown }> {
+    return postCommand(
+        "render-ringgrid-screen-target",
+        new Uint8Array(0),
+        0,
+        0,
+        { targetJson, optionsJson },
+    ) as Promise<{ png: Uint8Array; json: string; metadata: unknown }>;
+}

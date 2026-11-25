@@ -175,3 +175,16 @@ export interface TargetBundle {
 export function mapTargetBundle(bundle: RawTargetBundle): TargetBundle {
     return { svg: bundle.svg_text, dxf: bundle.dxf_text, json: bundle.json_text, png: bundle.png_bytes };
 }
+
+/** Result of a native-resolution screen render: the grayscale PNG plus the
+ * library's JSON sidecar (`json_text`). Both libraries return this shape;
+ * ringgrid additionally returns `metadata`. */
+export interface ScreenBundle {
+    png: Uint8Array;
+    json: string;
+}
+
+export interface RinggridScreenBundle extends ScreenBundle {
+    /** ringgrid's `ScreenTargetMetadata` — plain object, structured-clone safe. */
+    metadata: unknown;
+}

@@ -6,7 +6,15 @@ import {
     PUZZLEPOLE_PRESETS,
 } from "../../src/components/targetgen/presets";
 import type { TargetGeneratorState, ChessboardConfig } from "../../src/components/targetgen/types";
-import { A4_LANDSCAPE, PUZZLEPOLE_PERIODS, first, settledState } from "../fixtures/targetgen";
+import {
+    A4_LANDSCAPE,
+    PUZZLEPOLE_PERIODS,
+    SCREEN_GRID_RESULT,
+    SCREEN_RINGGRID_RESULT,
+    first,
+    settledScreenState,
+    settledState,
+} from "../fixtures/targetgen";
 
 // Real desktop usage (src/pages/TargetGenerator.tsx): a `w-80` right rail.
 function Rail({ children }: { children: React.ReactNode }) {
@@ -104,6 +112,45 @@ export const ValidationBlockedExport = () => {
     return (
         <Rail>
             <TargetConfigPanel state={state} dispatch={dispatch} sections={["validation", "downloads"]} />
+        </Rail>
+    );
+};
+
+// Screen medium: display fields on the Page step, realised geometry (from the sidecar) and the
+// PNG + JSON downloads on the Export step.
+export const ScreenDisplaySettings = () => {
+    const preset = first(CHARUCO_PRESETS);
+    const [state, dispatch] = usePanelState(settledScreenState(preset.target, SCREEN_GRID_RESULT));
+    return (
+        <Rail>
+            <TargetConfigPanel state={state} dispatch={dispatch} sections={["page"]} />
+        </Rail>
+    );
+};
+
+export const ScreenChessboardExport = () => {
+    const config: ChessboardConfig = { innerRows: 8, innerCols: 11, squareSizeMm: 20, innerSquareRel: 0 };
+    const [state, dispatch] = usePanelState(settledScreenState({ targetType: "chessboard", config }, SCREEN_GRID_RESULT));
+    return (
+        <Rail>
+            <TargetConfigPanel state={state} dispatch={dispatch} sections={["validation", "downloads"]} />
+        </Rail>
+    );
+};
+
+export const ScreenRingGridExport = () => {
+    const [state, dispatch] = usePanelState(
+        settledScreenState(
+            {
+                targetType: "ringgrid",
+                config: { rows: 15, longRowCols: 14, pitchMm: 8.0, markerOuterRadiusMm: 5.6, markerInnerRadiusMm: 3.2, markerRingWidthMm: 0.8, profile: "baseline" },
+            },
+            SCREEN_RINGGRID_RESULT,
+        ),
+    );
+    return (
+        <Rail>
+            <TargetConfigPanel state={state} dispatch={dispatch} sections={["pattern", "validation", "downloads"]} />
         </Rail>
     );
 };

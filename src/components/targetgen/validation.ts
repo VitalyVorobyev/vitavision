@@ -1,4 +1,13 @@
-import type { TargetConfig, PageConfig, ValidationResult, CharucoConfig, RingGridConfig } from "./types";
+import type {
+    TargetConfig,
+    PageConfig,
+    ValidationResult,
+    CharucoConfig,
+    RingGridConfig,
+    ScreenGeometry,
+    ScreenSettings,
+} from "./types";
+import { isScreenSupported, screenUnsupportedMessage } from "./screenTarget";
 import { resolvePageDimensions } from "./svg/paperConstants";
 import { PUZZLEBOARD_QUIET_ZONE_MM } from "./puzzleboard/constants";
 import { toRinggridTarget, toRinggridBoardSizeOptions } from "./ringgridTarget";
@@ -18,6 +27,69 @@ function dictionaryPoolSize(name: string): number | null {
     if (match) return Number(match[1]);
     // AprilTag / ArUco original — large enough for any practical board
     return null;
+}
+
+/** Config checks shared by the print and screen media (no page involved). */
+function charucoConfigErrors(c: CharucoConfig): string[] {
+    const errors: string[] = [];
+    if (c.markerSizeRel <= 0 || c.markerSizeRel >= 1) {
+        errors.push("Marker size ratio must be between 0 and 1.");
+    }
+    const needed = charucoMarkerCount(c);
+    const poolSize = dictionaryPoolSize(c.dictionary);
+    if (poolSize !== null && needed > poolSize) {
+        errors.push(
+            `Board requires ${needed} markers but dictionary ${c.dictionary} only has ${poolSize}. ` +
+            `Use a larger dictionary or reduce board dimensions.`,
+        );
+    }
+    return errors;
+}
+
+const MAX_SCREEN_PX = 16384;
+
+/**
+ * Screen-medium validation: the pure checks that need no rendering. Whatever
+ * only the library can judge (a ChArUco dictionary that is too small, a board
+ * that cannot fit the display, a ring grid that cannot fit at the marker
+ * diameter) comes back as a render error and is surfaced by the caller as a
+ * validation error with the library's own message.
+ */
+export function validateScreenConfig(target: TargetConfig, screen: ScreenSettings): ValidationResult {
+    const errors: string[] = [];
+    const warnings: string[] = [];
+
+    if (!isScreenSupported(target.targetType)) {
+        errors.push(screenUnsupportedMessage(target.targetType));
+    }
+
+    for (const [label, v] of [["Width", screen.widthPx], ["Height", screen.heightPx]] as const) {
+        if (!Number.isInteger(v) || v < 1 || v > MAX_SCREEN_PX) {
+            errors.push(`${label} must be a whole number of pixels between 1 and ${MAX_SCREEN_PX}.`);
+        }
+    }
+    if (!Number.isFinite(screen.pixelPitchMm) || screen.pixelPitchMm <= 0) {
+        errors.push("Pixel pitch must be a positive number of millimeters.");
+    }
+    if (screen.marginPx !== null && (!Number.isInteger(screen.marginPx) || screen.marginPx < 0)) {
+        errors.push("Margin must be a whole number of pixels, 0 or more (or blank for the library default).");
+    }
+
+    if (target.targetType === "charuco") {
+        errors.push(...charucoConfigErrors(target.config));
+    }
+    return { errors, warnings };
+}
+
+/** Warnings that depend on the realised geometry of a successful screen render. */
+export function screenGeometryWarnings(geometry: ScreenGeometry): string[] {
+    if (geometry.kind === "grid" && geometry.squareSizePx < 12) {
+        return [`Squares are only ${geometry.squareSizePx} px wide — corner detection may be unreliable at that size.`];
+    }
+    if (geometry.kind === "ringgrid" && geometry.drawnMarkerDiameterPx < 24) {
+        return [`Markers are only ${geometry.drawnMarkerDiameterPx.toFixed(0)} px across — detection may be unreliable at that size.`];
+    }
+    return [];
 }
 
 export async function validateConfig(
@@ -90,17 +162,7 @@ export async function validateConfig(
             boardH = c.rows * c.squareSizeMm;
             if (c.squareSizeMm < 5) smallFeatureWarning = true;
 
-            if (c.markerSizeRel <= 0 || c.markerSizeRel >= 1) {
-                errors.push("Marker size ratio must be between 0 and 1.");
-            }
-            const needed = charucoMarkerCount(c);
-            const poolSize = dictionaryPoolSize(c.dictionary);
-            if (poolSize !== null && needed > poolSize) {
-                errors.push(
-                    `Board requires ${needed} markers but dictionary ${c.dictionary} only has ${poolSize}. ` +
-                    `Use a larger dictionary or reduce board dimensions.`,
-                );
-            }
+            errors.push(...charucoConfigErrors(c));
             break;
         }
         case "ringgrid": {

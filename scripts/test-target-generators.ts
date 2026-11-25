@@ -67,7 +67,19 @@ import { PUZZLEPOLE_PRESETS } from "../src/components/targetgen/presets";
 import { resolvePageDimensions } from "../src/components/targetgen/svg/paperConstants";
 import { toRinggridTarget } from "../src/components/targetgen/ringgridTarget";
 import { deepMerge, unwrapMaps } from "../src/lib/wasm/worker/util";
-import { adaptMarkerBoardDiagnosis, type MarkerBoardDiagnosis } from "../src/lib/wasm/worker/calibTargets";
+import { adaptMarkerBoardDiagnosis, renderScreenTargetWith, type MarkerBoardDiagnosis } from "../src/lib/wasm/worker/calibTargets";
+import { renderRinggridScreenWith } from "../src/lib/wasm/worker/ringgrid";
+import {
+    buildRinggridSidecar,
+    geometryFromCalibSidecar,
+    geometryFromRinggridMetadata,
+    toRinggridScreenOptions,
+    toRinggridScreenTargetJson,
+    toScreenOptions,
+    toScreenTargetSpec,
+    type RinggridScreenMetadata,
+} from "../src/components/targetgen/screenTarget";
+import type { ScreenSettings } from "../src/components/targetgen/types";
 import { PNG } from "pngjs";
 import type { defaultCircles as DefaultCirclesFn } from "../src/components/targetgen/reducer";
 import type * as CalibTargetsModule from "@vitavision/calib-targets";
@@ -442,6 +454,195 @@ function checkPuzzlepoleBundle(cfg: PuzzlepoleConfig, bundle: GeneratedBundle): 
         problems.push(`json_text is not JSON: ${String(e)}`);
     }
     return problems;
+}
+
+
+// ── Part G — screen targets: render -> decode PNG -> detect ────────────────
+//
+// The Screen medium renders pixel-native, anti-aliased grayscale PNGs
+// (`render_screen_target` / `render_fitted_screen_target_json`). Unlike Parts
+// A-D there is no SVG to rasterise: the PNG the app saves is fed straight to the
+// detector. The render goes through `renderScreenTargetWith` /
+// `renderRinggridScreenWith` — the very functions the WASM worker calls — and
+// the detector is configured from the REALISED geometry in the sidecar (board
+// dimensions from `target`, the fitted ring-grid spec from `json_text`), not
+// from what was requested.
+async function runScreenRoundTrip(
+    mod: typeof CalibTargetsModule,
+    ringgridMod: typeof RinggridModule,
+    record: (line: string, ok: boolean) => void,
+): Promise<void> {
+    console.log("\n--- Part G: screen target generation -> detection round trip ---\n");
+
+    const screen: ScreenSettings = { widthPx: 1920, heightPx: 1080, pixelPitchMm: 0.2745, marginPx: null };
+    const chessCfg = mod.default_chess_config();
+
+    const decodeGray = (png: Uint8Array): Raster => {
+        const img = PNG.sync.read(Buffer.from(png));
+        const gray = new Uint8Array(img.width * img.height);
+        for (let i = 0; i < gray.length; i++) gray[i] = img.data[i * 4];
+        return { width: img.width, height: img.height, gray };
+    };
+
+    const calibCases: { name: string; target: TargetConfig }[] = [
+        {
+            name: "screen/chessboard-8x11-20mm",
+            target: { targetType: "chessboard", config: { innerRows: 8, innerCols: 11, squareSizeMm: 20, innerSquareRel: 0 } },
+        },
+        {
+            name: "screen/charuco-8x11-dict4x4_250",
+            target: {
+                targetType: "charuco",
+                config: { rows: 8, cols: 11, squareSizeMm: 20, markerSizeRel: 0.75, dictionary: "DICT_4X4_250", borderBits: 1, innerSquareRel: 0 },
+            },
+        },
+        {
+            // 9x12, not the app's 7x10 default: the detector's default decode
+            // `min_window` is 7 corners per side, which a 7-row board (6 inner
+            // corners) cannot supply — the same on paper (see the matrix above,
+            // which starts at 8x8).
+            name: "screen/puzzleboard-9x12-15mm",
+            target: { targetType: "puzzleboard", config: { rows: 9, cols: 12, cellSizeMm: 15 } },
+        },
+    ];
+
+    for (const c of calibCases) {
+        try {
+            const bundle = renderScreenTargetWith(mod, toScreenTargetSpec(c.target), toScreenOptions(screen));
+            const meta = JSON.parse(bundle.json) as { target: Record<string, number | string> };
+            const geom = geometryFromCalibSidecar(bundle.json);
+            if (geom.kind !== "grid") throw new Error("expected grid geometry");
+            const { width, height, gray } = decodeGray(bundle.png);
+            if (width !== screen.widthPx || height !== screen.heightPx) {
+                record(`FAIL ${c.name}: PNG is ${width}x${height}, expected ${screen.widthPx}x${screen.heightPx}`, false);
+                continue;
+            }
+            const head =
+                `square=${geom.squareSizePx}px=${geom.squareSizeMm.toFixed(4)}mm (requested ${geom.requestedSquareSizeMm}mm), ` +
+                `origin=[${geom.boardOriginPx.join(",")}]`;
+
+            if (c.target.targetType === "chessboard") {
+                const rows = meta.target.inner_rows as number;
+                const cols = meta.target.inner_cols as number;
+                const params = deepMerge(mod.default_chessboard_params(), { expected_rows: rows, expected_cols: cols });
+                const result = mod.detect_chessboard(width, height, gray, chessCfg, params) as { corners: unknown[] } | null;
+                const got = result?.corners?.length ?? 0;
+                const expected = rows * cols;
+                record(`${got === expected ? "PASS" : "FAIL"} ${c.name}: ${head}, corners=${got}/${expected}`, got === expected);
+            } else if (c.target.targetType === "charuco") {
+                const rows = meta.target.rows as number;
+                const cols = meta.target.cols as number;
+                const dictionary = meta.target.dictionary as string;
+                const params = mod.default_charuco_params(rows, cols, meta.target.marker_size_rel as number, dictionary) as {
+                    board: { border_bits: number };
+                };
+                params.board.border_bits = meta.target.border_bits as number;
+                const result = mod.detect_charuco(width, height, gray, chessCfg, params) as {
+                    corners: unknown[];
+                    markers: { id: number; rotation: number }[];
+                } | null;
+                const markers = result?.markers ?? [];
+                // OpenCV ChArUco layout: marker cells are those with (row + col)
+                // odd, ids running row-major from 0. The detector decodes a
+                // marker only when all four corners of its cell are detected
+                // inner corners, i.e. the cells off the board's outer ring —
+                // (rows-2)*(cols-2)/2 of the rows*cols/2 printed markers. The
+                // ids of exactly those cells are the ground truth.
+                const expectedIds: number[] = [];
+                let nextId = 0;
+                for (let r = 0; r < rows; r++) {
+                    for (let col = 0; col < cols; col++) {
+                        if ((r + col) % 2 !== 1) continue;
+                        if (r >= 1 && r <= rows - 2 && col >= 1 && col <= cols - 2) expectedIds.push(nextId);
+                        nextId++;
+                    }
+                }
+                const expectedMarkers = expectedIds.length;
+                const ids = markers.map((m) => m.id).sort((a, b) => a - b);
+                const idsMatch = ids.length === expectedIds.length && ids.every((id, i) => id === expectedIds[i]);
+                const badRotations = markers.filter((m) => m.rotation !== 0).length;
+                const gotCorners = result?.corners?.length ?? 0;
+                const expectedCorners = (rows - 1) * (cols - 1);
+                const ok = idsMatch && badRotations === 0 && gotCorners === expectedCorners;
+                record(
+                    `${ok ? "PASS" : "FAIL"} ${c.name}: ${head}, interior markers=${markers.length}/${expectedMarkers} (of ${Math.floor((rows * cols) / 2)} printed) idsMatch=${idsMatch} ` +
+                        `nonzeroRotations=${badRotations}, corners=${gotCorners}/${expectedCorners}`,
+                    ok,
+                );
+            } else {
+                const rows = meta.target.rows as number;
+                const cols = meta.target.cols as number;
+                const params = mod.default_puzzleboard_params(rows, cols);
+                const result = mod.detect_puzzleboard(width, height, gray, chessCfg, params) as {
+                    decode: { bit_error_rate: number; edges_matched: number; edges_observed: number };
+                } | null;
+                const d = result?.decode;
+                const ok = !!d && d.bit_error_rate === 0 && d.edges_matched === d.edges_observed && d.edges_observed > 0;
+                record(
+                    `${ok ? "PASS" : "FAIL"} ${c.name}: ${head}, bit_error_rate=${d?.bit_error_rate} edges=${d?.edges_matched}/${d?.edges_observed}`,
+                    ok,
+                );
+            }
+        } catch (e) {
+            record(`FAIL ${c.name}: threw: ${e instanceof Error ? e.message : String(e)}`, false);
+        }
+    }
+
+    // Library errors must be catchable strings (the app shows them as validation errors).
+    try {
+        const tooSmall: TargetConfig = {
+            targetType: "charuco",
+            config: { rows: 12, cols: 10, squareSizeMm: 10, markerSizeRel: 0.75, dictionary: "DICT_4X4_50", borderBits: 1, innerSquareRel: 0 },
+        };
+        renderScreenTargetWith(mod, toScreenTargetSpec(tooSmall), toScreenOptions(screen));
+        record("FAIL screen/charuco-dictionary-too-small: render accepted 60 markers from a 50-marker dictionary", false);
+    } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        record(`${/markers/.test(msg) ? "PASS" : "FAIL"} screen/charuco-dictionary-too-small: library error surfaced: ${msg}`, /markers/.test(msg));
+    }
+
+    // Ring grid (ringgrid module) through the worker's own code path.
+    try {
+        const { DEFAULT_RINGGRID } = await import("../src/components/targetgen/reducer.ts");
+        const ringScreen: ScreenSettings = { ...screen, pixelPitchMm: 0.25 };
+        const bundle = renderRinggridScreenWith(
+            ringgridMod,
+            toRinggridScreenTargetJson(DEFAULT_RINGGRID),
+            JSON.stringify(toRinggridScreenOptions(DEFAULT_RINGGRID, ringScreen)),
+        );
+        const metadata = bundle.metadata as RinggridScreenMetadata;
+        const geom = geometryFromRinggridMetadata(metadata);
+        if (geom.kind !== "ringgrid") throw new Error("expected ringgrid geometry");
+        const sidecar = JSON.parse(buildRinggridSidecar(metadata, bundle.json)) as { metadata: unknown; target: unknown };
+        if (!sidecar.metadata || !sidecar.target) throw new Error("sidecar is missing metadata or target");
+
+        const img = PNG.sync.read(Buffer.from(bundle.png));
+        if (img.width !== ringScreen.widthPx || img.height !== ringScreen.heightPx) {
+            throw new Error(`PNG is ${img.width}x${img.height}`);
+        }
+        // Detector built from the FITTED spec (`json_text`), sized from the drawn diameter in the sidecar.
+        const detector = new ringgridMod.RinggridDetector(bundle.json);
+        try {
+            const d = geom.drawnMarkerDiameterPx;
+            detector.update_config(JSON.stringify({ marker_scale: { diameter_min_px: Math.floor(d * 0.7), diameter_max_px: Math.ceil(d * 1.3) } }));
+            const result = JSON.parse(detector.detect_adaptive_rgba(new Uint8Array(img.data), img.width, img.height)) as {
+                detected_markers?: { id: number }[];
+            };
+            const ids = (result.detected_markers ?? []).map((m) => m.id);
+            const unique = new Set(ids).size;
+            const ratio = unique / geom.markerCount;
+            const ok = ratio >= 0.95 && unique === ids.length;
+            record(
+                `${ok ? "PASS" : "FAIL"} screen/ringgrid-default-fitted: ${geom.rows}x${geom.columns} markers=${geom.markerCount}, ` +
+                    `drawn=${geom.drawnMarkerDiameterPx}px=${geom.drawnMarkerDiameterMm}mm, detected=${unique} (${(ratio * 100).toFixed(1)}%, need >=95%), duplicates=${ids.length - unique}`,
+                ok,
+            );
+        } finally {
+            detector.free();
+        }
+    } catch (e) {
+        record(`FAIL screen/ringgrid-default-fitted: threw: ${e instanceof Error ? e.message : String(e)}`, false);
+    }
 }
 
 async function runHarness(
@@ -980,6 +1181,8 @@ async function runHarness(
     } catch (e) {
         record(`FAIL ringgrid/default-15x14-hex: round trip threw: ${e instanceof Error ? e.message : String(e)}`, false);
     }
+
+    await runScreenRoundTrip(mod, ringgridMod, record);
 
     console.log("\n=== Summary ===");
     for (const line of summary) console.log(line);

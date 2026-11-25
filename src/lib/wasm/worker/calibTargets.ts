@@ -1,4 +1,4 @@
-import { generateId, toPoint, toPointOrNull, toPointArray, toPointArrayOrNull, gridFromWasm, alignmentFromWasm, mergeConfig, unwrapMaps, mapTargetBundle, type TargetBundle, type RawTargetBundle } from "./util";
+import { generateId, toPoint, toPointOrNull, toPointArray, toPointArrayOrNull, gridFromWasm, alignmentFromWasm, mergeConfig, unwrapMaps, mapTargetBundle, type TargetBundle, type RawTargetBundle, type ScreenBundle } from "./util";
 import { getCalibModule } from "./modules";
 
 export function adaptCalibTargetResult(
@@ -325,4 +325,23 @@ export async function handleRenderTargetBundle(doc: unknown): Promise<TargetBund
     const mod = await getCalibModule();
     const bundle = mod.render_target_bundle_json(doc) as RawTargetBundle;
     return mapTargetBundle(bundle);
+}
+
+/** The slice of the calib-targets module the screen renderer needs. Taking it
+ * as a parameter lets `scripts/test-target-generators.ts` drive the exact code
+ * the worker runs without the worker's lazy module loader. */
+export interface CalibScreenModule {
+    render_screen_target(target: unknown, screen: unknown): { png_bytes: Uint8Array; json_text: string };
+}
+
+/** Render a chessboard / ChArUco / PuzzleBoard for 1:1 display. Throws the
+ * library's own error string for invalid input. */
+export function renderScreenTargetWith(mod: CalibScreenModule, target: unknown, screen: unknown): ScreenBundle {
+    const bundle = mod.render_screen_target(target, screen);
+    return { png: bundle.png_bytes, json: bundle.json_text };
+}
+
+export async function handleRenderScreenTarget(target: unknown, screen: unknown): Promise<ScreenBundle> {
+    const mod = await getCalibModule();
+    return renderScreenTargetWith(mod, target, screen);
 }

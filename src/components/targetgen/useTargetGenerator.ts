@@ -1,10 +1,13 @@
 import { useReducer, useEffect, useState } from "react";
 import { targetGeneratorReducer, INITIAL_STATE } from "./reducer";
 import { generatePreviewSvg } from "./svg";
-import { validateConfig } from "./validation";
+import { validateConfig, validateScreenConfig, screenGeometryWarnings } from "./validation";
+import { renderScreenViaWasm } from "./renderScreenViaWasm";
 import type { TargetGeneratorState, TargetGeneratorAction } from "./types";
 import { loadPuzzlepolePeriods } from "./puzzlepole/periods";
 import type { PuzzlepolePeriod } from "./puzzlepole/geometry";
+
+const SCREEN_RENDER_DEBOUNCE_MS = 250;
 
 export function useTargetGenerator(): {
     state: TargetGeneratorState;
@@ -29,6 +32,7 @@ export function useTargetGenerator(): {
 
     // Regenerate preview on every config/page change
     useEffect(() => {
+        if (state.medium !== "print") return;
         let cancelled = false;
 
         generatePreviewSvg(state.target, state.page)
@@ -56,7 +60,39 @@ export function useTargetGenerator(): {
         return () => {
             cancelled = true;
         };
-    }, [state.target, state.page]);
+    }, [state.medium, state.target, state.page]);
+
+    // Screen medium: render the real native-resolution PNG (debounced — a
+    // full-display render is far heavier than the SVG preview). Pure checks run
+    // first; whatever only the library can judge arrives as a thrown message
+    // and is shown as a validation error.
+    useEffect(() => {
+        if (state.medium !== "screen") return;
+        let cancelled = false;
+        const timer = setTimeout(() => {
+            const validation = validateScreenConfig(state.target, state.screen);
+            if (validation.errors.length > 0) {
+                dispatch({ type: "SET_SCREEN_PREVIEW", result: null, validation });
+                return;
+            }
+            renderScreenViaWasm(state.target, state.screen)
+                .then((result) => {
+                    if (cancelled) return;
+                    validation.warnings.push(...screenGeometryWarnings(result.geometry));
+                    dispatch({ type: "SET_SCREEN_PREVIEW", result, validation });
+                })
+                .catch((err) => {
+                    if (cancelled) return;
+                    validation.errors.push(err instanceof Error ? err.message : String(err));
+                    dispatch({ type: "SET_SCREEN_PREVIEW", result: null, validation });
+                });
+        }, SCREEN_RENDER_DEBOUNCE_MS);
+
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
+    }, [state.medium, state.target, state.screen]);
 
     return { state, dispatch, puzzlepolePeriods };
 }

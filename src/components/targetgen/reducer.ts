@@ -8,6 +8,7 @@ import type {
     PuzzleboardConfig,
     PuzzlepoleConfig,
     CircleSpec,
+    ScreenSettings,
 } from "./types";
 
 /** Compute default circle triangle centered on the board. */
@@ -95,6 +96,16 @@ export function defaultConfigForType(targetType: string) {
     }
 }
 
+// pixelPitchMm has no honest prefill (the browser cannot know the panel's physical
+// size); 0.25 mm is a placeholder in the range of common desktop monitors, and the
+// UI tells the user to replace it from the display's spec sheet.
+export const DEFAULT_SCREEN: ScreenSettings = {
+    widthPx: 1920,
+    heightPx: 1080,
+    pixelPitchMm: 0.25,
+    marginPx: null,
+};
+
 export const INITIAL_STATE: TargetGeneratorState = {
     target: { targetType: "chessboard", config: { ...DEFAULT_CHESSBOARD } },
     page: {
@@ -106,6 +117,10 @@ export const INITIAL_STATE: TargetGeneratorState = {
         pngDpi: 300,
         showScaleLine: true,
     },
+    medium: "print",
+    screen: { ...DEFAULT_SCREEN },
+    screenPrefilled: false,
+    screenResult: null,
     previewSvg: "",
     validation: { errors: [], warnings: [] },
     configCache: {},
@@ -162,6 +177,25 @@ export function targetGeneratorReducer(
                 ...state,
                 page: { ...state.page, ...action.partial },
             };
+        case "SET_MEDIUM": {
+            if (action.medium === state.medium) return state;
+            // The display size is prefilled once, the first time Screen is chosen;
+            // later visits keep whatever the user has typed.
+            const px = action.medium === "screen" && !state.screenPrefilled ? action.displayPx : undefined;
+            return {
+                ...state,
+                medium: action.medium,
+                screenPrefilled: state.screenPrefilled || action.medium === "screen",
+                screen: px ? { ...state.screen, widthPx: px.widthPx, heightPx: px.heightPx } : state.screen,
+                // The two media have separate results and validation; drop the stale ones.
+                screenResult: null,
+                validation: { errors: [], warnings: [] },
+            };
+        }
+        case "UPDATE_SCREEN":
+            return { ...state, screen: { ...state.screen, ...action.partial } };
+        case "SET_SCREEN_PREVIEW":
+            return { ...state, screenResult: action.result, validation: action.validation };
         case "SET_PREVIEW":
             return {
                 ...state,

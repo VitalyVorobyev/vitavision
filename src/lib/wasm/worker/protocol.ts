@@ -25,7 +25,9 @@ export type WorkerCommand =
     | "render-target-bundle"
     | "puzzlepole-periods"
     | "render-ringgrid-bundle"
-    | "ringgrid-page-size";
+    | "ringgrid-page-size"
+    | "render-screen-target"
+    | "render-ringgrid-screen-target";
 
 /** Runs one of the seven registered algorithms against real pixel data. A
  * missing `command` (the common case) is equivalent to `"detect"`. */

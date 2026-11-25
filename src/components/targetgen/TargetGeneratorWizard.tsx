@@ -17,7 +17,7 @@ export type TargetGeneratorStep = "target" | "pattern" | "page" | "export";
 const STEPS: { key: TargetGeneratorStep; label: string; description: string }[] = [
     { key: "target", label: "Target", description: "Choose target type or import a saved configuration" },
     { key: "pattern", label: "Pattern", description: "Apply a preset, then adjust board geometry and target-specific settings" },
-    { key: "page", label: "Page", description: "Set paper size, orientation, margins, and export density" },
+    { key: "page", label: "Page", description: "Choose print or screen, then set the paper or the display" },
     { key: "export", label: "Export", description: "Review validation and download files" },
 ];
 
@@ -124,12 +124,16 @@ export default function TargetGeneratorWizard({
     const errorCount = state.validation.errors.length;
 
     const summaryLine = useMemo(() => {
+        if (state.medium === "screen") {
+            const { widthPx, heightPx, pixelPitchMm } = state.screen;
+            return `${TARGET_LABELS[state.target.targetType]} • Screen • ${widthPx} x ${heightPx} px • ${pixelPitchMm} mm pitch`;
+        }
         const orientation = state.page.orientation === "portrait" ? "Portrait" : "Landscape";
         const page = state.page.sizeKind === "custom"
             ? `${state.page.customWidthMm} x ${state.page.customHeightMm} mm`
             : state.page.sizeKind.toUpperCase();
         return `${TARGET_LABELS[state.target.targetType]} • ${page} • ${orientation}`;
-    }, [state.page, state.target.targetType]);
+    }, [state.medium, state.screen, state.page, state.target.targetType]);
 
     return (
         <div className="flex h-[calc(100vh-64px)] flex-col overflow-hidden animate-in fade-in bg-ground">
@@ -201,6 +205,7 @@ export default function TargetGeneratorWizard({
                                 dispatch={dispatch}
                                 showPresets={false}
                                 layout="grid"
+                                medium={state.medium}
                             />
                         </WizardStepCard>
                     )}
@@ -224,8 +229,10 @@ export default function TargetGeneratorWizard({
 
                     {activeStep === "page" && (
                         <WizardStepCard
-                            title="Page settings"
-                            description="Define paper dimensions, orientation, margins, and export resolution."
+                            title={state.medium === "screen" ? "Display settings" : "Page settings"}
+                            description={state.medium === "screen"
+                                ? "Describe the monitor the target will be shown on: native resolution and pixel pitch."
+                                : "Define paper dimensions, orientation, margins, and export resolution."}
                         >
                             <TargetConfigPanel
                                 state={state}
@@ -238,7 +245,9 @@ export default function TargetGeneratorWizard({
                     {activeStep === "export" && (
                         <WizardStepCard
                             title="Review and export"
-                            description="Check validation messages, then download the target in the required file format."
+                            description={state.medium === "screen"
+                                ? "Check the realised geometry, then download the PNG and its JSON sidecar."
+                                : "Check validation messages, then download the target in the required file format."}
                         >
                             <TargetConfigPanel
                                 state={state}
@@ -280,7 +289,7 @@ export default function TargetGeneratorWizard({
                             Live Preview
                         </div>
                         <div className="mt-1 text-sm text-fg-muted">
-                            Current board, page, and printable area
+                            {state.medium === "screen" ? "The rendered screen PNG" : "Current board, page, and printable area"}
                         </div>
                     </div>
                     <Button size="md" onClick={() => setPreviewOpen((open) => !open)} aria-expanded={previewOpen}>

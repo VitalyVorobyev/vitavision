@@ -6,6 +6,9 @@ import RingGridGenConfig from "./RingGridGenConfig";
 import PuzzleboardGenConfig from "./PuzzleboardGenConfig";
 import PuzzlepoleGenConfig from "./PuzzlepoleGenConfig";
 import PaperConfig from "./PaperConfig";
+import ScreenConfig, { MediumSwitch } from "./ScreenConfig";
+import ScreenGeometryPanel from "./ScreenGeometryPanel";
+import { isScreenSupported, screenUnsupportedMessage } from "../screenTarget";
 import DownloadBar, { type DxfGenerator } from "./DownloadBar";
 import type { TargetGeneratorState, TargetGeneratorAction } from "../types";
 import type { PuzzlepolePeriod } from "../puzzlepole/geometry";
@@ -44,6 +47,14 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
             {visibleSections.has("pattern") && target.targetType === "markerboard" && (
                 <MarkerBoardGenConfig config={target.config} dispatch={dispatch} />
             )}
+            {visibleSections.has("pattern") && target.targetType === "ringgrid" && state.medium === "screen" && (
+                <Callout tone="info" title="Fitted to the display" className="text-xs">
+                    In Screen mode the library fits the number of rows and columns to fill the display, so
+                    those two fields only seed the template and do not determine the output. The pitch and
+                    marker proportions still apply; the marker size comes from the radii and ring width. The
+                    realised grid is reported on the Export step.
+                </Callout>
+            )}
             {visibleSections.has("pattern") && target.targetType === "ringgrid" && (
                 <RingGridGenConfig config={target.config} dispatch={dispatch} />
             )}
@@ -55,8 +66,19 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
             )}
 
             {/* Page config */}
-            {visibleSections.has("page") && (
+            {visibleSections.has("page") && <MediumSwitch medium={state.medium} dispatch={dispatch} />}
+            {visibleSections.has("page") && state.medium === "print" && (
                 <PaperConfig page={state.page} dispatch={dispatch} />
+            )}
+            {visibleSections.has("page") && state.medium === "screen" && (
+                <>
+                    {!isScreenSupported(target.targetType) && (
+                        <Callout tone="error" className="text-xs">
+                            {screenUnsupportedMessage(target.targetType)}
+                        </Callout>
+                    )}
+                    <ScreenConfig screen={state.screen} dispatch={dispatch} />
+                </>
             )}
 
             {/* Validation messages */}
@@ -73,6 +95,10 @@ export default function TargetConfigPanel({ state, dispatch, sections = ALL_SECT
                         {validation.warnings.map((w) => <li key={w}>{w}</li>)}
                     </ul>
                 </Callout>
+            )}
+
+            {visibleSections.has("validation") && state.medium === "screen" && (
+                <ScreenGeometryPanel result={state.screenResult} />
             )}
 
             {/* Download bar */}

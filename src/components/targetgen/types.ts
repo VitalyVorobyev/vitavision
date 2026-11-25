@@ -94,6 +94,57 @@ export interface PageConfig {
     showScaleLine: boolean;
 }
 
+// ── Medium / screen display ──────────────────────────────────────────────────
+
+/** `print` = paper (SVG/PNG/DXF); `screen` = pixel-native PNG for a monitor. */
+export type Medium = "print" | "screen";
+
+/**
+ * The display a screen target is rendered for — exactly the library inputs
+ * (`ScreenTargetOptions`). `marginPx: null` means "library default"
+ * (calib-targets: 1 px; ringgrid computes its own).
+ */
+export interface ScreenSettings {
+    widthPx: number;
+    heightPx: number;
+    pixelPitchMm: number;
+    marginPx: number | null;
+}
+
+/**
+ * The realised geometry reported by the library's sidecar. This — not the
+ * requested configuration — is what a calibration must use.
+ */
+export type ScreenGeometry =
+    | {
+        kind: "grid";
+        squareSizePx: number;
+        /** Realised square size (`target.square_size_mm` in the sidecar). */
+        squareSizeMm: number;
+        requestedSquareSizeMm: number;
+        boardOriginPx: [number, number];
+    }
+    | {
+        kind: "ringgrid";
+        rows: number;
+        columns: number;
+        markerCount: number;
+        drawnMarkerDiameterPx: number;
+        drawnMarkerDiameterMm: number;
+        codeBandWidthPx: number | null;
+        boardOriginPx: [number, number];
+    };
+
+export interface ScreenRenderResult {
+    /** 8-bit grayscale PNG at exactly `widthPx` x `heightPx`. */
+    png: Uint8Array;
+    /** Sidecar file content (see `screenTarget.ts`). */
+    sidecarJson: string;
+    geometry: ScreenGeometry;
+    widthPx: number;
+    heightPx: number;
+}
+
 // ── Validation ───────────────────────────────────────────────────────────────
 
 export interface ValidationResult {
@@ -127,6 +178,12 @@ export interface ConfigCache {
 export interface TargetGeneratorState {
     target: TargetConfig;
     page: PageConfig;
+    medium: Medium;
+    screen: ScreenSettings;
+    /** True once the display size has been prefilled from the browser (done once). */
+    screenPrefilled: boolean;
+    /** Latest rendered screen target; `null` while rendering or when invalid. */
+    screenResult: ScreenRenderResult | null;
     previewSvg: string;
     validation: ValidationResult;
     configCache: ConfigCache;
@@ -139,4 +196,7 @@ export type TargetGeneratorAction =
     | { type: "UPDATE_CONFIG"; partial: Record<string, unknown> }
     | { type: "UPDATE_PAGE"; partial: Partial<PageConfig> }
     | { type: "SET_PREVIEW"; svg: string; validation: ValidationResult }
+    | { type: "SET_MEDIUM"; medium: Medium; displayPx?: { widthPx: number; heightPx: number } | undefined }
+    | { type: "UPDATE_SCREEN"; partial: Partial<ScreenSettings> }
+    | { type: "SET_SCREEN_PREVIEW"; result: ScreenRenderResult | null; validation: ValidationResult }
     | { type: "LOAD_PRESET"; target: TargetConfig; page: PageConfig };
